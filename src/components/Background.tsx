@@ -9,6 +9,7 @@ import {
   useAnimations,
 } from "@react-three/drei";
 import fishModel from "../assets/scene.gltf?url";
+import puterModel from "../assets/retroComputer.gltf?url";
 import { useLoader } from "@react-three/fiber";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { useEffect, useMemo, useRef } from "react";
@@ -30,7 +31,6 @@ function FishModel(props) {
   const borderRadius = 10.0;
 
   useEffect(() => {
-    console.log(actions);
     const action = actions["Swim Animation"];
     if (action) {
       action.timeScale = 0.2;
@@ -78,6 +78,16 @@ function FishModel(props) {
   return <primitive ref={fishRef} object={cloned} {...props} />;
 }
 
+function PuterModel(props) {
+  const gltf = useGLTF(puterModel);
+  const puterRef = useRef(null);
+  if (puterRef && puterRef.current) {
+    console.log("Puter pos", puterRef.current.position, puterRef.current.scale);
+  }
+
+  return <primitive ref={puterRef} object={gltf.scene} {...props} />;
+}
+
 function Bubble() {
   // const gltf = useLoader(GLTFLoader, gltf_model);
 
@@ -93,6 +103,11 @@ function Bubble() {
           position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
         />
       ))}
+      <PuterModel
+        scale={4}
+        position={[-3, 0, -5]}
+        rotation={[0, -0.25 * Math.PI, Math.PI / 12]}
+      />
 
       <Float floatIntensity={1} speed={0.5}>
         <mesh scale={1}>
