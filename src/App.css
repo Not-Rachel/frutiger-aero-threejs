@@ -10,11 +10,14 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  scrollbar-color: rgb(188, 235, 251) lightblue;
+  scrollbar-width: thin;
 }
 
 /*
 Frutiger Aero Button
-https://codepen.io/fkeiler/pen/gOZzNzj*/
+https://codepen.io/fkeiler/pen/gOZzNzj
+*/
 :root {
   --bottom-glow: radial-gradient(
     farthest-corner at bottom center,
@@ -40,12 +43,17 @@ body {
   flex-direction: column;
 }
 
+.aero {
+  font-family: "Lucida Grande", "Lucida Sans Unicode", "Lunasima", sans-serif;
+  text-shadow: 0 2px 0.5em #0003;
+}
+
 button.aero {
   /* Colors */
   --hue: 230;
   --button-background: oklch(75% 0.1 var(--hue) / 0.8);
   --bg-dark: oklch(45% 0.1 var(--hue) / 0.75);
-  --button-foreground: oklch(15% 0.05 var(--hue));
+  --button-foreground: oklch(15% 0.15 var(--hue));
   /* Style */
   background-color: var(--button-background);
   background:
@@ -55,15 +63,14 @@ button.aero {
   border: 1px solid var(--button-background);
   border-radius: 9999px;
   cursor: pointer;
-  margin: 1em 1ex;
-  padding: 1ex 4em;
+  /* margin: 1em 1ex; */
+  /* padding: 1ex 4em; */
   position: relative;
   text-shadow: 0 2px 0.5em #0003;
   transition: all 300ms;
   /* Text */
-  color: var(--button-foreground);
+  /* color: var(--button-foreground); */
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lunasima", sans-serif;
-  font-weight: 700;
 
   &::after {
     content: "";
@@ -85,13 +92,12 @@ button.aero {
   &:focus {
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
   }
-
   &:active {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 }
 
-input#hue {
+/* input#hue {
   appearance: none;
   background: linear-gradient(
     to right in oklch longer hue,
@@ -99,4 +105,4 @@ input#hue {
     oklch(75% 0.1 360)
   );
   border-radius: 9999px;
-}
+} */

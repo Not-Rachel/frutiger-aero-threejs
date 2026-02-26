@@ -1,19 +1,27 @@
-import { Canvas, useFrame } from "@react-three/fiber";
-import * as THREE from "@react-three/fiber";
+import { Canvas, extend, useFrame } from "@react-three/fiber";
+// import * as THREE from "@react-three/fiber";
 
 import hdr from "../assets/puresky.hdr?url";
 import {
   Environment,
   OrbitControls,
   MeshDistortMaterial,
+  MeshReflectorMaterial,
   Float,
   useGLTF,
   useAnimations,
+  shaderMaterial,
 } from "@react-three/drei";
 import fishModel from "../assets/scene.gltf?url";
 import puterModel from "../assets/retroComputer.gltf?url";
 import * as YUKA from "yuka";
-import { useEffect, useMemo, useRef } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
 import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
 import {
@@ -22,12 +30,54 @@ import {
   Noise,
   HueSaturation,
 } from "@react-three/postprocessing";
+import { MeshRefractionMaterial } from "@react-three/drei/materials/MeshRefractionMaterial";
+import { Color } from "three";
 
 function randInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+const glsl = (x: any) => x;
+
+const OceanMaterial = shaderMaterial(
+  {
+    uTime: 0,
+    uColorStart: new Color("hotpink"),
+    uColorEnd: new Color("white"),
+  },
+  glsl`
+  varying vec2 vUv;
+  void main() {
+    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
+    vec4 viewPosition = viewMatrix * modelPosition;
+    vec4 projectionPosition = projectionMatrix * viewPosition;
+    gl_Position = projectionPosition;
+    vUv = uv;
+  }`,
+  glsl`
+  #pragma glslify: cnoise3 = require(glsl-noise/classic/3d.glsl) 
+  uniform float uTime;
+  uniform vec3 uColorStart;
+  uniform vec3 uColorEnd;
+  varying vec2 vUv;
+  void main() {
+    vec2 displacedUv = vUv + cnoise3(vec3(vUv * 7.0, uTime * 0.1));
+    float strength = cnoise3(vec3(displacedUv * 5.0, uTime * 0.2));
+    float outerGlow = distance(vUv, vec2(0.5)) * 4.0 - 1.4;
+    strength += outerGlow;
+    strength += step(-0.2, strength) * 0.8;
+    strength = clamp(strength, 0.0, 1.0);
+    vec3 color = mix(uColorStart, uColorEnd, strength);
+    gl_FragColor = vec4(color, 1.0);
+    #include <tonemapping_fragment>
+    #include <encodings_fragment>
+  }`,
+);
+
+// shaderMaterial creates a THREE.ShaderMaterial, and auto-creates uniform setter/getters
+// extend makes it available in JSX, in this case <portalMaterial />
+extend({ PortalMaterial: OceanMaterial });
 
 function FishModel(props) {
   const gltf = useGLTF(fishModel);
@@ -141,7 +191,11 @@ function FishModel(props) {
   return <primitive ref={fishRef} object={cloned} {...props} />;
 }
 
-function PuterModel(props) {
+type PuterModelProps = {
+  setShowUI: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function PuterModel({ setShowUI, ...props }: PuterModelProps) {
   const gltf = useGLTF(puterModel);
   const puterRef = useRef(null);
   if (puterRef && puterRef.current) {
@@ -153,9 +207,10 @@ function PuterModel(props) {
       ref={puterRef}
       object={gltf.scene}
       {...props}
-      onClick={(e: Event) => {
+      onClick={(e) => {
         e.stopPropagation();
-        console.log("Clicked computer");
+        setShowUI((prev) => !prev);
+        console.log("hello");
       }}
     />
   );
@@ -166,7 +221,8 @@ function BubbleMesh(props) {
 
   useFrame(({ clock }) => {
     if (bubble.current) {
-      bubble.current.position.y += 0.001;
+      bubble.current.position.y = Math.sin(clock.elapsedTime / 3.0);
+      bubble.current.position.x = Math.cos(clock.elapsedTime / 3.0);
     }
     // console.log("Frame");
   });
@@ -191,12 +247,64 @@ function BubbleMesh(props) {
     </Float>
   );
 }
-function Bubble() {
-  // const gltf = useLoader(GLTFLoader, gltf_model);
+
+function OceanMesh(props) {
+  const oceanRef = useRef(null!);
+
+  useEffect(() => {
+    if (oceanRef.current) {
+      // oceanRef.current.rotation.x = -Math.PI / 2;
+      console.log(oceanRef.current);
+    }
+  }, [oceanRef]);
 
   return (
-    <Canvas camera={{ fov: 65 }} className="border-2 border-white">
-      {Array.from({ length: 20 }).map((_, i) => (
+    <mesh
+      ref={oceanRef}
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale={1}
+      position={[0, -1, 0]}
+    >
+      <planeGeometry args={[64, 64]} />
+      {/* <MeshDistortMaterial
+        distort={0.0}
+        color={"#094443"}
+        transmission={0.5}
+        thickness={-0.5}
+        roughness={0.1}
+        iridescence={0.5}
+        iridescenceIOR={1}
+        iridescenceThicknessRange={[0, 1200]}
+        clearcoat={1}
+        
+        clearcoatRoughness={0}
+        envMapIntensity={1.5}
+      /> */}
+      <MeshReflectorMaterial
+        blur={[400, 100]}
+        resolution={1024}
+        mixBlur={1}
+        mixStrength={15}
+        depthScale={1}
+        minDepthThreshold={0.85}
+        color={"#153333"}
+        // metalness={0.6}
+        roughness={1}
+      />
+      {/* <THREE.MeshBasicMaterial */}
+      {/* <meshBasicMaterial color={"#094443"} /> */}
+    </mesh>
+  );
+}
+
+type BackgroundProps = {
+  setShowUI: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function Background({ setShowUI }: BackgroundProps) {
+  return (
+    <Canvas camera={{ fov: 65 }}>
+      {Array.from({ length: 1 }).map((_, i) => (
         <FishModel
           key={i}
           scale={7}
@@ -209,31 +317,18 @@ function Bubble() {
         scale={4}
         position={[5, 0, -7]}
         rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
+        setShowUI={setShowUI}
+        // onClick={() => console.log("Hello")}
       />
       <BubbleMesh />
-      <mesh scale={1} position={[0, 0, 0]}>
-        <planeGeometry args={[64, 64]} rotateX={-Math.PI / 2} />
-        <MeshDistortMaterial
-          distort={0.0}
-          transmission={1.0}
-          thickness={-0.5}
-          roughness={0}
-          iridescence={1}
-          iridescenceIOR={1}
-          iridescenceThicknessRange={[0, 1200]}
-          clearcoat={1}
-          clearcoatRoughness={0}
-          envMapIntensity={1.5}
-        />
-      </mesh>
-
-      <OrbitControls
+      <OceanMesh />
+      {/* <OrbitControls
         enableZoom={true}
         // minAzimuthAngle={-Math.PI / 4}
         // maxAzimuthAngle={Math.PI / 4}
         // minPolarAngle={Math.PI / 6}
         // maxPolarAngle={Math.PI - Math.PI / 6}
-      />
+      /> */}
       <Environment
         files={hdr}
         backgroundBlurriness={0.03}
@@ -256,4 +351,4 @@ function Bubble() {
   );
 }
 
-export default Bubble;
+export default Background;
