@@ -1,91 +1,49 @@
-import { Canvas, extend, useFrame } from "@react-three/fiber";
-// import * as THREE from "@react-three/fiber";
-
+import {
+  Canvas,
+  // extend,
+  useFrame,
+} from "@react-three/fiber";
 import hdr from "../assets/puresky.hdr?url";
 import {
   Environment,
-  OrbitControls,
+  // OrbitControls,
   MeshDistortMaterial,
   MeshReflectorMaterial,
   Float,
   useGLTF,
   useAnimations,
-  shaderMaterial,
+  // shaderMaterial,
 } from "@react-three/drei";
 import fishModel from "../assets/scene.gltf?url";
 import puterModel from "../assets/retroComputer.gltf?url";
 import * as YUKA from "yuka";
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useEffect, useMemo, useRef, type JSX } from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
-import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
+// import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
 import {
   DepthOfField,
   EffectComposer,
   Noise,
   HueSaturation,
 } from "@react-three/postprocessing";
-import { MeshRefractionMaterial } from "@react-three/drei/materials/MeshRefractionMaterial";
-import { Color } from "three";
+import { Object3D, type Object3DEventMap } from "three";
+// import { MeshRefractionMaterial } from "@react-three/drei/materials/MeshRefractionMaterial";
+// import { Color } from "three";
 
-function randInt(min, max) {
+function randInt(min: number, max: number) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-const glsl = (x: any) => x;
+// const glsl = (x: any) => x;
 
-const OceanMaterial = shaderMaterial(
-  {
-    uTime: 0,
-    uColorStart: new Color("hotpink"),
-    uColorEnd: new Color("white"),
-  },
-  glsl`
-  varying vec2 vUv;
-  void main() {
-    vec4 modelPosition = modelMatrix * vec4(position, 1.0);
-    vec4 viewPosition = viewMatrix * modelPosition;
-    vec4 projectionPosition = projectionMatrix * viewPosition;
-    gl_Position = projectionPosition;
-    vUv = uv;
-  }`,
-  glsl`
-  #pragma glslify: cnoise3 = require(glsl-noise/classic/3d.glsl) 
-  uniform float uTime;
-  uniform vec3 uColorStart;
-  uniform vec3 uColorEnd;
-  varying vec2 vUv;
-  void main() {
-    vec2 displacedUv = vUv + cnoise3(vec3(vUv * 7.0, uTime * 0.1));
-    float strength = cnoise3(vec3(displacedUv * 5.0, uTime * 0.2));
-    float outerGlow = distance(vUv, vec2(0.5)) * 4.0 - 1.4;
-    strength += outerGlow;
-    strength += step(-0.2, strength) * 0.8;
-    strength = clamp(strength, 0.0, 1.0);
-    vec3 color = mix(uColorStart, uColorEnd, strength);
-    gl_FragColor = vec4(color, 1.0);
-    #include <tonemapping_fragment>
-    #include <encodings_fragment>
-  }`,
-);
-
-// shaderMaterial creates a THREE.ShaderMaterial, and auto-creates uniform setter/getters
-// extend makes it available in JSX, in this case <portalMaterial />
-extend({ PortalMaterial: OceanMaterial });
-
-function FishModel(props) {
+function FishModel(props: any) {
   const gltf = useGLTF(fishModel);
   const cloned = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
   // cloned.matrixAutoUpdate = false;
 
   const { actions } = useAnimations(gltf.animations, cloned);
-  const fishRef = useRef<THREE.Group>(null);
+  const fishRef = useRef<Object3D<Object3DEventMap>>(null!);
   const vehicleRef = useRef<YUKA.Vehicle>(null!);
   const previousTimeRef = useRef<number>(0);
   const speedRef = useRef(props.speed); // Adjust for larger/smaller circle
@@ -97,7 +55,11 @@ function FishModel(props) {
     if (fishRef.current) {
       //Connect mesh to moving obj
       const vehicle = new YUKA.Vehicle();
-      vehicle.setRenderComponent(fishRef.current);
+      vehicle.setRenderComponent(fishRef.current, (entity, renderComponent) => {
+        renderComponent.position.copy(entity.position);
+        renderComponent.quaternion.copy(entity.rotation);
+      });
+
       vehicle.position.set(
         props.position[0],
         props.position[1],
@@ -191,7 +153,7 @@ function FishModel(props) {
   return <primitive ref={fishRef} object={cloned} {...props} />;
 }
 
-type PuterModelProps = {
+type PuterModelProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowUI: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -207,7 +169,7 @@ function PuterModel({ setShowUI, ...props }: PuterModelProps) {
       ref={puterRef}
       object={gltf.scene}
       {...props}
-      onClick={(e) => {
+      onClick={(e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         setShowUI((prev) => !prev);
         console.log("hello");
@@ -216,8 +178,8 @@ function PuterModel({ setShowUI, ...props }: PuterModelProps) {
   );
 }
 
-function BubbleMesh(props) {
-  const bubble = useRef(null!);
+function BubbleMesh() {
+  const bubble = useRef<Object3D<Object3DEventMap>>(null!);
 
   useFrame(({ clock }) => {
     if (bubble.current) {
@@ -248,7 +210,7 @@ function BubbleMesh(props) {
   );
 }
 
-function OceanMesh(props) {
+function OceanMesh() {
   const oceanRef = useRef(null!);
 
   useEffect(() => {
