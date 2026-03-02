@@ -12,7 +12,7 @@ body,
   padding: 0;
   overflow-y: hidden;
   overflow-x: hidden;
-  scrollbar-color: rgb(188, 235, 251) lightblue;
+  scrollbar-color: rgb(188, 235, 251) rgb(72, 124, 141);
   scrollbar-width: thin;
 }
 
@@ -28,21 +28,15 @@ https://codepen.io/fkeiler/pen/gOZzNzj
   );
   --stripes: repeating-linear-gradient(
     to bottom,
-    #eee 0px,
-    #eee 2px,
-    #fff 2px,
-    #fff 4px
+    #2f444c 0px,
+    #3f565f 2px,
+    #2f444c 2px,
+    #3f565f 4px
   );
 }
 
 body {
   background: var(--stripes);
-  height: 100dvh;
-  width: 100dvw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
 }
 
 .aero {
@@ -53,8 +47,9 @@ body {
 button.aero {
   /* Colors */
   --hue: 230;
-  --button-background: oklch(75% 0.1 var(--hue) / 0.8);
-  --bg-dark: oklch(45% 0.1 var(--hue) / 0.75);
+  --saturation: 0.1;
+  --button-background: oklch(80% var(--saturation) var(--hue) / 0.8);
+  --bg-dark: oklch(45% var(--saturation) var(--hue) / 0.75);
   --button-foreground: oklch(15% 0.15 var(--hue));
   /* Style */
   background-color: var(--button-background);
@@ -63,7 +58,7 @@ button.aero {
     linear-gradient(to bottom, var(--bg-dark), var(--button-background));
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.4);
   border: 1px solid var(--button-background);
-  border-radius: 9999px;
+  /* border-radius: 999px; */
   cursor: pointer;
   /* margin: 1em 1ex; */
   /* padding: 1ex 4em; */
@@ -74,13 +69,14 @@ button.aero {
   /* color: var(--button-foreground); */
   font-family: "Lucida Grande", "Lucida Sans Unicode", "Lunasima", sans-serif;
 
+  /*Reflection on button*/
   &::after {
     content: "";
     position: absolute;
     top: 4%;
-    left: 0.5em;
-    width: calc(100% - 1em);
-    height: 40%;
+    left: 0.25em;
+    width: calc(100% - 0.5em);
+    height: 50%;
     background: linear-gradient(
       to bottom,
       rgba(255, 255, 255, 0.8),
@@ -98,13 +94,3 @@ button.aero {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
   }
 }
-
-/* input#hue {
-  appearance: none;
-  background: linear-gradient(
-    to right in oklch longer hue,
-    oklch(75% 0.1 0),
-    oklch(75% 0.1 360)
-  );
-  border-radius: 9999px;
-} */
