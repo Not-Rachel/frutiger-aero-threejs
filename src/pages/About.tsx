@@ -1,9 +1,7 @@
 import React from "react";
 
 function About() {
-  return (
-    <div>My name is Rachel Brinkman, you killed my father prepare to die</div>
-  );
+  return <div>About Me</div>;
 }
 
 export default About;

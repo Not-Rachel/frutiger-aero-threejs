@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, easeInOut } from "motion/react";
-import { useState, type CSSProperties, type JSX } from "react";
+import { useEffect, useState, type CSSProperties, type JSX } from "react";
 import { Route, useLocation, useNavigate, Routes } from "react-router-dom";
 import Projects from "./Projects";
 import Art from "./Art";
@@ -19,12 +19,22 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     navigate(`/${param}`);
   }
 
+  useEffect(() => {
+    console.log({ showNav, navToClose, showScreen });
+  }, [showNav, navToClose, showScreen]);
+
+  function closeScreen() {
+    setShowNav(true);
+    setNavToClose(false);
+    setShowScreen(false);
+  }
+
   function navDrag(event, info) {
-    console.log(info.point.x, info.point.y);
+    // console.log(info.point.x, info.point.y);
     setNavToClose(info.point.x < 0 || info.point.y < 0);
   }
   function navDragEnd(event, info) {
-    console.log(info.point.x, info.point.y);
+    // console.log(info.point.x, info.point.y);
     if (info.point.x < 0 || info.point.y < 0) {
       setShowNav(false);
     }
@@ -62,10 +72,11 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => changeScreen("")}
-                className={
+                className={`p-1 aero rounded-xl`}
+                style={
                   location.pathname === "/"
-                    ? "p-1 aero rounded-xl text-blue-900"
-                    : `p-1 aero rounded-xl`
+                    ? ({ "--saturation": 0.5 } as CSSProperties)
+                    : {}
                 }
               >
                 Home
@@ -73,10 +84,11 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => changeScreen("projects")}
-                className={
+                className={`p-1 aero rounded-xl`}
+                style={
                   location.pathname === "/projects"
-                    ? "p-1 aero rounded-xl text-blue-900"
-                    : `p-1 aero rounded-xl`
+                    ? ({ "--saturation": 0.5 } as CSSProperties)
+                    : {}
                 }
               >
                 Projects
@@ -84,22 +96,24 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 onClick={() => changeScreen("art")}
-                className={
+                className={`p-1 aero rounded-xl`}
+                style={
                   location.pathname === "/art"
-                    ? "p-1 aero rounded-xl text-blue-900"
-                    : `p-1 aero rounded-xl`
+                    ? ({ "--saturation": 0.5 } as CSSProperties)
+                    : {}
                 }
               >
                 Illustrations
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1 }}
-                className={
-                  location.pathname === "/cv"
-                    ? "p-1 aero rounded-xl text-blue-900"
-                    : `p-1 aero rounded-xl`
-                }
+                className={`p-1 aero rounded-xl`}
                 onClick={() => changeScreen("cv")}
+                style={
+                  location.pathname === "/cv"
+                    ? ({ "--saturation": 0.5 } as CSSProperties)
+                    : {}
+                }
               >
                 Resume
               </motion.button>
@@ -116,91 +130,91 @@ function HomePage({ setShowTHREE }: HomePageProps) {
           </motion.nav>
         )}
         {/* </AnimatePresence> */}
-        <motion.main
-          key={"screen"}
-          drag="y"
-          whileDrag={{ scale: 0.95 }}
-          dragConstraints={{ top: 0, bottom: 500 }}
-          initial={{ scaleY: showScreen ? 0 : "100%" }}
-          animate={{
-            scaleY: showScreen ? "100%" : 0,
-            transition: {
-              duration: 0.3,
-            },
-          }}
+        <motion.div
           layout
-          layoutDependency={showNav}
+          // layoutDependency={showNav}
           transition={{
             duration: 0.5,
           }}
-          className=" w-full h-full sm:perspective-[800px]"
+          className=" w-full h-full "
         >
-          <motion.div
-            key={"projects"}
-            initial={{ rotateY: -10, rotateX: -1 }}
+          <motion.main
+            key={"screen"}
+            drag="y"
+            whileDrag={{ scale: 0.95 }}
+            dragConstraints={{ top: 0, bottom: 500 }}
+            initial={{ scaleY: showScreen ? 0 : "100%" }}
             animate={{
-              rotateY: showNav ? -5 : 0,
-              rotateX: 1,
-
+              scaleY: showScreen ? "100%" : 0,
               transition: {
-                duration: showNav ? 5 : 0.5,
-
-                repeat: showNav ? Infinity : 0,
-                repeatType: "mirror",
-                ease: "easeInOut",
+                duration: 0.3,
               },
             }}
-            className="text-white p-4 pt-8 relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-visible  inset-shadow-sm inset-shadow-indigo-100 "
+            className=" w-full h-full sm:perspective-[800px]"
           >
-            <div className="absolute -top-2 -left-1 z-50">
-              <button
-                onClick={() => {
-                  setShowNav(true);
-                  setNavToClose(false);
-                  setShowScreen(false);
-                }}
-                className="aero   text-xl  rounded-lg rounded-r-sm px-2  "
-                style={{ "--hue": 20, "--saturation": 0.9 } as CSSProperties}
-              >
-                x
-              </button>
-              <button
-                onClick={() => {
-                  setShowNav((prev) => !prev);
-                  setNavToClose(false);
-                }}
-                className="aero   text-xl  rounded-lg rounded-l-sm px-2 "
-                style={
-                  {
-                    "--hue": showNav ? 110 : 150,
-                    "--saturation": 0.3,
-                  } as CSSProperties
-                }
-              >
-                []
-              </button>
-            </div>
-            <div className="overflow-y-scroll w-full">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={location.pathname}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 1 }}
-                  className="static"
+            <motion.div
+              key={"projects"}
+              initial={{ rotateY: -10, rotateX: -1 }}
+              animate={{
+                rotateY: showNav ? -5 : 0,
+                rotateX: 1,
+
+                transition: {
+                  duration: showNav ? 5 : 0.5,
+
+                  repeat: showNav ? Infinity : 0,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                },
+              }}
+              className="text-white p-4 pt-8 relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-visible  inset-shadow-sm inset-shadow-indigo-100 "
+            >
+              <div className="absolute -top-2 -left-1 z-50">
+                <button
+                  onClick={closeScreen}
+                  className="aero   text-xl  rounded-lg rounded-r-sm px-2  "
+                  style={{ "--hue": 20, "--saturation": 0.9 } as CSSProperties}
                 >
-                  <Routes>
-                    <Route path="/" element={<About />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/art" element={<Art />} />
-                    <Route path="/photos" element={<Art />} />
-                    <Route path="/cv" element={<Art />} />
-                  </Routes>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        </motion.main>
+                  x
+                </button>
+                <button
+                  onClick={() => {
+                    setShowNav((prev) => !prev);
+                    setNavToClose(false);
+                  }}
+                  className="aero   text-xl  rounded-lg rounded-l-sm px-2 "
+                  style={
+                    {
+                      "--hue": showNav ? 110 : 150,
+                      "--saturation": 0.3,
+                    } as CSSProperties
+                  }
+                >
+                  []
+                </button>
+              </div>
+              <div className="overflow-y-scroll w-full">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={location.pathname}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 1 }}
+                    className="static"
+                  >
+                    <Routes>
+                      <Route path="/" element={<About />} />
+                      <Route path="/projects" element={<Projects />} />
+                      <Route path="/art" element={<Art />} />
+                      <Route path="/photos" element={<Art />} />
+                      <Route path="/cv" element={<Art />} />
+                    </Routes>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          </motion.main>
+        </motion.div>
       </motion.div>
     </div>
   );
