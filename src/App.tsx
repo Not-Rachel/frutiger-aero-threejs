@@ -1,20 +1,20 @@
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import Background from "./components/Background";
-import { BrowserRouter, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-
-function LoadingScreen() {
-  console.log("Loading Screen");
-  return (
-    <div className="flex justify-center items-center text w-full h-full bg-amber-600">
-      <p>LOADING...</p>
-    </div>
-  );
-}
+import About from "./pages/About";
+// function LoadingScreen() {
+//   console.log("Loading Screen");
+//   return (
+//     <div className="flex justify-center items-center text w-full h-full bg-amber-600">
+//       <p>LOADING...</p>
+//     </div>
+//   );
+// }
 function App() {
-  const [showUI, setShowUI] = useState(true);
-  const [showTHREE, setShowTHREE] = useState(false);
+  // const [showUI, setShowUI] = useState(true);
+  const [showTHREE, setShowTHREE] = useState(true);
 
   return (
     <div className="relative h-full w-full">
@@ -24,7 +24,14 @@ function App() {
         </BrowserRouter>
       </div>
       {/* <LoadingScreen /> */}
-      {showTHREE && <Background setShowUI={setShowUI}></Background>}
+
+      {showTHREE && (
+        <Background
+          setShowUI={() => {
+            console.log("Clicked");
+          }}
+        ></Background>
+      )}
     </div>
   );
 }

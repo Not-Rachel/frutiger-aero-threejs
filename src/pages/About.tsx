@@ -1,7 +1,9 @@
-import React from "react";
-
 function About() {
-  return <div>About Me</div>;
+  return (
+    <div>
+      <p>Rachel Brinkman -- Check out my projects</p>
+    </div>
+  );
 }
 
 export default About;

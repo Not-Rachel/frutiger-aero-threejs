@@ -1,19 +1,30 @@
-import { motion, AnimatePresence, easeInOut } from "motion/react";
-import { useEffect, useState, type CSSProperties, type JSX } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type JSX,
+} from "react";
 import { Route, useLocation, useNavigate, Routes } from "react-router-dom";
 import Projects from "./Projects";
 import Art from "./Art";
 import About from "./About";
+import itunes from "../assets/itunes.png";
+import ReactAudioPlayer from "react-audio-player";
+import music from "../assets/photo_channel.mp3";
 
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
 function HomePage({ setShowTHREE }: HomePageProps) {
+  const [playMusic, setPlayMusic] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const [showScreen, setShowScreen] = useState(location.pathname.length > 1);
   const [navToClose, setNavToClose] = useState(false);
   const [showNav, setShowNav] = useState(true);
+  const audioRef = useRef<HTMLAudioElement>(null);
   function changeScreen(param: string) {
     setShowScreen(true);
     navigate(`/${param}`);
@@ -29,19 +40,97 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     setShowScreen(false);
   }
 
-  function navDrag(event, info) {
-    // console.log(info.point.x, info.point.y);
+  function navDrag(event: any, info: { point: { x: number; y: number } }) {
+    console.log(event);
     setNavToClose(info.point.x < 0 || info.point.y < 0);
   }
-  function navDragEnd(event, info) {
+  function navDragEnd(event: any, info: { point: { x: number; y: number } }) {
     // console.log(info.point.x, info.point.y);
+    console.log(event);
     if (info.point.x < 0 || info.point.y < 0) {
       setShowNav(false);
     }
   }
 
+  const [subIndex, setSubIndex] = useState(0);
+  const subtitles = [
+    "est. 2002",
+    "Batteries not incluced",
+    "I'd rather be fishing",
+    "Fish want me. Women fear me..",
+  ];
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSubIndex((prev) => (prev + 1) % subtitles.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  });
+
+  function toggleAudio() {
+    if (audioRef.current) {
+      playMusic ? audioRef.current.pause() : audioRef.current.play();
+      setPlayMusic((prev) => !prev);
+    }
+  }
+
   return (
     <div className="p-4 sm:p-8 flex flex-col items-center absolute w-full h-full ">
+      <div className="flex justify-center flex-col items-center absolute right-0 bottom-0 m-2 mx-8 z-50">
+        <audio ref={audioRef} src={music} loop={true}></audio>
+        <motion.img
+          whileHover={{
+            scale: 1.1,
+            opacity: 1,
+            transition: {
+              duration: 1,
+              repeat: Infinity,
+              repeatType: "mirror",
+              ease: "easeInOut",
+            },
+          }}
+          src={itunes}
+          alt=""
+          onClick={toggleAudio}
+          animate={{ opacity: playMusic ? 1 : 0.5 }}
+          className=" h-16 w-16"
+        />
+        <motion.p
+          initial={{ opacity: 0, x: "50%" }}
+          animate={{ opacity: 1, x: 0 }}
+          // transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
+          // exit={{ opacity: 0, y: "50%" }}
+          className="text-white text-sm text-shadow-lg text-shadow-black/40"
+        >
+          photo_channel.mp3
+        </motion.p>
+      </div>
+      <AnimatePresence>
+        {!showScreen && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0 }}
+            className="absolute justify-center pointer-none"
+          >
+            <h1 className="text-7xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
+              Rachel Brinkman
+            </h1>
+
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={subIndex}
+                layout
+                initial={{ opacity: 0, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: "50%" }}
+                className="text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+              >
+                {subtitles[subIndex]}
+              </motion.p>
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.div
         layout
         transition={{ duration: 0.3 }}
@@ -62,7 +151,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               },
             }}
             layout
-            className=" h-full p-4 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+            className="aero h-full p-4 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
             style={{ backgroundColor: navToClose ? "#f3255151" : "#06B6D451" }}
           >
             <div
@@ -74,7 +163,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 onClick={() => changeScreen("")}
                 className={`p-1 aero rounded-xl`}
                 style={
-                  location.pathname === "/"
+                  showScreen && location.pathname === "/"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
@@ -86,7 +175,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 onClick={() => changeScreen("projects")}
                 className={`p-1 aero rounded-xl`}
                 style={
-                  location.pathname === "/projects"
+                  showScreen && location.pathname === "/projects"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
@@ -98,7 +187,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 onClick={() => changeScreen("art")}
                 className={`p-1 aero rounded-xl`}
                 style={
-                  location.pathname === "/art"
+                  showScreen && location.pathname === "/art"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
@@ -110,7 +199,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 className={`p-1 aero rounded-xl`}
                 onClick={() => changeScreen("cv")}
                 style={
-                  location.pathname === "/cv"
+                  showScreen && location.pathname === "/cv"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
@@ -154,7 +243,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
           >
             <motion.div
               key={"projects"}
-              initial={{ rotateY: -10, rotateX: -1 }}
+              initial={{ rotateY: 0, rotateX: -1 }}
               animate={{
                 rotateY: showNav ? -5 : 0,
                 rotateX: 1,
@@ -167,7 +256,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                   ease: "easeInOut",
                 },
               }}
-              className="text-white p-4 pt-8 relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-visible  inset-shadow-sm inset-shadow-indigo-100 "
+              className=" text-white p-4 pt-8 relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-visible  inset-shadow-sm inset-shadow-indigo-100 "
             >
               <div className="absolute -top-2 -left-1 z-50">
                 <button

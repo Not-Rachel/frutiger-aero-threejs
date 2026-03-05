@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { motion, AnimatePresence, easeInOut } from "motion/react";
-import { view } from "motion/react-client";
+import { motion } from "motion/react";
 
 function Art() {
-  const images = import.meta.glob("../assets/portfolio/*.{png,jpg,jpeg}", {
-    eager: true,
-  });
+  const images = import.meta.glob<{ default: string }>(
+    "../assets/portfolio/*.{png,jpg,jpeg}",
+    {
+      eager: true,
+    },
+  );
 
   const [viewImg, setViewImg] = useState<number | null>(null);
   const imageArray = Object.values(images);
@@ -20,7 +22,7 @@ function Art() {
           <motion.div
             key={i}
             layout
-            className={`overflow-hidden bg-black/80 ${viewImg === i ? "col-span-3 row-span-2" : "col-span-1 row-span-1"}`}
+            className={` bg-black/80 ${viewImg === i ? "col-span-3 row-span-2" : "col-span-1 row-span-1"}`}
           >
             <motion.img
               layout
@@ -35,7 +37,7 @@ function Art() {
                         repeatType: "mirror",
                         ease: "easeInOut",
                       },
-                      zIndex: 40,
+                      zIndex: 99,
                       boxShadow: "0 0 30px rgba(255, 255, 255, 0.8)",
                     }
                   : {}
@@ -45,7 +47,7 @@ function Art() {
               }}
               className={`${viewImg !== i ? "object-cover" : "object-contain"} w-full cursor-pointer transition-all h-full`}
               key={i}
-              src={img.default}
+              src={(img as { default: string }).default}
             />
           </motion.div>
         ))}

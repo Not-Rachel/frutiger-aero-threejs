@@ -266,7 +266,7 @@ type BackgroundProps = {
 function Background({ setShowUI }: BackgroundProps) {
   return (
     <Canvas camera={{ fov: 65 }}>
-      {Array.from({ length: 1 }).map((_, i) => (
+      {Array.from({ length: 10 }).map((_, i) => (
         <FishModel
           key={i}
           scale={7}

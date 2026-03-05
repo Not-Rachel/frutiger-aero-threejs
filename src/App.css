@@ -44,6 +44,18 @@ body {
   text-shadow: 0 2px 0.5em #0003;
 }
 
+h1.aero {
+  /* margin: 0; */
+  /* font-size: 4em; */
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: rgb(
+    236,
+    244,
+    255
+  ); /* Can be changed in the live sample */
+  /* font-family: "Lucida Grande", "Lucida Sans Unicode", "Lunasima", sans-serif; */
+}
+
 button.aero {
   /* Colors */
   --hue: 230;
