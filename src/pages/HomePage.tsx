@@ -11,30 +11,52 @@ import Projects from "./Projects";
 import Art from "./Art";
 import About from "./About";
 import itunes from "../assets/itunes.png";
-import ReactAudioPlayer from "react-audio-player";
-import music from "../assets/photo_channel.mp3";
-
+import ui_1 from "../assets/ui1.mp3";
+import hover from "../assets/hover.mp3";
+import click_low from "../assets/click_low.mp3";
+import TVOff from "../assets/TVOff2.mp3";
+import { randInt } from "three/src/math/MathUtils.js";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
+const musicTracksObj = import.meta.glob<{ default: string }>(
+  "../assets/music_tracks/*.mp3",
+  {
+    eager: true,
+  },
+);
+const musicTracks = Object.values(musicTracksObj).map(
+  (module) => module.default,
+);
+
 function HomePage({ setShowTHREE }: HomePageProps) {
-  const [playMusic, setPlayMusic] = useState(true);
+  const [playMusic, setPlayMusic] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState(
+    randInt(0, musicTracks.length - 1),
+  );
+  const [playUI, setPlayUI] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const [showScreen, setShowScreen] = useState(location.pathname.length > 1);
   const [navToClose, setNavToClose] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
+
+  const buttonSound1 = new Audio(ui_1);
+  const hoverSound = new Audio(hover);
+  const clickLow = new Audio(click_low);
+  const TVoffSound = new Audio(TVOff);
+  // TVoffSound.volume = 0.9;
+  clickLow.volume = 0.7;
+  hoverSound.volume = 0.5;
+
   function changeScreen(param: string) {
     setShowScreen(true);
     navigate(`/${param}`);
   }
 
-  useEffect(() => {
-    console.log({ showNav, navToClose, showScreen });
-  }, [showNav, navToClose, showScreen]);
-
   function closeScreen() {
+    TVoffSound.play();
     setShowNav(true);
     setNavToClose(false);
     setShowScreen(false);
@@ -73,14 +95,46 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     }
   }
 
+  function playNextTrack(steps = 1) {
+    setCurrentTrack(
+      (prev) =>
+        (((prev + steps) % musicTracks.length) + musicTracks.length) %
+        musicTracks.length,
+    );
+  }
+
+  // Avoid race conditions with playing next track
+  useEffect(() => {
+    if (audioRef.current && playMusic) {
+      audioRef.current.play().catch((err) => console.log("Play error:", err));
+    }
+  }, [currentTrack, playMusic]);
+
+  function buttonClick(path: string) {
+    changeScreen(path);
+    if (playUI) clickLow.play();
+  }
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 0.35;
+    }
+  }, []);
+
   return (
     <div className="p-4 sm:p-8 flex flex-col items-center absolute w-full h-full ">
-      <div className="flex justify-center flex-col items-center absolute right-0 bottom-0 m-2 mx-8 z-50">
-        <audio ref={audioRef} src={music} loop={true}></audio>
+      {/* <div className="absolute right-0 bottom-0 m-2 z-50"> */}
+      <audio
+        ref={audioRef}
+        src={musicTracks[currentTrack]}
+        loop={false}
+        onEnded={() => playNextTrack()}
+      ></audio>
+      <div className="flex gap-2 text-white text-2xl font-black fixed right-0 z-50 bottom-0 m-8 ">
+        <button onClick={() => playNextTrack(-1)}>{"<"}</button>
         <motion.img
           whileHover={{
             scale: 1.1,
-            opacity: 1,
             transition: {
               duration: 1,
               repeat: Infinity,
@@ -91,19 +145,24 @@ function HomePage({ setShowTHREE }: HomePageProps) {
           src={itunes}
           alt=""
           onClick={toggleAudio}
-          animate={{ opacity: playMusic ? 1 : 0.5 }}
-          className=" h-16 w-16"
+          onDoubleClick={() => setPlayUI(true)}
+          animate={{ opacity: playMusic ? 1 : 0.6 }}
+          className=" h-16 w-16 "
         />
-        <motion.p
-          initial={{ opacity: 0, x: "50%" }}
-          animate={{ opacity: 1, x: 0 }}
-          // transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
-          // exit={{ opacity: 0, y: "50%" }}
-          className="text-white text-sm text-shadow-lg text-shadow-black/40"
-        >
-          photo_channel.mp3
-        </motion.p>
+        <button onClick={() => playNextTrack()}>{">"}</button>
       </div>
+      <AnimatePresence>
+        <motion.p
+          key={currentTrack}
+          initial={playMusic ? { opacity: 0, x: "50%" } : { opacity: 1, x: 0 }}
+          animate={playMusic ? { opacity: 1, x: 0 } : { opacity: 0, x: "50%" }}
+          // transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
+          exit={{ opacity: 0, x: "50%" }}
+          className="absolute text-center  right-0 bottom-0 m-2 mx-8 z-50  text-white text-sm text-shadow-lg text-shadow-black/40"
+        >
+          {musicTracks[currentTrack].split("/").pop()}
+        </motion.p>
+      </AnimatePresence>
       <AnimatePresence>
         {!showScreen && (
           <motion.div
@@ -159,8 +218,9 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               className="flex  sm:flex-col flex-row gap-8 w-full   text-white font-extrabold"
             >
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                onClick={() => changeScreen("")}
+                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+                onHoverStart={() => hoverSound.play()}
+                onClick={() => buttonClick("")}
                 className={`p-1 aero rounded-xl`}
                 style={
                   showScreen && location.pathname === "/"
@@ -171,8 +231,9 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 Home
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                onClick={() => changeScreen("projects")}
+                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+                onClick={() => buttonClick("projects")}
+                onHoverStart={() => hoverSound.play()}
                 className={`p-1 aero rounded-xl`}
                 style={
                   showScreen && location.pathname === "/projects"
@@ -183,8 +244,9 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 Projects
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                onClick={() => changeScreen("art")}
+                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+                onClick={() => buttonClick("art")}
+                onHoverStart={() => hoverSound.play()}
                 className={`p-1 aero rounded-xl`}
                 style={
                   showScreen && location.pathname === "/art"
@@ -195,9 +257,10 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 Illustrations
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
                 className={`p-1 aero rounded-xl`}
-                onClick={() => changeScreen("cv")}
+                onClick={() => buttonClick("cv")}
+                onHoverStart={() => hoverSound.play()}
                 style={
                   showScreen && location.pathname === "/cv"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
@@ -209,8 +272,12 @@ function HomePage({ setShowTHREE }: HomePageProps) {
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.1 }}
-              onClick={() => setShowTHREE((prev) => !prev)}
+              whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+              onClick={() => {
+                clickLow.play();
+                setShowTHREE((prev) => !prev);
+              }}
+              onHoverStart={() => hoverSound.play()}
               className=" h-8 aero px-2 text-amber-50 rounded-xl"
               style={{ "--hue": 100, "--saturation": 0.7 } as CSSProperties}
             >
@@ -268,6 +335,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 </button>
                 <button
                   onClick={() => {
+                    buttonSound1.play();
                     setShowNav((prev) => !prev);
                     setNavToClose(false);
                   }}
@@ -288,7 +356,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                     key={location.pathname}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 1 }}
+                    transition={{ duration: 2 }}
                     className="static"
                   >
                     <Routes>
