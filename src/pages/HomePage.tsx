@@ -16,6 +16,8 @@ import hover from "../assets/hover.mp3";
 import click_low from "../assets/click_low.mp3";
 import TVOff from "../assets/TVOff2.mp3";
 import { randInt } from "three/src/math/MathUtils.js";
+import CV from "./CV";
+import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -117,9 +119,16 @@ function HomePage({ setShowTHREE }: HomePageProps) {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = 0.35;
+      audioRef.current.volume = volume;
     }
   }, []);
+
+  const [volumeSlider, setVolumeSilder] = useState(false);
+  const [volume, setVolume] = useState(0.25);
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume;
+  }, [volume]);
 
   return (
     <div className="p-4 sm:p-8 flex flex-col items-center absolute w-full h-full ">
@@ -130,48 +139,82 @@ function HomePage({ setShowTHREE }: HomePageProps) {
         loop={false}
         onEnded={() => playNextTrack()}
       ></audio>
-      <div className="flex gap-2 text-white text-2xl font-black fixed right-0 z-50 bottom-0 m-8 ">
-        <button onClick={() => playNextTrack(-1)}>{"<"}</button>
-        <motion.img
-          whileHover={{
-            scale: 1.1,
-            transition: {
-              duration: 1,
-              repeat: Infinity,
-              repeatType: "mirror",
-              ease: "easeInOut",
-            },
-          }}
-          src={itunes}
-          alt=""
-          onClick={toggleAudio}
-          onDoubleClick={() => setPlayUI(true)}
-          animate={{ opacity: playMusic ? 1 : 0.6 }}
-          className=" h-16 w-16 "
-        />
-        <button onClick={() => playNextTrack()}>{">"}</button>
-      </div>
-      <AnimatePresence>
-        <motion.p
-          key={currentTrack}
-          initial={playMusic ? { opacity: 0, x: "50%" } : { opacity: 1, x: 0 }}
-          animate={playMusic ? { opacity: 1, x: 0 } : { opacity: 0, x: "50%" }}
-          // transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
-          exit={{ opacity: 0, x: "50%" }}
-          className="absolute text-center  right-0 bottom-0 m-2 mx-8 z-50  text-white text-sm text-shadow-lg text-shadow-black/40"
-        >
-          {musicTracks[currentTrack].split("/").pop()}
-        </motion.p>
-      </AnimatePresence>
+      <motion.div
+        onHoverStart={() => setVolumeSilder(true)}
+        onHoverEnd={() => setVolumeSilder(false)}
+        className="flex w-48 flex-col justify-center items-center gap-1  fixed right-0 z-50 bottom-0 m-4  "
+      >
+        <div className="flex gap-2 items-center text-white text-2xl font-black">
+          <button
+            className="aero rounded-4xl h-1/2"
+            onClick={() => playNextTrack(-1)}
+            style={{ "--hue": 270, "--saturation": 0.2 } as CSSProperties}
+          >
+            <PiCaretDoubleLeftFill />
+          </button>
+
+          <motion.img
+            whileHover={{
+              scale: 1.1,
+              transition: {
+                duration: 1,
+                repeat: Infinity,
+                repeatType: "mirror",
+                ease: "easeInOut",
+              },
+            }}
+            src={itunes}
+            alt=""
+            onClick={toggleAudio}
+            onDoubleClick={() => setPlayUI(true)}
+            animate={{ opacity: playMusic ? 1 : 0.4 }}
+            className=" h-16 w-16 "
+          />
+          <button
+            className="aero rounded-4xl h-1/2 "
+            onClick={() => playNextTrack()}
+            style={{ "--hue": 270, "--saturation": 0.2 } as CSSProperties}
+          >
+            <PiCaretDoubleRightFill />
+          </button>
+        </div>
+        {!volumeSlider ? (
+          <motion.p
+            key={currentTrack}
+            initial={{ opacity: 0, x: "50%" }}
+            animate={{ opacity: 1, x: 0 }}
+            // transition={{ duration: 1, repeat: Infinity, repeatType: "mirror" }}
+            exit={{ opacity: 0, x: "50%" }}
+            className=" text-center z-50  text-white text-sm text-shadow-lg text-shadow-black/40"
+          >
+            {playMusic
+              ? musicTracks[currentTrack].split("/").pop()
+              : "Click icon to play music"}
+          </motion.p>
+        ) : (
+          // <p className=" text-center z-50  text-white text-sm text-shadow-lg text-shadow-black/40">
+          //   set the volume
+          // </p>
+          <input
+            type="range"
+            id="volume-slider"
+            value={volume * 200}
+            onChange={(e: any) => {
+              setVolume(e.currentTarget.value / 200);
+            }}
+          ></input>
+        )}
+      </motion.div>
+
       <AnimatePresence>
         {!showScreen && (
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0 }}
-            className="absolute justify-center pointer-none"
+            className="absolute  pointer-none"
           >
-            <h1 className="text-7xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
+            <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
               Rachel Brinkman
             </h1>
 
@@ -182,7 +225,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 initial={{ opacity: 0, y: 0 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: "50%" }}
-                className="text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+                className="fixed text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
               >
                 {subtitles[subIndex]}
               </motion.p>
@@ -193,7 +236,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
       <motion.div
         layout
         transition={{ duration: 0.3 }}
-        className="flex sm:flex-row flex-col w-full h-full"
+        className="flex flex-row  w-full h-full"
       >
         {/* <AnimatePresence mode="wait"> */}
         {showNav && (
@@ -210,12 +253,12 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               },
             }}
             layout
-            className="aero h-full p-4 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+            className="aero h-full p-2 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
             style={{ backgroundColor: navToClose ? "#f3255151" : "#06B6D451" }}
           >
             <div
               key={"menu"}
-              className="flex  sm:flex-col flex-row gap-8 w-full   text-white font-extrabold"
+              className="flex  flex-col gap-8 w-full   text-white font-extrabold"
             >
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
@@ -325,7 +368,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               }}
               className=" text-white p-4 pt-8 relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-visible  inset-shadow-sm inset-shadow-indigo-100 "
             >
-              <div className="absolute -top-2 -left-1 z-50">
+              <div className="absolute -top-1 left-0 z-50">
                 <button
                   onClick={closeScreen}
                   className="aero   text-xl  rounded-lg rounded-r-sm px-2  "
@@ -364,7 +407,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                       <Route path="/projects" element={<Projects />} />
                       <Route path="/art" element={<Art />} />
                       <Route path="/photos" element={<Art />} />
-                      <Route path="/cv" element={<Art />} />
+                      <Route path="/cv" element={<CV />} />
                     </Routes>
                   </motion.div>
                 </AnimatePresence>

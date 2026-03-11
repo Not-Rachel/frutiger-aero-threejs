@@ -5,13 +5,13 @@ function Projects() {
         <p>Offline</p>
       </div>
       <div className="border-4 bg-blue-50/30 border-white">
-        <p>Scavenger</p>
+        <a href="/scavenger">Scavenger</a>
       </div>
       <div className="border-4 bg-blue-50/30 border-white">
-        <p>Grass Simulation</p>
+        <a href="/threejs">Three JS </a>
       </div>
       <div className="border-4 bg-blue-50/30 border-white">
-        <p>Project 4</p>
+        <p>Survival Game</p>
       </div>
       <div className="border-4 bg-blue-50/30 border-white">
         <p>Project 5</p>
