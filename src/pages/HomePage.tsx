@@ -18,7 +18,6 @@ import click_low from "/assets/audio/click_low.mp3";
 import TVOff from "/assets/audio/TVOff2.mp3";
 
 import { randInt } from "three/src/math/MathUtils.js";
-import CV from "./CV";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
@@ -310,7 +309,6 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
                 className={`p-1 aero rounded-xl`}
-                onClick={() => buttonClick("cv")}
                 onHoverStart={() => hoverSound.play()}
                 style={
                   showScreen && location.pathname === "/cv"
@@ -415,7 +413,6 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                       <Route path="/projects" element={<Projects />} />
                       <Route path="/art" element={<Art />} />
                       <Route path="/photos" element={<Art />} />
-                      <Route path="/cv" element={<CV />} />
                     </Routes>
                   </motion.div>
                 </AnimatePresence>

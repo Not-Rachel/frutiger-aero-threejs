@@ -1,7 +1,8 @@
 function About() {
   return (
     <div>
-      <p>Rachel Brinkman -- Check out my projects</p>
+      <p>I'm Rachel, a web developer and designer </p>
+      <p>Please check out some of my projects</p>
     </div>
   );
 }
