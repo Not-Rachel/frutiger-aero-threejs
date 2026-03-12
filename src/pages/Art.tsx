@@ -2,15 +2,29 @@ import { useState } from "react";
 import { motion } from "motion/react";
 
 function Art() {
-  const images = import.meta.glob<{ default: string }>(
-    "../assets/portfolio/*.{png,jpg,jpeg}",
-    {
-      eager: true,
-    },
-  );
+  // const images = import.meta.glob<{ default: string }>(
+  //   "/assets/portfolio/*.{png,jpg,jpeg}",
+  //   {
+  //     eager: true,
+  //   },
+  // );
 
   const [viewImg, setViewImg] = useState<number | null>(null);
-  const imageArray = Object.values(images);
+  // const imageArray = Object.values(images);
+  const imageArray = [
+    "/assets/portfolio/bee.png",
+    "/assets/portfolio/bird.jpeg",
+    "/assets/portfolio/birdWater.jpg",
+    "/assets/portfolio/blue-gold.png",
+    "/assets/portfolio/doc.png",
+    "/assets/portfolio/gull.png",
+    "/assets/portfolio/horseman.png",
+    "/assets/portfolio/mailbox.png",
+    "/assets/portfolio/poppies.jpeg",
+    "/assets/portfolio/raccoon.png",
+    "/assets/portfolio/reactor.png",
+    "/assets/portfolio/train.jpg",
+  ];
 
   return (
     <div className=" relative m-4">
@@ -47,7 +61,7 @@ function Art() {
               }}
               className={`${viewImg !== i ? "object-cover" : "object-contain"} w-full cursor-pointer transition-all h-full`}
               key={i}
-              src={(img as { default: string }).default}
+              src={img}
             />
           </motion.div>
         ))}

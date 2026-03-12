@@ -3,7 +3,7 @@ import {
   // extend,
   useFrame,
 } from "@react-three/fiber";
-import hdr from "../assets/puresky.hdr?url";
+import hdr from "/assets/puresky.hdr?url";
 import {
   Environment,
   // OrbitControls,
@@ -14,8 +14,8 @@ import {
   useAnimations,
   // shaderMaterial,
 } from "@react-three/drei";
-import fishModel from "../assets/scene.gltf?url";
-import puterModel from "../assets/retroComputer.gltf?url";
+import fishModel from "/assets/scene.gltf?url";
+import puterModel from "/assets/retroComputer.gltf?url";
 import * as YUKA from "yuka";
 import { useEffect, useMemo, useRef, type JSX } from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";

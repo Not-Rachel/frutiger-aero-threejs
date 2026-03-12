@@ -10,26 +10,34 @@ import { Route, useLocation, useNavigate, Routes } from "react-router-dom";
 import Projects from "./Projects";
 import Art from "./Art";
 import About from "./About";
-import itunes from "../assets/itunes.png";
-import ui_1 from "../assets/ui1.mp3";
-import hover from "../assets/hover.mp3";
-import click_low from "../assets/click_low.mp3";
-import TVOff from "../assets/TVOff2.mp3";
+import itunes from "/assets/itunes.png";
+
+import ui_1 from "/assets/audio/ui1.mp3";
+import hover from "/assets/audio/hover.mp3";
+import click_low from "/assets/audio/click_low.mp3";
+import TVOff from "/assets/audio/TVOff2.mp3";
+
 import { randInt } from "three/src/math/MathUtils.js";
 import CV from "./CV";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const musicTracksObj = import.meta.glob<{ default: string }>(
-  "../assets/music_tracks/*.mp3",
-  {
-    eager: true,
-  },
-);
-const musicTracks = Object.values(musicTracksObj).map(
-  (module) => module.default,
-);
+// const musicTracksObj = import.meta.glob<{ default: string }>(
+//   "/assets/audio/tracks/*.mp3",
+//   {
+//     eager: true,
+//   },
+// );
+// const musicTracks = Object.values(musicTracksObj).map(
+//   (module) => module.default,
+// );
+const musicTracks = [
+  "/assets/audio/tracks/aphex_twin_delphium.mp3",
+  "/assets/audio/tracks/aphex_twin_film.mp3",
+  "/assets/audio/tracks/aphex_twin_I.mp3",
+  "/assets/audio/tracks/sd_card_gallery.mp3",
+];
 
 function HomePage({ setShowTHREE }: HomePageProps) {
   const [playMusic, setPlayMusic] = useState(false);
