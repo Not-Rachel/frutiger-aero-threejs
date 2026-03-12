@@ -1,0 +1,453 @@
+{
+  "accessors": [
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 2970,
+      "max": [
+        0.22391152381896973,
+        0.2022373080253601,
+        0.23922064900398254
+      ],
+      "min": [
+        -0.22181186079978943,
+        -0.16233588755130768,
+        -0.23139497637748718
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 35640,
+      "componentType": 5126,
+      "count": 2970,
+      "max": [
+        0.9995885491371155,
+        0.9970875382423401,
+        0.9998326301574707
+      ],
+      "min": [
+        -0.9953789114952087,
+        -0.999992311000824,
+        -0.9999588131904602
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5126,
+      "count": 2970,
+      "max": [
+        0.9999809265136719,
+        0.997836172580719,
+        0.998765230178833,
+        1.0
+      ],
+      "min": [
+        -0.9999983906745911,
+        -0.9999567866325378,
+        -0.9988216161727905,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 2970,
+      "max": [
+        0.9985049366950989,
+        0.9583622217178345
+      ],
+      "min": [
+        0.002440810203552246,
+        0.0015043794410303235
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 23760,
+      "componentType": 5126,
+      "count": 2970,
+      "max": [
+        0.9985049366950989,
+        0.9583622217178345
+      ],
+      "min": [
+        0.002440810203552246,
+        0.0015043794410303235
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 10512,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 71280,
+      "componentType": 5126,
+      "count": 5438,
+      "max": [
+        0.18470041453838348,
+        0.011328357271850109,
+        0.2842220067977905
+      ],
+      "min": [
+        -0.1847003996372223,
+        -0.3046209216117859,
+        -0.23861250281333923
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 2,
+      "byteOffset": 136536,
+      "componentType": 5126,
+      "count": 5438,
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 3,
+      "byteOffset": 47520,
+      "componentType": 5126,
+      "count": 5438,
+      "max": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "type": "VEC4"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 47520,
+      "componentType": 5126,
+      "count": 5438,
+      "max": [
+        0.9892970323562622,
+        0.9981474280357361
+      ],
+      "min": [
+        0.0014107227325439453,
+        0.001407243893481791
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 91024,
+      "componentType": 5126,
+      "count": 5438,
+      "max": [
+        0.9892970323562622,
+        0.9981474280357361
+      ],
+      "min": [
+        0.0014107227325439453,
+        0.001407243893481791
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 42048,
+      "componentType": 5125,
+      "count": 16626,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "SomeDude (https://sketchfab.com/Patyot.Suttipreecha)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/alice-backpack-with-lc-2-frame-set-fbcbbb7fc57f47e3ac52e286fb324c37",
+      "title": "A.L.I.C.E Backpack with LC-2 Frame Set"
+    },
+    "generator": "Sketchfab-16.72.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 108552,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 134528,
+      "byteOffset": 108552,
+      "byteStride": 8,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 201792,
+      "byteOffset": 243080,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    },
+    {
+      "buffer": 0,
+      "byteLength": 134528,
+      "byteOffset": 444872,
+      "byteStride": 16,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 579400,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_specular"
+  ],
+  "images": [
+    {
+      "uri": "textures/lc-2Rucksack_mat.004_baseColor.png"
+    },
+    {
+      "uri": "textures/lc-2Rucksack_mat.004_metallicRoughness.png"
+    },
+    {
+      "uri": "textures/lc-2Rucksack_mat.004_normal.png"
+    }
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_specular": {
+          "specularColorFactor": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "specularFactor": 0.06042642820938637
+        }
+      },
+      "name": "lc-2Rucksack_mat.004",
+      "normalTexture": {
+        "index": 2
+      },
+      "occlusionTexture": {
+        "index": 1
+      },
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        },
+        "roughnessFactor": 0.5
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "model_alice_backpack_lc-2Rucksack_mat.004_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0,
+            "TANGENT": 2,
+            "TEXCOORD_0": 3,
+            "TEXCOORD_1": 4
+          },
+          "indices": 5,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "model_lc-2_frame_lc-2Rucksack_mat.004_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 7,
+            "POSITION": 6,
+            "TANGENT": 8,
+            "TEXCOORD_0": 9,
+            "TEXCOORD_1": 10
+          },
+          "indices": 11,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.048784613609314,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.3287696518033173e-16,
+        -1.048784613609314,
+        0.0,
+        0.0,
+        1.048784613609314,
+        2.3287696518033173e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "3d71f286ad1840fa91c7b6e71f2c83de.fbx"
+    },
+    {
+      "children": [
+        3,
+        5
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4
+      ],
+      "matrix": [
+        99.61946242574612,
+        -4.2181736410787846e-07,
+        8.715571130253501,
+        0.0,
+        8.715571130253316,
+        -1.6328970950809178e-05,
+        -99.6194624257448,
+        0.0,
+        1.8433755494262627e-06,
+        99.99999999999866,
+        -1.6230071775424904e-05,
+        0.0,
+        1.5492022037506104,
+        129.50567626953125,
+        -15.66351318359375,
+        1.0
+      ],
+      "name": "model_alice_backpack"
+    },
+    {
+      "mesh": 0,
+      "name": "model_alice_backpack_lc-2Rucksack_mat.004_0"
+    },
+    {
+      "children": [
+        6
+      ],
+      "matrix": [
+        99.61946242574612,
+        -4.2181736410787846e-07,
+        8.715571130253501,
+        0.0,
+        8.715571130253316,
+        -1.6328970950809178e-05,
+        -99.6194624257448,
+        0.0,
+        1.8433755494262627e-06,
+        99.99999999999866,
+        -1.6230071775424904e-05,
+        0.0,
+        0.2512633800506592,
+        126.85987091064453,
+        -3.2215514183044434,
+        1.0
+      ],
+      "name": "model_lc-2_frame"
+    },
+    {
+      "mesh": 1,
+      "name": "model_lc-2_frame_lc-2Rucksack_mat.004_0"
+    }
+  ],
+  "samplers": [
+    {
+      "magFilter": 9729,
+      "minFilter": 9987,
+      "wrapS": 10497,
+      "wrapT": 10497
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "textures": [
+    {
+      "sampler": 0,
+      "source": 0
+    },
+    {
+      "sampler": 0,
+      "source": 1
+    },
+    {
+      "sampler": 0,
+      "source": 2
+    }
+  ]
+}
