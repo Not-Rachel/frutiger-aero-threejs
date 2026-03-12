@@ -1,0 +1,16 @@
+[build]
+  publish = "parent"   # The folder containing all apps
+
+# Allow SPA routing for the main app
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
+# Allow SPA routing for sub-apps
+
+[[redirects]]
+  from = "/scavenger/*"
+  to = "/scavenger/index.html"
+  status = 200
