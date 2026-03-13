@@ -24,13 +24,12 @@ interface itemProps {
   model: string;
 }
 
+const oldParchment = "/scavenger/assets/old-parchment-center-l.png";
+const House = "/scavenger/assets/home.png";
+const oldParchmentRight = "/scavenger/assets/old-parchment-edge-right.png";
+const oldParchmentLeft = "/scavenger/assets/old-parchment-edge-left.png";
+
 function Map() {
-  const House = "scavenger/assets/home.png";
-
-  const oldParchment = "scavenger/assets/old-parchment-center-l.png";
-  const oldParchmentRight = "scavenger/assets/old-parchment-edge-right.png";
-  const oldParchmentLeft = "scavenger/assets/old-parchment-edge-left.png";
-
   const navigate = useNavigate();
 
   const [firstClick, setFirstClick] = useState<boolean>(false);

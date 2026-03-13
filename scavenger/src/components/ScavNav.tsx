@@ -7,11 +7,11 @@ import { useNavigate } from "react-router-dom";
 import VariableProximity from "./VariableProximity";
 import { useRef } from "react";
 import NotateText from "./NotateText";
+const logo = "/scavenger/assets/logo.svg";
 
 function TopNav() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
-  const logo = "scavenger/assets/logo.svg";
 
   return (
     <>

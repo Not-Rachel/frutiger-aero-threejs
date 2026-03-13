@@ -15,12 +15,11 @@ interface itemProps {
   text: string;
   model: string | null;
 }
+const oldBook = "/scavenger/assets/old-book2.png";
 
 // TODO: Add page flipping animation
 
 function NoteBook({ items }: NoteBookProps) {
-  const oldBook = "/scavenger/assets/old-book2.png";
-
   const [cart, setCart] = useState<itemProps[]>([]);
   const [viewItem, setViewItem] = useState<boolean>(false);
   const [currentItem, setCurrentItem] = useState<number>(0);

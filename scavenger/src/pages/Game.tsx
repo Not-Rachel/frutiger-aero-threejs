@@ -4,7 +4,7 @@ import TopNav from "../components/ScavNav";
 import { ReactSVG } from "react-svg";
 import "./Dino.css";
 function Game() {
-  const dino = "scavenger/assets/chrome_dino.svg";
+  const dino = "/scavenger/assets/chrome_dino.svg";
 
   const [isJump, setIsJump] = useState(false);
   const [score, setScore] = useState(0);

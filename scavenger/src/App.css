@@ -20,45 +20,45 @@
 
 @font-face {
   font-family: bleguk;
-  src: url(assets/fonts/Bleguk-Demo.otf);
+  src: url(/assets/fonts/Bleguk-Demo.otf) format("truetype");
 }
 @font-face {
   font-family: revolution;
-  src: url(assets/fonts/Children_of_the_revolution.ttf);
+  src: url(/assets/fonts/Children_of_the_revolution.ttf) format("truetype");
 }
 @font-face {
   font-family: santo;
-  src: url(assets/fonts/SANTO___.TTF);
+  src: url(/assets/fonts/SANTO___.TTF) format("truetype");
 }
 @font-face {
   font-family: vtks;
-  src: url(assets/fonts/Vtks_Vinte_e_Cinco.ttf);
+  src: url(/assets/fonts/Vtks_Vinte_e_Cinco.ttf) format("truetype");
 }
 @font-face {
   font-family: EdSloppy;
-  src: url(assets/fonts/zai_EdSloppyHandwritten.ttf);
+  src: url(/assets/fonts/zai_EdSloppyHandwritten.ttf) format("truetype");
 }
 @font-face {
   font-family: EdSimple;
-  src: url(assets/fonts/zai_EdSloppySimple.ttf);
+  src: url(/assets/fonts/zai_EdSloppySimple.ttf) format("truetype");
 }
 @font-face {
   font-family: Daubmark;
-  src: url(assets/fonts/Daubmark.ttf);
+  src: url(/assets/fonts/Daubmark.ttf) format("truetype");
 }
 @font-face {
   font-family: Caligraf;
-  src: url(assets/fonts/Caligraf.ttf);
+  src: url(/assets/fonts/Caligraf.ttf) format("truetype");
 }
 @font-face {
   font-family: Kashare;
-  src: url(assets/fonts/Kashare.ttf);
+  src: url(/assets/fonts/Kashare.ttf) format("truetype");
 }
 
 .hero {
   display: flex;
   height: 200vh;
-  background-image: url("assets/woof.jpg");
+  background-image: url("/scavenger/assets/woof.jpg");
   background-size: contain;
   box-shadow: inset 0 0 1000px rgba(0, 0, 0, 0.7);
 }

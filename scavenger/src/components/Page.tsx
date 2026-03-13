@@ -10,9 +10,9 @@ interface itemProps {
   text: string;
   model: string;
 }
-function Page({ item }: PageProps) {
-  const pageImg = "scavenger/assets/old-paper-2.png";
+const pageImg = "/scavenger/assets/old-paper-2.png";
 
+function Page({ item }: PageProps) {
   return (
     <div className="relative font-bold font-[revolution] text-xl justify-center text-left flex ">
       <div className="absolute p-8 flex flex-row gap-8">

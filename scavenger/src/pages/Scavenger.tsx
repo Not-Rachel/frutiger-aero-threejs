@@ -16,15 +16,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NoteBook from "../components/Notebook";
 
 function Home() {
-  const balmImg = "scavenger/assets/balm.jpeg";
-  const allProductsImg = "scavenger/assets/product-images/all_together.png";
-  const strawImg = "scavenger/assets/product-images/filter_straw.jpeg";
-  const bagImg = "scavenger/assets/product-images/bag.jpeg";
-  const cordImg = "scavenger/assets/product-images/cord.jpeg";
-  const toteImg = "scavenger/assets/product-images/tote.jpeg";
-  const fireImg = "scavenger/assets/product-images/fire_starter.jpeg";
-  const multitoolImg = "scavenger/assets/product-images/multitool.jpg";
-
+  const balmImg = "/scavenger/assets/product-images/balm.jpeg";
+  const allProductsImg = "/scavenger/assets/product-images/all_together.png";
+  const strawImg = "/scavenger/assets/product-images/filter_straw.jpeg";
+  const bagImg = "/scavenger/assets/product-images/bag.jpeg";
+  const cordImg = "/scavenger/assets/product-images/cord.jpeg";
+  const toteImg = "/scavenger/assets/product-images/tote.jpeg";
+  const fireImg = "/scavenger/assets/product-images/fire_starter.jpeg";
+  const multitoolImg = "/scavenger/assets/product-images/multitool.jpg";
   const items = [
     {
       key: 0,

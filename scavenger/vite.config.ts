@@ -6,6 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: "/scavenger/",
+  publicDir: "public",
+
   build: {
     outDir: "../dist/scavenger",
   },
