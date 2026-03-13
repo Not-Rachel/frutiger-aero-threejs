@@ -1,0 +1,11 @@
+Model Information:
+* title:	A.L.I.C.E Backpack with LC-2 Frame Set
+* source:	https://sketchfab.com/3d-models/alice-backpack-with-lc-2-frame-set-fbcbbb7fc57f47e3ac52e286fb324c37
+* author:	SomeDude (https://sketchfab.com/Patyot.Suttipreecha)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "A.L.I.C.E Backpack with LC-2 Frame Set" (https://sketchfab.com/3d-models/alice-backpack-with-lc-2-frame-set-fbcbbb7fc57f47e3ac52e286fb324c37) by SomeDude (https://sketchfab.com/Patyot.Suttipreecha) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

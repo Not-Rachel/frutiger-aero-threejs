@@ -1,0 +1,11 @@
+Model Information:
+* title:	Retro Computer Monitor
+* source:	https://sketchfab.com/3d-models/retro-computer-monitor-b4e4f8a5685b45bfa2916a519a71176e
+* author:	Griffin Keller (https://sketchfab.com/griffinkeller)
+
+Model License:
+* license type:	CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
+* requirements:	Author must be credited. No commercial use. Modified versions must have the same license.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Retro Computer Monitor" (https://sketchfab.com/3d-models/retro-computer-monitor-b4e4f8a5685b45bfa2916a519a71176e) by Griffin Keller (https://sketchfab.com/griffinkeller) licensed under CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)
