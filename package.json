@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && cd scavenger && npm run build",
+    "build": "tsc -b && vite build && cd scavenger && npm run build && cd ../threejs & npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -15,6 +15,8 @@
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/three": "^0.182.0",
+    "cannon-es": "^0.20.0",
+    "dat.gui": "^0.7.9",
     "gasp": "^0.0.2",
     "gl-matrix": "^3.4.4",
     "motion": "^12.34.3",
