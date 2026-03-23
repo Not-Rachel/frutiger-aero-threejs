@@ -2,15 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 
 function Art() {
-  // const images = import.meta.glob<{ default: string }>(
-  //   "/assets/portfolio/*.{png,jpg,jpeg}",
-  //   {
-  //     eager: true,
-  //   },
-  // );
-
   const [viewImg, setViewImg] = useState<number | null>(null);
-  // const imageArray = Object.values(images);
   const imageArray = [
     "/assets/portfolio/bee.png",
     "/assets/portfolio/bird.jpeg",

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls, ShaderPass } from "three/examples/jsm/Addons.js";
+import { OrbitControls } from "three/examples/jsm/Addons.js";
 import * as dat from "dat.gui";
 import * as CANNON from "cannon-es";
 import { BlueDitheringPass } from "./BlueDitheringPass";
@@ -42,82 +42,46 @@ renderer.render(scene, camera);
 renderer.shadowMap.enabled = true;
 renderer.debug.checkShaderErrors = true;
 
+const gui = new dat.GUI();
+const options = {
+  highcolor: "#ffffff",
+  midcolor: "#61cf9a",
+  lowcolor: "#000000",
+};
+
 //Post Proc First render pass
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-// composer.addPass(new RenderPixelatedPass(4, scene, camera));
-// composer.addPass(new AfterimagePass(0.8));
 
-// const VS = `
-// varying vec2 vUv;
-// void main(){
-//   gl_Position = projectionMatrix * modelViewMatrix  * vec4(position, 1.0);
-//   vUv = uv;
-// }
-// `;
+const ditherPass = new BlueDitheringPass("#ffffff", "#61cf9a", "#040405");
+gui.addColor(options, "highcolor").onChange((e) => {
+  ditherPass.highTint = e;
+});
+gui.addColor(options, "midcolor").onChange((e) => {
+  ditherPass.midTint = e;
+});
+gui.addColor(options, "lowcolor").onChange((e) => {
+  ditherPass.lowTint = e;
+});
 
-// const FS = `
-// #include <common>
-
-// uniform sampler2D tDiffuse;
-// uniform sampler2D bluenoise;
-// uniform vec2 u_resolution;
-// uniform vec3 tint;
-// uniform vec3 high_tint;
-// uniform vec3 low_tint;
-// uniform float lowThreshold;
-// uniform float highThreshold;
-
-// varying vec2 vUv;
-
-// void main() {
-//     vec2 st = gl_FragCoord.xy / u_resolution;
-//     vec4 noise = texture2D(bluenoise, st);
-
-//     vec4 diffuse = texture2D(tDiffuse, vUv);
-//     float luma = dot(diffuse.rgb, vec3(0.299, 0.587, 0.114)); //Convert to greyscale
-
-//     float threshold = texture2D(bluenoise, fract(gl_FragCoord.xy / 64.0)).r;
-//     float low  = threshold * lowThreshold;
-//     float high = threshold + highThreshold;
-
-//     vec3 result =
-//     (luma < low)  ? low_tint :
-//     (luma < high) ? tint :
-//                     high_tint;
-
-//     gl_FragColor = vec4(result,1.0);
-// }`;
-
-// const tex = new THREE.TextureLoader().load(bluenoise64);
-// tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-// tex.minFilter = THREE.LinearFilter;
-// tex.magFilter = THREE.LinearFilter;
-
-// const Shader = {
-//   uniforms: {
-//     u_resolution: {
-//       type: "v2",
-//       value: new THREE.Vector2(
-//         window.innerWidth,
-//         window.innerHeight,
-//       ).multiplyScalar(window.devicePixelRatio),
-//     },
-//     tint: { value: new THREE.Color("#61cf9a") },
-//     high_tint: { value: new THREE.Color(0xffffff) },
-//     low_tint: { value: new THREE.Color(0x0) },
-//     lowThreshold: { value: 0.33 },
-//     highThreshold: { value: 0.05 },
-//     bluenoise: { value: tex },
-//     tDiffuse: { value: null }, //Texture is replaced with the scene
-//   },
-//   vertexShader: VS,
-//   fragmentShader: FS,
-// };
-
-// const shaderPass = new ShaderPass(Shader);
-composer.addPass(new BlueDitheringPass("#f9ffd5", "#cbd5a8", "#4b0515"));
+composer.addPass(ditherPass);
 composer.addPass(new AfterimagePass(0.7));
+
+// Add object on mouse click
+const mouse = new THREE.Vector2();
+const intersectionPoint = new THREE.Vector3();
+const planeNormal = new THREE.Vector3();
+const planeRayCast = new THREE.Plane();
+const raycaster = new THREE.Raycaster();
+
+window.addEventListener("mousemove", function (e) {
+  mouse.x = (e.clientX / this.window.innerWidth) * 2 - 1;
+  mouse.y = -(e.clientY / this.window.innerHeight) * 2 + 1;
+  planeNormal.copy(camera.position).normalize();
+  planeRayCast.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+  raycaster.setFromCamera(mouse, camera);
+  raycaster.ray.intersectPlane(planeRayCast, intersectionPoint);
+});
 
 //Sphere
 const sphereGeo = new THREE.SphereGeometry(3, 32, 32);
@@ -200,6 +164,45 @@ const groundSphereContactMat = new CANNON.ContactMaterial(
 world.addContactMaterial(groundBodyContactMat);
 world.addContactMaterial(groundSphereContactMat);
 
+const spheres = [];
+const bodies = [];
+window.addEventListener("click", function (e) {
+  //Sphere mesh
+  const sphereGeo = new THREE.SphereGeometry(0.5, 30, 30);
+  const sphereMat = new THREE.MeshStandardMaterial({
+    color: Math.random() * 0xffffff,
+    roughness: 0.2,
+  });
+  const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+  sphere.castShadow = true;
+  scene.add(sphere);
+  sphere.position.copy(intersectionPoint);
+
+  //Sphere body
+  const spherePhyMat = new CANNON.Material();
+  const sphereBody = new CANNON.Body({
+    shape: new CANNON.Sphere(0.5),
+    mass: 1,
+    type: CANNON.Body.DYNAMIC,
+    material: spherePhyMat,
+  });
+  sphereBody.linearDamping = 0.31;
+  sphereBody.position.copy(intersectionPoint);
+  world.addBody(sphereBody);
+
+  // Contact material
+  const groundSphereContactMat = new CANNON.ContactMaterial(
+    groundPhysMat,
+    spherePhyMat,
+    { restitution: 0.99, contactEquationStiffness: 1000 },
+  );
+
+  world.addContactMaterial(groundSphereContactMat);
+
+  spheres.push(sphere);
+  bodies.push(sphereBody);
+});
+
 //FOG
 scene.fog = new THREE.FogExp2(0x0f1f21, 0.01);
 
@@ -226,51 +229,6 @@ var obj = {
     boxBody.velocity.set(0.0, 0.0, 0.0);
   },
 };
-// const gui = new dat.GUI();
-// const options = {
-//   height: 5,
-//   color: 0xffffff,
-//   sphereColor: "#61cf9a",
-// };
-// gui.add(obj, "reset");
-// gui.add(options, "sphereColor");
-// gui.add(options, "color").onChange((e) => {
-//   const color = new THREE.Color(e);
-//   console.log({ color });
-//   Shader.uniforms.tint.value = new THREE.Color(e);
-// });
-// gui.add(options, "height").onChange((e) => {
-//   sphereBody.position.y = e;
-// });
-
-const gui = new dat.GUI();
-// const options = {
-//   highcolor: "#ffffff",
-//   midcolor: "#61cf9a",
-//   lowcolor: "#000000",
-//   lowThreshold: 0.33,
-//   highThreshold: 0.05,
-// };
-
-// gui.addColor(options, "highcolor").onChange(function (e) {
-//   shaderPass.uniforms.high_tint.value = new THREE.Color(e);
-// });
-// gui.addColor(options, "midcolor").onChange(function (e) {
-//   shaderPass.uniforms.tint.value = new THREE.Color(e);
-// });
-// gui.addColor(options, "lowcolor").onChange(function (e) {
-//   shaderPass.uniforms.low_tint.value = new THREE.Color(e);
-// });
-
-// gui.add(options, "lowThreshold", 0, 1).onChange(function (e) {
-//   //   Shader.uniforms.lowThreshold.value = e;
-//   shaderPass.uniforms.lowThreshold.value = e;
-// });
-
-// gui.add(options, "highThreshold", 0, 1).onChange(function (e) {
-//   //   Shader.uniforms.highThreshold.value = e;
-//   shaderPass.uniforms.highThreshold.value = e;
-// });
 
 gui.add(obj, "reset");
 
@@ -297,6 +255,12 @@ const loop = () => {
 
   box.position.copy(boxBody.position);
   box.quaternion.copy(boxBody.quaternion);
+
+  // Add clicked balls
+  for (let i = 0; i < bodies.length; i++) {
+    spheres[i].position.copy(bodies[i].position);
+    spheres[i].quaternion.copy(bodies[i].quaternion);
+  }
 
   //   renderer.render(scene, camera);
   composer.render([]); // Render through effect composer

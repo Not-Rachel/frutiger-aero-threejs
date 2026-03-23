@@ -81,4 +81,24 @@ export class BlueDitheringPass extends ShaderPass {
     this.midTint = midTint;
     this.lowTint = lowTint;
   }
+  set highTint(v) {
+    this.uniforms.high_tint.value.set(v);
+  }
+  get highTint() {
+    return this.uniforms.high_tint.value;
+  }
+
+  set midTint(v) {
+    this.uniforms.tint.value.set(v);
+  }
+  get midTint() {
+    return this.uniforms.tint.value;
+  }
+
+  set lowTint(v) {
+    this.uniforms.low_tint.value.set(v);
+  }
+  get lowTint() {
+    return this.uniforms.low_tint.value;
+  }
 }
