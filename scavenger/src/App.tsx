@@ -18,10 +18,9 @@ function App() {
         <Router>
           {/* <TopNav /> */}
           <Routes>
-            <Route path="/" element={<Scavenger />} />
             <Route path="/scavenger" element={<Scavenger />} />
-            <Route path="/scavenger/about" element={<AboutUs />} />
-            <Route path="/scavenger/cart" element={<Cart />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/game" element={<Game />} />
           </Routes>
         </Router>

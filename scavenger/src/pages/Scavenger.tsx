@@ -14,6 +14,7 @@ import { use, useEffect, useRef, useState } from "react";
 import NotateText from "../components/NotateText";
 import { useLocation, useNavigate } from "react-router-dom";
 import NoteBook from "../components/Notebook";
+import Book3D from "../components/Book3D";
 
 function Home() {
   const balmImg = "/scavenger/assets/product-images/balm.jpeg";
@@ -24,6 +25,7 @@ function Home() {
   const toteImg = "/scavenger/assets/product-images/tote.jpeg";
   const fireImg = "/scavenger/assets/product-images/fire_starter.jpeg";
   const multitoolImg = "/scavenger/assets/product-images/multitool.jpg";
+  const bookCover = "/scavenger/assets/product-images/oldbookcover.png";
   const items = [
     {
       key: 0,
@@ -67,13 +69,30 @@ function Home() {
       text: "Spacious and rugged tote bag for carrying survival essentials, snacks, and trail gear—easy to pack and grab on the go.",
       model: null,
     },
+    {
+      key: 6,
+      image: toteImg,
+      name: "Item #7",
+      text: "Add more items",
+      model: null,
+    },
+    {
+      key: 7,
+      image: toteImg,
+      name: "Item #8",
+      text: "Add more items",
+      model: null,
+    },
   ];
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const openMap =
-    searchParams.get("view") === "map" || searchParams.get("view") === "cart";
-  const navigate = useNavigate();
+  // const location = useLocation();
+  // const searchParams = new URLSearchParams(location.search);
+  // const openMap =
+  //   searchParams.get("view") === "map" || searchParams.get("view") === "cart";
+  // const navigate = useNavigate();
+
+  const [openNoteBook, setOpenNoteBook] = useState(true);
+  const [openMap, setOpenMap] = useState(false);
 
   // function clickOpenMap() {
   //   const newParams = new URLSearchParams(location.search);
@@ -81,14 +100,14 @@ function Home() {
   //   navigate(`/scavenger?${newParams.toString()}`);
   // }
 
-  function clickOpenCart() {
-    const newParams = new URLSearchParams(location.search);
-    newParams.set("view", openMap ? "" : "cart");
-    navigate(`/scavenger?${newParams.toString()}`);
-  }
+  // function clickOpenCart() {
+  //   const newParams = new URLSearchParams(location.search);
+  //   newParams.set("view", openMap ? "" : "cart");
+  //   navigate(`/scavenger?${newParams.toString()}`);
+  // }
 
   return (
-    <div className="bg-black snap-mandatory snap-y overflow-y-scroll h-[100vh] flex flex-col no-scrollbar">
+    <div className="bg-black snap-mandatory snap-y overflow-hidden h-[100vh] flex flex-col no-scrollbar">
       <Noise
         patternSize={900}
         patternScaleX={4}
@@ -102,16 +121,31 @@ function Home() {
         easing="ease-out"
         initialOpacity={0}
       >
-        <section className="relative flex h-screen bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_70%,rgba(0,0,0,1)_100%),url('assets/woof.jpg')] shadow-[inset_0_0_8px_8px_black]  bg-cover bg-no-repeat snap-start scroll-mt-0">
+        <section className="relative flex h-screen bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_70%,rgba(0,0,0,1)_100%),url('assets/woof.jpg')] shadow-[inset_0_0_8px_8px_black]  bg-cover bg-no-repeat">
+          <motion.div
+            style={openNoteBook ? { zIndex: 99 } : { zIndex: 10 }}
+            layout
+            drag
+            className="absolute z-50 w-1/2 h-2/3"
+          >
+            <button onClick={() => setOpenNoteBook((prev) => !prev)}>
+              Close
+            </button>
+            {/* <NoteBook items={items}></NoteBook> */}
+            <Book3D items={items} cover={bookCover} backcover={bookCover} />
+          </motion.div>
           <div className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]">
-            <div className="absolute z-40  ">
-              <Map></Map>
-            </div>
+            {!openNoteBook && (
+              <div className="absolute z-40  ">
+                <Map></Map>
+              </div>
+            )}
             <motion.div
               className={`flex flex-col justify-center items-center z-60 pt-8
                ${openMap ? "pointer-events-none" : "pointer-events-auto"}`}
-              initial={openMap ? { opacity: 1 } : { opacity: 0 }}
-              animate={openMap ? { opacity: 0 } : { opacity: 1 }}
+              animate={
+                openMap || openNoteBook ? { opacity: 0 } : { opacity: 1 }
+              }
               transition={{ duration: 4, type: "spring" }}
             >
               <FuzzyText
@@ -133,48 +167,12 @@ function Home() {
                 {/* <div onClick={clickOpenMap}>
                   <NotateText>begin your journey</NotateText>
                 </div> */}
-                <button onClick={clickOpenCart}>
+                <button onClick={() => console.log("cart")}>
                   <NotateText>Open Cart</NotateText>
                 </button>
               </div>
             </motion.div>
           </div>
-        </section>
-
-        <section className="bg-black h-screen snap-start scroll-mt-0 flex items-center justify-center ">
-          {/* {viewItem && ( */}
-          <>
-            {/* {items[currentItem].model && viewItem && (
-                <motion.div
-                  onDoubleClick={() => setViewItem(false)}
-                  className="opacity-10 absolute w-full h-screen flex flex-col items-center justify-center pointer-events-auto"
-                  initial={{ opacity: 0 }}
-                  style={{
-                    zIndex: viewItem ? 99 : 1,
-                    pointerEvents: viewItem ? "auto" : "none",
-                  }}
-                  animate={viewItem ? { opacity: 1.0 } : {}}
-                >
-                  <ThreeModel
-                    modelSource={items[currentItem].model}
-                    scale={1.8}
-                  />
-                  <div
-                    onClick={() => setViewItem(false)}
-                    className="font-[Daubmark] text-3xl mb-8 border-3 border-white border-dotted rounded-sm text-yellow-100 p-4"
-                  >
-                    <NotateText>RETURN</NotateText>
-                  </div>
-                </motion.div>
-              )} */}
-            <NoteBook
-              // viewItem={viewItem}
-              // setViewItem={setViewItem}
-              // setItem={nextItem}
-              // item={items[currentItem]}
-              items={items}
-            ></NoteBook>
-          </>
         </section>
       </FadeContent>
       <p>

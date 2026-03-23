@@ -1,9 +1,10 @@
 import FadeIn from "./FadeIn";
 import NotateText from "./NotateText";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 
 import { useEffect, useState } from "react";
 import ThreeModel from "./ThreeModel";
+import { rotate } from "three/src/nodes/TSL.js";
 interface NoteBookProps {
   items: itemProps[];
 }
@@ -16,8 +17,7 @@ interface itemProps {
   model: string | null;
 }
 const oldBook = "/scavenger/assets/old-book2.png";
-
-// TODO: Add page flipping animation
+const oldPaper = "/scavenger/assets/old-paper-2.png";
 
 function NoteBook({ items }: NoteBookProps) {
   const [cart, setCart] = useState<itemProps[]>([]);
@@ -32,8 +32,50 @@ function NoteBook({ items }: NoteBookProps) {
   }, []);
 
   function setItem() {
+    setPageTurn(true);
     console.log((currentItem + 1) % items.length);
     setCurrentItem((currentItem + 1) % items.length);
+  }
+
+  function Page({ item }: itemProps) {
+    const [pageTurn, setPageTurn] = useState(false);
+
+    return (
+      <motion.div
+        // initial={{ rotateY: 0 }}
+        key={item.key}
+        animate={pageTurn ? { rotateY: 180 } : { rotateY: 0 }}
+        transition={{
+          // repeat: Infinity,
+          duration: 2,
+          // repeatType: "mirror",
+          ease: "easeInOut",
+          // type: "decay",
+        }}
+        style={{
+          transformOrigin: "0 50%",
+          // transfrom: "rotate(60deg)",
+          backgroundImage: `url(${oldPaper})`,
+        }}
+        onClick={() => setPageTurn((prev) => !prev)}
+        onAnimationEnd={() => setCurrentItem((currentItem + 1) % items.length)}
+        className=" font-[bleguk] relative w-[50%] p-4 inset-0 flex flex-col items-center text-orange-950 "
+      >
+        <p>Click to view product</p>
+        <motion.img
+          src={item.image}
+          alt=""
+          className="w-[75%] h-auto object-contain bg-none hover:border-white z-60 border-3 border-stone-300 rotate-3 rounded-xl "
+          onClick={() => setViewItem(item.model != null)}
+        ></motion.img>
+
+        <div className="my-8 text-2xl font-bold hover:font-black z-80 brightness-90 pointer-events-auto flex-1 flex-col ">
+          <button onClick={handleCart}>
+            <NotateText>ADD TO CART</NotateText>
+          </button>
+        </div>
+      </motion.div>
+    );
   }
 
   function handleCart(): void {
@@ -60,6 +102,8 @@ function NoteBook({ items }: NoteBookProps) {
       setCurrentItem((currentItem - 1 + items.length) % items.length);
     }
   }
+
+  const [leftPage, setLeftPage] = useState(false);
 
   return (
     <div tabIndex={0} onKeyDown={handleKeyDown} className="overflow-y-scroll">
@@ -102,41 +146,41 @@ function NoteBook({ items }: NoteBookProps) {
                   className="w-full h-full object-contain bg-none  "
                   onLoad={onLoad}
                 />
-
-                <div className="absolute flex flex-row h-full ">
-                  <div className="w-[45%] opacity-85  inset-0 flex flex-col m-8 px-2  text-orange-950  pointer-events-auto ">
-                    <h1 className="font-[Kashare] text-4xl font-bold pb-8">
-                      {items[currentItem].name}
-                    </h1>
-                    <div className="text-2xl font-[revolution] font-bold">
-                      <p>{items[currentItem].text}</p>
-                      {/* <p className="my-4">Text</p> */}
+                {/* Page */}
+                <div className="absolute flex flex-row h-full  ">
+                  <motion.div
+                    animate={{ rotateY: leftPage ? 180 : 0 }}
+                    transition={{
+                      duration: 2,
+                      ease: "easeInOut",
+                    }}
+                    style={{
+                      transformOrigin: "100% 50%",
+                      backgroundImage: `url(${oldPaper})`,
+                      transformStyle: "preserve-3d",
+                    }}
+                    onAnimationEnd={() =>
+                      setCurrentItem((currentItem + 1) % items.length)
+                    }
+                    onClick={() => setLeftPage((prev) => !prev)}
+                    className=" w-[50%] "
+                  >
+                    <div
+                      style={{
+                        backfaceVisibility: "hidden",
+                      }}
+                      className=" inset-0 flex flex-col p-8  text-orange-950  pointer-events-auto"
+                    >
+                      <h1 className="font-[Kashare] text-4xl font-bold pb-8">
+                        {items[currentItem].name}
+                      </h1>
+                      <div className="text-2xl font-[revolution] font-bold">
+                        <p>{items[currentItem].text}</p>
+                        {/* <p className="my-4">Text</p> */}
+                      </div>
                     </div>
-                  </div>
-                  <div className="font-[bleguk] relative w-[50%] m-4 inset-0 flex flex-col items-center text-orange-950 ">
-                    <p>Click to view product</p>
-                    <motion.img
-                      src={items[currentItem].image}
-                      alt=""
-                      className="w-[75%] h-auto object-contain bg-none hover:border-white z-60 border-3 border-stone-300 rotate-3 rounded-xl "
-                      onClick={() =>
-                        setViewItem(items[currentItem].model != null)
-                      }
-                    ></motion.img>
-
-                    <div className="my-8 text-2xl font-bold hover:font-black z-80 brightness-90 pointer-events-auto flex-1 flex-col ">
-                      <button onClick={handleCart}>
-                        <NotateText>ADD TO CART</NotateText>
-                      </button>
-                      <button
-                        name="Next item"
-                        className="my-16"
-                        onClick={setItem}
-                      >
-                        Turn page
-                      </button>
-                    </div>
-                  </div>
+                  </motion.div>
+                  {/* <Page item={items[currentItem]}></Page> */}
                 </div>
               </div>
             )}
