@@ -32,12 +32,11 @@ function NoteBook({ items }: NoteBookProps) {
   }, []);
 
   function setItem() {
-    setPageTurn(true);
     console.log((currentItem + 1) % items.length);
     setCurrentItem((currentItem + 1) % items.length);
   }
 
-  function Page({ item }: itemProps) {
+  function Page(item: itemProps) {
     const [pageTurn, setPageTurn] = useState(false);
 
     return (

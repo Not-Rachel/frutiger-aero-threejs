@@ -244,33 +244,33 @@ var obj = {
 // });
 
 const gui = new dat.GUI();
-const options = {
-  highcolor: "#ffffff",
-  midcolor: "#61cf9a",
-  lowcolor: "#000000",
-  lowThreshold: 0.33,
-  highThreshold: 0.05,
-};
+// const options = {
+//   highcolor: "#ffffff",
+//   midcolor: "#61cf9a",
+//   lowcolor: "#000000",
+//   lowThreshold: 0.33,
+//   highThreshold: 0.05,
+// };
 
-gui.addColor(options, "highcolor").onChange(function (e) {
-  shaderPass.uniforms.high_tint.value = new THREE.Color(e);
-});
-gui.addColor(options, "midcolor").onChange(function (e) {
-  shaderPass.uniforms.tint.value = new THREE.Color(e);
-});
-gui.addColor(options, "lowcolor").onChange(function (e) {
-  shaderPass.uniforms.low_tint.value = new THREE.Color(e);
-});
+// gui.addColor(options, "highcolor").onChange(function (e) {
+//   shaderPass.uniforms.high_tint.value = new THREE.Color(e);
+// });
+// gui.addColor(options, "midcolor").onChange(function (e) {
+//   shaderPass.uniforms.tint.value = new THREE.Color(e);
+// });
+// gui.addColor(options, "lowcolor").onChange(function (e) {
+//   shaderPass.uniforms.low_tint.value = new THREE.Color(e);
+// });
 
-gui.add(options, "lowThreshold", 0, 1).onChange(function (e) {
-  //   Shader.uniforms.lowThreshold.value = e;
-  shaderPass.uniforms.lowThreshold.value = e;
-});
+// gui.add(options, "lowThreshold", 0, 1).onChange(function (e) {
+//   //   Shader.uniforms.lowThreshold.value = e;
+//   shaderPass.uniforms.lowThreshold.value = e;
+// });
 
-gui.add(options, "highThreshold", 0, 1).onChange(function (e) {
-  //   Shader.uniforms.highThreshold.value = e;
-  shaderPass.uniforms.highThreshold.value = e;
-});
+// gui.add(options, "highThreshold", 0, 1).onChange(function (e) {
+//   //   Shader.uniforms.highThreshold.value = e;
+//   shaderPass.uniforms.highThreshold.value = e;
+// });
 
 gui.add(obj, "reset");
 

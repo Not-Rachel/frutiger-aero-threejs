@@ -28,14 +28,13 @@ import { Canvas } from "@react-three/fiber";
 
 interface PageProps {
   number: number;
-  front: itemProps;
+  front: itemProps | null;
   back: itemProps | null;
 }
 interface NoteBookProps {
   items: itemProps[];
   cover: string;
   backcover: string;
-  doublesided: boolean;
 }
 
 interface itemProps {
@@ -139,14 +138,10 @@ function Cover({ ...props }) {
     </group>
   );
 }
-function Book3D({
-  items,
-  cover,
-  backcover,
-  doubleSided = true,
-}: NoteBookProps) {
+function Book3D({ items, cover, backcover }: NoteBookProps) {
   if (items.length < 1) return;
 
+  console.log(cover, backcover);
   // Organize into pages
   const pages = [];
   for (let i = 0; i < items.length - 1; i += 2) {
@@ -161,9 +156,7 @@ function Book3D({
       <group>
         {/* <Cover /> */}
         {pages.map((page, index) => {
-          return (
-            <Page index={index} number={index} front={page[0]} back={page[1]} />
-          );
+          return <Page number={index} front={page[0]} back={page[1]} />;
         })}
         {/* <Cover position-x={pages.length * 0.15} /> */}
       </group>

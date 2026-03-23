@@ -4,17 +4,14 @@ import TopNav from "../components/ScavNav";
 import FuzzyText from "../components/FuzzyText";
 import Noise from "../components/Noise";
 import FadeContent from "../components/FadeContent";
-import ThreeModel from "../components/ThreeModel";
-import FadeIn from "../components/FadeIn";
 import { RoughNotation, RoughNotationGroup } from "react-rough-notation";
 import Map from "../components/Map";
 
 import { motion } from "motion/react";
 import { use, useEffect, useRef, useState } from "react";
 import NotateText from "../components/NotateText";
-import { useLocation, useNavigate } from "react-router-dom";
 import NoteBook from "../components/Notebook";
-import Book3D from "../components/Book3D";
+// import Book3D from "../components/Book3D";
 
 function Home() {
   const balmImg = "/scavenger/assets/product-images/balm.jpeg";
@@ -131,8 +128,8 @@ function Home() {
             <button onClick={() => setOpenNoteBook((prev) => !prev)}>
               Close
             </button>
-            {/* <NoteBook items={items}></NoteBook> */}
-            <Book3D items={items} cover={bookCover} backcover={bookCover} />
+            <NoteBook items={items}></NoteBook>
+            {/* <Book3D items={items} cover={bookCover} backcover={bookCover} /> */}
           </motion.div>
           <div className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]">
             {!openNoteBook && (
