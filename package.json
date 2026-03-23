@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && cd scavenger && npm run build && cd ../threejs & npm run build",
+    "build": "tsc -b && vite build && cd scavenger && npm run build && cd ../threejs && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
