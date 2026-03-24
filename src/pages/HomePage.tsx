@@ -19,6 +19,7 @@ import TVOff from "/assets/audio/TVOff2.mp3";
 
 import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
+import DitherDemo from "./DitherDemo";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -86,9 +87,8 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   const [subIndex, setSubIndex] = useState(0);
   const subtitles = [
     "est. 2002",
-    "Batteries not incluced",
-    "I'd rather be fishing",
-    "Fish want me. Women fear me..",
+    "Batteries not included",
+    "Now in technicolor",
   ];
   useEffect(() => {
     const interval = setInterval(() => {
@@ -138,7 +138,9 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   }, [volume]);
 
   return (
-    <div className="p-4 sm:p-8 flex flex-col items-center absolute w-full h-full ">
+    <div
+      className={`${showNav ? "p-4" : "p-0"} flex flex-col items-center absolute w-full h-full`}
+    >
       {/* <div className="absolute right-0 bottom-0 m-2 z-50"> */}
       <audio
         ref={audioRef}
@@ -269,29 +271,42 @@ function HomePage({ setShowTHREE }: HomePageProps) {
             >
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+                onClick={() => buttonClick("dither")}
                 onHoverStart={() => hoverSound.play()}
-                onClick={() => buttonClick("")}
                 className={`p-1 aero rounded-xl`}
                 style={
-                  showScreen && location.pathname === "/"
+                  showScreen && location.pathname === "/dither"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
               >
-                Home
+                Blue Dithering
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => buttonClick("projects")}
-                onHoverStart={() => hoverSound.play()}
+                onClick={() => buttonClick("scavenger")}
                 className={`p-1 aero rounded-xl`}
+                onHoverStart={() => hoverSound.play()}
                 style={
-                  showScreen && location.pathname === "/projects"
+                  showScreen && location.pathname === "/scavenger"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
               >
-                Projects
+                Scavenger
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+                onClick={() => buttonClick("offline")}
+                className={`p-1 aero rounded-xl`}
+                onHoverStart={() => hoverSound.play()}
+                style={
+                  showScreen && location.pathname === "/offline"
+                    ? ({ "--saturation": 0.5 } as CSSProperties)
+                    : {}
+                }
+              >
+                Offline
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
@@ -305,18 +320,6 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 }
               >
                 Illustrations
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                className={`p-1 aero rounded-xl`}
-                onHoverStart={() => hoverSound.play()}
-                style={
-                  showScreen && location.pathname === "/cv"
-                    ? ({ "--saturation": 0.5 } as CSSProperties)
-                    : {}
-                }
-              >
-                Resume
               </motion.button>
             </div>
 
@@ -345,9 +348,6 @@ function HomePage({ setShowTHREE }: HomePageProps) {
         >
           <motion.main
             key={"screen"}
-            drag="y"
-            whileDrag={{ scale: 0.95 }}
-            dragConstraints={{ top: 0, bottom: 500 }}
             initial={{ scaleY: showScreen ? 0 : "100%" }}
             animate={{
               scaleY: showScreen ? "100%" : 0,
@@ -362,7 +362,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               initial={{ rotateY: 0, rotateX: -1 }}
               animate={{
                 rotateY: showNav ? -5 : 0,
-                rotateX: 1,
+                rotateX: showNav ? 1 : 0,
 
                 transition: {
                   duration: showNav ? 5 : 0.5,
@@ -372,7 +372,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                   ease: "easeInOut",
                 },
               }}
-              className=" text-white p-4 pt-8 relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-visible  inset-shadow-sm inset-shadow-indigo-100 "
+              className=" text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
             >
               <div className="absolute -top-1 left-0 z-50">
                 <button
@@ -399,20 +399,20 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                   []
                 </button>
               </div>
-              <div className="overflow-y-scroll w-full">
+              <div className="overflow-y-scroll w-full h-full">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={location.pathname}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 2 }}
-                    className="static"
+                    className=" w-full h-full"
                   >
                     <Routes>
                       <Route path="/" element={<About />} />
                       <Route path="/projects" element={<Projects />} />
                       <Route path="/art" element={<Art />} />
-                      <Route path="/photos" element={<Art />} />
+                      <Route path="/dither" element={<DitherDemo />} />
                     </Routes>
                   </motion.div>
                 </AnimatePresence>
