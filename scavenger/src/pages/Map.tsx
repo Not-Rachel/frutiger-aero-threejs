@@ -1,16 +1,20 @@
-import { motion } from "motion/react";
-import Page from "./Page";
+import { AnimatePresence, motion } from "motion/react";
+import Page from "../components/Page";
 
-import FadeIn from "./FadeIn";
+import FadeIn from "../components/FadeIn";
 import { useEffect, useRef, useState } from "react";
 import {
+  Route,
   BrowserRouter as Router,
+  Routes,
   useLocation,
   useNavigate,
 } from "react-router-dom";
 
 // import { round } from "three/src/nodes/TSL.js";
-import NotateText from "./NotateText";
+import NotateText from "../components/NotateText";
+import Home from "./Scavenger";
+import Cart from "./Cart";
 interface MapProps {
   openMap: boolean;
   clickOpenMap: () => void;
@@ -35,16 +39,9 @@ function Map() {
   const [firstClick, setFirstClick] = useState<boolean>(false);
   const [animatePath, setAnimatePath] = useState(false);
   const pageRef = useRef(null);
-  const [hovered, setHovered] = useState(false);
   const campingRef = useRef(null);
   const homeRef = useRef(null);
   const [path, setPath] = useState<string | undefined>(undefined);
-  const [cart, setCart] = useState<itemProps[]>([]);
-
-  useEffect(() => {
-    const items = localStorage.getItem("cart");
-    if (items) setCart(JSON.parse(items));
-  }, []);
 
   function handleMap() {
     clickOpenMap();
@@ -63,7 +60,8 @@ function Map() {
     searchParams.get("view") === "map" || searchParams.get("view") === "cart";
   function clickOpenMap() {
     const newParams = new URLSearchParams(location.search);
-    newParams.set("view", openMap ? "" : "map");
+    if (openMap) newParams.delete("view");
+    else newParams.set("view", "map");
     navigate(`/scavenger?${newParams.toString()}`);
   }
   function clickOpenCart() {
@@ -76,10 +74,9 @@ function Map() {
   // Posted by Akshay Kumar, modified by community. See post 'Timeline' for change history
   // Retrieved 2025-11-11, License - CC BY-SA 4.0
 
-  //TODO add Map elements such as Trees, Mountains, and "trails" to Product types
-
   return (
     <motion.div
+      drag
       className="saturate-75  relative  "
       transition={{ duration: 8, type: "spring" }}
       initial={openMap ? {} : { rotate: "-90deg" }}
@@ -99,7 +96,7 @@ function Map() {
                 initial={!openMap ? {} : { x: "-90%" }}
                 animate={!openMap ? { x: 0 } : {}}
                 transition={{ duration: 4, type: "spring" }}
-                onClick={clickOpenMap}
+                onClick={() => navigate("map")}
                 className="h-[95vh] w-1/2 z-50 flex justify-end brightness-90 pointer-events-auto  "
               >
                 <img
@@ -114,7 +111,9 @@ function Map() {
                 initial={!openMap ? {} : { x: "90%" }}
                 animate={!openMap ? { x: 0 } : {}}
                 transition={{ duration: 4, type: "spring" }}
-                onClick={clickOpenMap}
+                onClick={() => {
+                  navigate("./map");
+                }}
                 className=" h-[95vh] w-1/2 z-50 flex justify-start brightness-90 pointer-events-auto  "
               >
                 <div className="relative h-full justify-center  flex items-center ">
@@ -146,94 +145,21 @@ function Map() {
               />
               <div className="absolute flex flex-row justify-center items-center inset-0 pointer-events-auto  ">
                 <div className="w-[90%]  z-50 flex-col m-8  text-orange-950 pointer-events-auto h-[90%]">
-                  <div className="absolute pointer-events-none">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="451"
-                      height="437"
-                      className="pointer-events-none"
+                  <div className="absolute pointer-events-none"></div>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={location.pathname}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 2 }}
+                      className=" w-full h-full"
                     >
-                      <motion.path
-                        d={path}
-                        fill="transparent"
-                        strokeWidth="2"
-                        stroke="#001017ff"
-                        strokeLinecap={"round"}
-                        strokeDasharray={"10,10"}
-                        initial={{ pathLength: 0 }}
-                        animate={
-                          hovered ? { pathLength: 1 } : { pathLength: 0 }
-                        }
-                        transition={{ duration: 2, ease: "easeInOut" }}
-                      />
-                    </svg>
-                  </div>
-                  {searchParams.get("view") !== "cart" ? (
-                    <>
-                      <div
-                        onClick={clickOpenCart}
-                        className="z-50 flex justify-center items-center w-full h-full font-[Kashare] flex-col lg:text-4xl  md:text-3xl text-2xl"
-                      >
-                        <NotateText>Go to Cart</NotateText>
-
-                        <img
-                          ref={homeRef}
-                          src={House}
-                          alt="Home"
-                          className="w-1/20 "
-                        />
-                      </div>
-                      <div className="z-50 font-[Kashare] lg:text-5xl  md:text-4xl text-3xl flex-1 justify-center items-center h-full w-full pointer-events-auto">
-                        {/* <p>HOME</p> */}
-
-                        <div
-                          className="absolute top-1/8 left-1/8 "
-                          onMouseEnter={() => {
-                            setHovered(true);
-                          }}
-                          onMouseLeave={() => {
-                            setHovered(false);
-                          }}
-                          ref={campingRef}
-                        >
-                          <NotateText type="crossed-off">Camping</NotateText>
-                        </div>
-                        <div className="absolute bottom-1/8 left-1/8">
-                          <NotateText type="circle">Hiking</NotateText>
-                        </div>
-                        <div className="absolute top-1/8 right-1/8">
-                          <NotateText type="circle">Climbing</NotateText>
-                        </div>
-                        <div className="absolute bottom-1/8 right-1/8">
-                          <NotateText type="circle">Fishing</NotateText>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="flex flex-col -space-y-210">
-                      {cart.map((item) => {
-                        const rotate = item.key % 2 === 0 ? 2 : -2;
-                        return (
-                          <div
-                            key={item.key}
-                            style={{ rotate: `${rotate}deg` }}
-                            className="w-2/3"
-                          >
-                            <Page item={item} />
-                          </div>
-                        );
-                      })}
-                      <button
-                        className=" absolute bg-amber-200 rounded-xl right-16 p-4"
-                        onClick={() => {
-                          localStorage.clear();
-                          setCart([]);
-                        }}
-                      >
-                        Clear cart
-                      </button>
-                    </div>
-                  )}
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/cart" element={<Cart />} />
+                      </Routes>
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
               </div>
             </motion.div>

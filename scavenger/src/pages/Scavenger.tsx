@@ -5,12 +5,13 @@ import FuzzyText from "../components/FuzzyText";
 import Noise from "../components/Noise";
 import FadeContent from "../components/FadeContent";
 import { RoughNotation, RoughNotationGroup } from "react-rough-notation";
-import Map from "../components/Map";
+import Map from "./Map";
 
 import { motion } from "motion/react";
 import { use, useEffect, useRef, useState } from "react";
 import NotateText from "../components/NotateText";
 import NoteBook from "../components/Notebook";
+import { useLocation } from "react-router-dom";
 // import Book3D from "../components/Book3D";
 
 function Home() {
@@ -82,26 +83,13 @@ function Home() {
     },
   ];
 
-  // const location = useLocation();
-  // const searchParams = new URLSearchParams(location.search);
-  // const openMap =
-  //   searchParams.get("view") === "map" || searchParams.get("view") === "cart";
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const openMap =
+    searchParams.get("view") === "map" || searchParams.get("view") === "cart";
   // const navigate = useNavigate();
 
-  const [openNoteBook, setOpenNoteBook] = useState(true);
-  const [openMap, setOpenMap] = useState(false);
-
-  // function clickOpenMap() {
-  //   const newParams = new URLSearchParams(location.search);
-  //   newParams.set("products", openMap ? "false" : "true");
-  //   navigate(`/scavenger?${newParams.toString()}`);
-  // }
-
-  // function clickOpenCart() {
-  //   const newParams = new URLSearchParams(location.search);
-  //   newParams.set("view", openMap ? "" : "cart");
-  //   navigate(`/scavenger?${newParams.toString()}`);
-  // }
+  // const [openMap, setOpenMap] = useState(false);
 
   return (
     <div className="bg-black snap-mandatory snap-y overflow-hidden h-[100vh] flex flex-col no-scrollbar">
@@ -119,30 +107,14 @@ function Home() {
         initialOpacity={0}
       >
         <section className="relative flex h-screen bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_70%,rgba(0,0,0,1)_100%),url('assets/woof.jpg')] shadow-[inset_0_0_8px_8px_black]  bg-cover bg-no-repeat">
-          <motion.div
-            style={openNoteBook ? { zIndex: 99 } : { zIndex: 10 }}
-            layout
-            drag
-            className="absolute z-50 w-1/2 h-2/3"
-          >
-            <button onClick={() => setOpenNoteBook((prev) => !prev)}>
-              Close
-            </button>
-            <NoteBook items={items}></NoteBook>
-            {/* <Book3D items={items} cover={bookCover} backcover={bookCover} /> */}
-          </motion.div>
           <div className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]">
-            {!openNoteBook && (
-              <div className="absolute z-40  ">
-                <Map></Map>
-              </div>
-            )}
+            <div className="absolute z-40  ">
+              <Map></Map>
+            </div>
             <motion.div
               className={`flex flex-col justify-center items-center z-60 pt-8
                ${openMap ? "pointer-events-none" : "pointer-events-auto"}`}
-              animate={
-                openMap || openNoteBook ? { opacity: 0 } : { opacity: 1 }
-              }
+              animate={openMap ? { opacity: 0 } : { opacity: 1 }}
               transition={{ duration: 4, type: "spring" }}
             >
               <FuzzyText
@@ -172,11 +144,6 @@ function Home() {
           </div>
         </section>
       </FadeContent>
-      <p>
-        <a href="https://pngtree.com/freepng/old-grunge-open-notebook-damaged_13595593.html">
-          png image from pngtree.com/
-        </a>
-      </p>
     </div>
   );
 }

@@ -41,7 +41,7 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
   });
   const timeStep = 1 / 30;
 
-  renderer.setClearColor(0xffffff, 0.0); //transparent
+  renderer.setClearColor(0x0, 1.0); //transparent
   renderer.setSize(sizes.width, sizes.height);
   renderer.render(scene, camera);
   renderer.shadowMap.enabled = true;
@@ -49,9 +49,10 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
 
   const gui = new dat.GUI({ autoPlace: false });
   const options = {
-    highcolor: "#ffffff",
-    midcolor: "#61cf9a",
-    lowcolor: "#000000",
+    highcolor: "#ffc971",
+    midcolor: "#aa00da",
+    lowcolor: "#0f0d62",
+    toggle_dither: true,
   };
 
   const guiContainer = document.getElementById("gui-container");
@@ -61,15 +62,25 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
-  const ditherPass = new BlueDitheringPass("#ffffff", "#61cf9a", "#040405");
+  const ditherPass = new BlueDitheringPass([
+    "#0f0d62",
+    "#aa00da",
+    "#ffc971",
+    "#ffffff",
+  ]);
+
   gui.addColor(options, "highcolor").onChange((e: Event) => {
-    ditherPass.highTint = e;
-  });
-  gui.addColor(options, "midcolor").onChange((e: Event) => {
     ditherPass.midTint = e;
+  });
+
+  gui.addColor(options, "midcolor").onChange((e: Event) => {
+    ditherPass.midHighTint = e;
   });
   gui.addColor(options, "lowcolor").onChange((e: Event) => {
     ditherPass.lowTint = e;
+  });
+  gui.add(options, "toggle_dither").onChange((e: Event) => {
+    e ? composer.addPass(ditherPass) : composer.removePass(ditherPass);
   });
 
   composer.addPass(ditherPass);
@@ -96,7 +107,7 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
   //Sphere
   const sphereGeo = new THREE.SphereGeometry(3, 32, 32);
   const sphereMat = new THREE.MeshStandardMaterial({
-    color: "#0e695e",
+    color: "#fe695e",
     roughness: 0.2,
   });
   const sphere = new THREE.Mesh(sphereGeo, sphereMat);
@@ -117,7 +128,7 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
   //Box
   const boxGeo = new THREE.BoxGeometry(2, 2, 2);
   const boxMat = new THREE.MeshStandardMaterial({
-    color: "#f4ced8",
+    color: "#81e1f0",
     roughness: 0.1,
   });
   const box = new THREE.Mesh(boxGeo, boxMat);
@@ -140,9 +151,9 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
   world.addBody(boxBody);
 
   //Plane
-  const planeGeo = new THREE.PlaneGeometry(24, 24, 3, 3);
+  const planeGeo = new THREE.PlaneGeometry(48, 48, 3, 3);
   const planeMat = new THREE.MeshStandardMaterial({
-    color: 0xb55042,
+    color: "#b6b9cf",
     side: THREE.DoubleSide,
   });
   const plane = new THREE.Mesh(planeGeo, planeMat);
@@ -228,9 +239,9 @@ export default function initDitherDemo(canvas: HTMLCanvasElement) {
 
   //LIGHTS
   const spotlight = new THREE.SpotLight(0xfffffff, 10000);
-  spotlight.angle = 0.2;
+  spotlight.angle = 0.3;
   spotlight.penumbra = 1;
-  spotlight.position.set(-50, 50, 0);
+  spotlight.position.set(-25, 40, 0);
   spotlight.castShadow = true;
   scene.add(spotlight);
 
