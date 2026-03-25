@@ -3,7 +3,7 @@ import { ShaderPass } from "three/examples/jsm/Addons.js";
 import bluenoise64 from "/assets/HDR_L_2.png";
 
 export class BlueDitheringPass extends ShaderPass {
-  constructor(highTint = 0xffffff, midTint = "#61cf9a", lowTint = 0x0) {
+  constructor(highTint = "#ffffff", midTint = "#61cf9a", lowTint = "#000000") {
     const VS = `
       varying vec2 vUv;
       void main(){

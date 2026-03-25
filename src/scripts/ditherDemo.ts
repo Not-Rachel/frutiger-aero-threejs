@@ -2,20 +2,24 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import * as dat from "dat.gui";
 import * as CANNON from "cannon-es";
-import { BlueDitheringPass } from "./BlueDitheringPass";
+import { BlueDitheringPass } from "./BlueDitheringPass.ts";
 import {
   EffectComposer,
   RenderPass,
   AfterimagePass,
 } from "three/examples/jsm/Addons.js";
 
-export default function initDitherDemo(canvas) {
+type PhysicsMesh = {
+  mesh: THREE.Mesh;
+  body: CANNON.Body;
+};
+
+export default function initDitherDemo(canvas: HTMLCanvasElement) {
   const sizes = {
     width: canvas.clientWidth,
     height: canvas.clientHeight,
   };
   const scene = new THREE.Scene();
-  // const canvas = document.querySelector(".webgl");
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 
   const camera = new THREE.PerspectiveCamera(
@@ -28,7 +32,7 @@ export default function initDitherDemo(canvas) {
   camera.position.z = 20;
   camera.position.y = 30;
   camera.position.x = -20;
-  const orbit = new OrbitControls(camera, renderer.domElement);
+  new OrbitControls(camera, renderer.domElement);
   scene.add(camera);
 
   //Add world
@@ -43,25 +47,28 @@ export default function initDitherDemo(canvas) {
   renderer.shadowMap.enabled = true;
   renderer.debug.checkShaderErrors = true;
 
-  const gui = new dat.GUI();
+  const gui = new dat.GUI({ autoPlace: false });
   const options = {
     highcolor: "#ffffff",
     midcolor: "#61cf9a",
     lowcolor: "#000000",
   };
 
+  const guiContainer = document.getElementById("gui-container");
+  guiContainer!.appendChild(gui.domElement);
+
   //Post Proc First render pass
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
 
   const ditherPass = new BlueDitheringPass("#ffffff", "#61cf9a", "#040405");
-  gui.addColor(options, "highcolor").onChange((e) => {
+  gui.addColor(options, "highcolor").onChange((e: Event) => {
     ditherPass.highTint = e;
   });
-  gui.addColor(options, "midcolor").onChange((e) => {
+  gui.addColor(options, "midcolor").onChange((e: Event) => {
     ditherPass.midTint = e;
   });
-  gui.addColor(options, "lowcolor").onChange((e) => {
+  gui.addColor(options, "lowcolor").onChange((e: Event) => {
     ditherPass.lowTint = e;
   });
 
@@ -75,9 +82,9 @@ export default function initDitherDemo(canvas) {
   const planeRayCast = new THREE.Plane();
   const raycaster = new THREE.Raycaster();
 
-  const mouseHandler = (e) => {
-    mouse.x = (e.clientX / canvas.innerWidth) * 2 - 1;
-    mouse.y = -(e.clientY / canvas.innerHeight) * 2 + 1;
+  const mouseHandler = (e: MouseEvent) => {
+    mouse.x = (e.clientX / canvas.width) * 2 - 1;
+    mouse.y = -(e.clientY / canvas.height) * 2 + 1;
     planeNormal.copy(camera.position).normalize();
     planeRayCast.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
     raycaster.setFromCamera(mouse, camera);
@@ -167,10 +174,9 @@ export default function initDitherDemo(canvas) {
   world.addContactMaterial(groundBodyContactMat);
   world.addContactMaterial(groundSphereContactMat);
 
-  const spheres = [];
-  const bodies = [];
+  const physicsObjects: PhysicsMesh[] = [];
 
-  const clickHandler = (e) => {
+  const clickHandler = () => {
     //Sphere mesh
     const sphereGeo = new THREE.SphereGeometry(0.5, 30, 30);
     const sphereMat = new THREE.MeshStandardMaterial({
@@ -180,6 +186,8 @@ export default function initDitherDemo(canvas) {
     const sphere = new THREE.Mesh(sphereGeo, sphereMat);
     sphere.castShadow = true;
     scene.add(sphere);
+
+    if (intersectionPoint.y < 0) intersectionPoint.y = 5;
     sphere.position.copy(intersectionPoint);
 
     //Sphere body
@@ -191,7 +199,13 @@ export default function initDitherDemo(canvas) {
       material: spherePhyMat,
     });
     sphereBody.linearDamping = 0.31;
-    sphereBody.position.copy(intersectionPoint);
+    sphereBody.position.copy(
+      new CANNON.Vec3(
+        intersectionPoint.x,
+        intersectionPoint.y,
+        intersectionPoint.z,
+      ),
+    );
     world.addBody(sphereBody);
 
     // Contact material
@@ -203,8 +217,9 @@ export default function initDitherDemo(canvas) {
 
     world.addContactMaterial(groundSphereContactMat);
 
-    spheres.push(sphere);
-    bodies.push(sphereBody);
+    // spheres.push(sphere);
+    // bodies.push(sphereBody);
+    physicsObjects.push({ mesh: sphere, body: sphereBody });
   };
   window.addEventListener("click", clickHandler);
 
@@ -239,18 +254,9 @@ export default function initDitherDemo(canvas) {
 
   // Post Processing
 
-  // window.addEventListener("resize", () => {
-  //   //update size
-  //   sizes.width = canvas.innerWidth;
-  //   sizes.height = canvas.innerHeight;
-
-  //   camera.aspect = sizes.width / sizes.height;
-  //   camera.updateProjectionMatrix();
-  //   renderer.setSize(sizes.width, sizes.height);
-  // });
   const resizeObserver = new ResizeObserver(() => {
-    const width = canvas.clientWidth;
-    const height = canvas.clientHeight;
+    const width = canvas.parentElement!.clientWidth;
+    const height = canvas.parentElement!.clientHeight;
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
@@ -259,7 +265,7 @@ export default function initDitherDemo(canvas) {
     composer.setSize(width, height);
   });
 
-  resizeObserver.observe(canvas);
+  resizeObserver.observe(canvas.parentElement!);
 
   const loop = () => {
     world.step(timeStep);
@@ -274,13 +280,13 @@ export default function initDitherDemo(canvas) {
     box.quaternion.copy(boxBody.quaternion);
 
     // Add clicked balls
-    for (let i = 0; i < bodies.length; i++) {
-      spheres[i].position.copy(bodies[i].position);
-      spheres[i].quaternion.copy(bodies[i].quaternion);
-    }
+    physicsObjects.forEach((object) => {
+      object.mesh.position.copy(object.body.position);
+      object.mesh.quaternion.copy(object.body.quaternion);
+    });
 
     //   renderer.render(scene, camera);
-    composer.render([]); // Render through effect composer
+    composer.render(); // Render through effect composer
     window.requestAnimationFrame(loop);
   };
 
@@ -289,6 +295,7 @@ export default function initDitherDemo(canvas) {
   return () => {
     window.removeEventListener("mousemove", mouseHandler);
     window.removeEventListener("click", clickHandler);
+    guiContainer!.removeChild(gui.domElement);
     gui.destroy();
     renderer.dispose();
     composer.dispose();

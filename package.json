@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && cd scavenger && npm run build && cd ../threejs && npm run build",
+    "build": "tsc -b && vite build && cd scavenger && npm run build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/dat.gui": "^0.7.13",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@types/yuka": "^0.7.4",

@@ -7,7 +7,6 @@ import {
   type JSX,
 } from "react";
 import { Route, useLocation, useNavigate, Routes } from "react-router-dom";
-import Projects from "./Projects";
 import Art from "./Art";
 import About from "./About";
 import itunes from "/assets/itunes.png";
@@ -262,7 +261,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               },
             }}
             layout
-            className="aero h-full p-2 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+            className=" h-full p-2 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
             style={{ backgroundColor: navToClose ? "#f3255151" : "#06B6D451" }}
           >
             <div
@@ -284,11 +283,14 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => buttonClick("scavenger")}
+                onClick={() =>
+                  navigate("/scavenger/", { replace: true }) ||
+                  window.location.reload()
+                }
                 className={`p-1 aero rounded-xl`}
                 onHoverStart={() => hoverSound.play()}
                 style={
-                  showScreen && location.pathname === "/scavenger"
+                  showScreen && location.pathname.includes("scavenger")
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
@@ -340,7 +342,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
         {/* </AnimatePresence> */}
         <motion.div
           layout
-          // layoutDependency={showNav}
+          layoutDependency={showNav}
           transition={{
             duration: 0.5,
           }}
@@ -410,7 +412,6 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                   >
                     <Routes>
                       <Route path="/" element={<About />} />
-                      <Route path="/projects" element={<Projects />} />
                       <Route path="/art" element={<Art />} />
                       <Route path="/dither" element={<DitherDemo />} />
                     </Routes>
