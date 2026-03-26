@@ -19,6 +19,7 @@ import TVOff from "/assets/audio/TVOff2.mp3";
 import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 import DitherDemo from "./DitherDemo";
+import Offline from "./Offline";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -414,6 +415,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                       <Route path="/" element={<About />} />
                       <Route path="/art" element={<Art />} />
                       <Route path="/dither" element={<DitherDemo />} />
+                      <Route path="/offline" element={<Offline />} />
                     </Routes>
                   </motion.div>
                 </AnimatePresence>
