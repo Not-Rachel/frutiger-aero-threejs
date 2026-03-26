@@ -282,7 +282,8 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               >
                 Blue Dithering
               </motion.button>
-              <motion.button
+              {/*TODO: fix scavenger*/}
+              {/* <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
                 onClick={() =>
                   navigate("/scavenger/", { replace: true }) ||
@@ -297,7 +298,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 }
               >
                 Scavenger
-              </motion.button>
+              </motion.button> */}
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
                 onClick={() => buttonClick("offline")}
