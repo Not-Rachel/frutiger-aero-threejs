@@ -84,9 +84,7 @@ function Home() {
   ];
 
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const openMap =
-    searchParams.get("view") === "map" || searchParams.get("view") === "cart";
+  const openMap = location.pathname.includes("map");
   // const navigate = useNavigate();
 
   // const [openMap, setOpenMap] = useState(false);

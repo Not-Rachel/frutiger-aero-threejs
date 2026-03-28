@@ -215,7 +215,11 @@ function HomePage({ setShowTHREE }: HomePageProps) {
         )}
       </motion.div>
 
-      <AnimatePresence>
+      <AnimatePresence
+        onExitComplete={() => {
+          if (!showScreen) setShowTHREE(true);
+        }}
+      >
         {!showScreen && (
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
@@ -271,7 +275,10 @@ function HomePage({ setShowTHREE }: HomePageProps) {
             >
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => buttonClick("dither")}
+                onClick={() => {
+                  setShowTHREE(false);
+                  buttonClick("dither");
+                }}
                 onHoverStart={() => hoverSound.play()}
                 className={`p-1 aero rounded-xl`}
                 style={
@@ -331,6 +338,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
               onClick={() => {
                 clickLow.play();
+                closeScreen();
                 setShowTHREE((prev) => !prev);
               }}
               onHoverStart={() => hoverSound.play()}

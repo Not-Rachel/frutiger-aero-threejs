@@ -13,12 +13,9 @@ import {
 
 // import { round } from "three/src/nodes/TSL.js";
 import NotateText from "../components/NotateText";
-import Home from "./Scavenger";
+import Home from "./Home";
 import Cart from "./Cart";
-interface MapProps {
-  openMap: boolean;
-  clickOpenMap: () => void;
-}
+import { pre } from "framer-motion/client";
 
 interface itemProps {
   key: number;
@@ -36,43 +33,10 @@ const oldParchmentLeft = "/scavenger/assets/old-parchment-edge-left.png";
 function Map() {
   const navigate = useNavigate();
 
-  const [firstClick, setFirstClick] = useState<boolean>(false);
-  const [animatePath, setAnimatePath] = useState(false);
   const pageRef = useRef(null);
-  const campingRef = useRef(null);
-  const homeRef = useRef(null);
-  const [path, setPath] = useState<string | undefined>(undefined);
-
-  function handleMap() {
-    clickOpenMap();
-    setFirstClick(true);
-  }
-
-  function handleCampingClick() {
-    console.log("Click for animation");
-    setAnimatePath(true);
-    setTimeout(() => setAnimatePath(false), 3000); // Reset after animation
-  }
 
   const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  const openMap =
-    searchParams.get("view") === "map" || searchParams.get("view") === "cart";
-  function clickOpenMap() {
-    const newParams = new URLSearchParams(location.search);
-    if (openMap) newParams.delete("view");
-    else newParams.set("view", "map");
-    navigate(`/scavenger?${newParams.toString()}`);
-  }
-  function clickOpenCart() {
-    const newParams = new URLSearchParams(location.search);
-    newParams.set("view", "cart");
-    navigate(`/scavenger?${newParams.toString()}`);
-  }
-
-  // Source - https://stackoverflow.com/a
-  // Posted by Akshay Kumar, modified by community. See post 'Timeline' for change history
-  // Retrieved 2025-11-11, License - CC BY-SA 4.0
+  const openMap = location.pathname.includes("map");
 
   return (
     <motion.div
@@ -112,7 +76,8 @@ function Map() {
                 animate={!openMap ? { x: 0 } : {}}
                 transition={{ duration: 4, type: "spring" }}
                 onClick={() => {
-                  navigate("./map");
+                  openMap ? navigate("scavenger") : navigate("scavenger/map");
+                  // setOpenMap((prev) => !prev);
                 }}
                 className=" h-[95vh] w-1/2 z-50 flex justify-start brightness-90 pointer-events-auto  "
               >
@@ -155,8 +120,8 @@ function Map() {
                       className=" w-full h-full"
                     >
                       <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/cart" element={<Cart />} />
+                        <Route path="scavenger/map" element={<Home />} />
+                        <Route path="scavenger/map/cart" element={<Cart />} />
                       </Routes>
                     </motion.div>
                   </AnimatePresence>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import NotateText from "../components/NotateText";
 import { useNavigate } from "react-router-dom";
-const [hovered, setHovered] = useState(false);
 
 {
   /*
@@ -27,10 +26,12 @@ const [hovered, setHovered] = useState(false);
 }
 function Home() {
   const navigate = useNavigate();
+  const [hovered, setHovered] = useState(false);
+
   return (
     <>
       <div
-        onClick={() => navigate(`/cart`)}
+        onClick={() => navigate(`./cart`)}
         className="z-50 flex justify-center items-center w-full h-full font-[Kashare] flex-col lg:text-4xl  md:text-3xl text-2xl"
       >
         <NotateText>Go to Cart</NotateText>
