@@ -39,6 +39,7 @@ function Cart() {
         >
           Clear cart
         </button>
+        <p>Welcome to the cart</p>
       </div>
     </div>
   );

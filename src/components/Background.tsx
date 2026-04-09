@@ -12,6 +12,7 @@ import {
   Float,
   useGLTF,
   useAnimations,
+  OrbitControls,
   // shaderMaterial,
 } from "@react-three/drei";
 import fishModel from "/assets/scene.gltf?url";
@@ -19,6 +20,7 @@ import puterModel from "/assets/retroComputer.gltf?url";
 import * as YUKA from "yuka";
 import { useEffect, useMemo, useRef, type JSX } from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
+import { Physics, useBox, usePlane, useSphere } from "@react-three/cannon";
 // import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
 import {
   DepthOfField,
@@ -179,19 +181,25 @@ function PuterModel({ setShowUI, ...props }: PuterModelProps) {
 }
 
 function BubbleMesh() {
-  const bubble = useRef<Object3D<Object3DEventMap>>(null!);
+  // const bubble = useRef<Object3D<Object3DEventMap>>(null!);
 
-  useFrame(({ clock }) => {
-    if (bubble.current) {
-      bubble.current.position.y = Math.sin(clock.elapsedTime / 3.0);
-      bubble.current.position.x = Math.cos(clock.elapsedTime / 3.0);
-    }
-    // console.log("Frame");
-  });
+  // useFrame(({ clock }) => {
+  //   if (bubble.current) {
+  //     bubble.current.position.y = Math.sin(clock.elapsedTime / 3.0);
+  //     bubble.current.position.x = Math.cos(clock.elapsedTime / 3.0);
+  //   }
+  //   // console.log("Frame");
+  // });
+
+  const [ref] = useSphere(() => ({
+    mass: 0.02,
+    position: [0, 1, -4],
+    velocity: [-1, Math.random() * 0.5, Math.random() * 0.5],
+  }));
 
   return (
     <Float floatIntensity={1} speed={0.5}>
-      <mesh ref={bubble} scale={1} position={[0, 0, 0]}>
+      <mesh ref={ref} scale={1} position={[0, 0, 0]}>
         <sphereGeometry args={[1, 64, 64]} />
         <MeshDistortMaterial
           distort={0.25}
@@ -210,38 +218,41 @@ function BubbleMesh() {
   );
 }
 
-function OceanMesh() {
-  const oceanRef = useRef(null!);
+function Wall(props: any) {
+  const [ref] = useBox(() => ({
+    mass: 0,
+    type: "Static",
+    ...props,
+  }));
 
-  useEffect(() => {
-    if (oceanRef.current) {
-      // oceanRef.current.rotation.x = -Math.PI / 2;
-      console.log(oceanRef.current);
-    }
-  }, [oceanRef]);
+  return (
+    <mesh ref={ref}>
+      <boxGeometry args={props.args} />
+      <meshBasicMaterial
+        color={"#ff5445"}
+        wireframe={false}
+        transparent={true}
+        opacity={0}
+      />
+    </mesh>
+  );
+}
+
+function OceanMesh() {
+  const [ref] = usePlane(() => ({
+    mass: 0,
+    rotation: [-Math.PI / 2, 0, 0],
+    position: [0, -1, 0],
+  }));
 
   return (
     <mesh
-      ref={oceanRef}
+      ref={ref}
       rotation={[-Math.PI / 2, 0, 0]}
-      scale={1}
-      position={[0, -1, 0]}
+      // scale={1}
+      // position={[0, -1, 0]}
     >
       <planeGeometry args={[64, 64]} />
-      {/* <MeshDistortMaterial
-        distort={0.0}
-        color={"#094443"}
-        transmission={0.5}
-        thickness={-0.5}
-        roughness={0.1}
-        iridescence={0.5}
-        iridescenceIOR={1}
-        iridescenceThicknessRange={[0, 1200]}
-        clearcoat={1}
-        
-        clearcoatRoughness={0}
-        envMapIntensity={1.5}
-      /> */}
       <MeshReflectorMaterial
         blur={[400, 100]}
         resolution={1024}
@@ -250,7 +261,6 @@ function OceanMesh() {
         depthScale={1}
         minDepthThreshold={0.85}
         color={"#153333"}
-        // metalness={0.6}
         roughness={1}
       />
       {/* <THREE.MeshBasicMaterial */}
@@ -263,52 +273,108 @@ type BackgroundProps = {
   setShowUI: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+type BoxProps = {
+  position: [number, number, number];
+  args: [number, number, number];
+};
+
+function Box({ position, args }: BoxProps) {
+  const size = args[0];
+  return (
+    <mesh position={position}>
+      {/* Bottom */}
+      <Wall rotation={[-Math.PI / 2, 0, 0]} args={args} />
+      {/* Top */}
+      <Wall
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={[0, size / 2, 0]}
+        args={args}
+      />
+      {/* Back */}
+      <Wall args={args} position={[0, 0, -size / 2]} />
+      {/* Front */}
+      <Wall args={args} position={[0, 0, size / 2]} />
+      {/* Left */}
+      <Wall
+        rotation={[0, -Math.PI / 2, 0]}
+        args={args}
+        position={[-size / 2, 0, 0]}
+      />
+      {/* Right */}
+      <Wall
+        rotation={[0, -Math.PI / 2, 0]}
+        args={args}
+        position={[size / 2, 0, 0]}
+      />
+    </mesh>
+  );
+}
+
 function Background({ setShowUI }: BackgroundProps) {
   return (
-    <Canvas camera={{ fov: 65 }}>
-      {Array.from({ length: 10 }).map((_, i) => (
-        <FishModel
-          key={i}
-          scale={7}
-          // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
-          speed={randInt(1, 5)}
-          position={[0, 0, 0]}
+    <Canvas
+      camera={{ fov: 65 }}
+      gl={{
+        preserveDrawingBuffer: true,
+        powerPreference: "high-performance",
+        antialias: true,
+        alpha: false,
+      }}
+      onCreated={({ gl }) => {
+        gl.outputColorSpace = "srgb";
+      }}
+      // linear
+    >
+      <Physics
+        gravity={[0, 0.1, 0]}
+        defaultContactMaterial={{ restitution: 1.0 }}
+      >
+        {Array.from({ length: 10 }).map((_, i) => (
+          <FishModel
+            key={i}
+            scale={7}
+            // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
+            speed={randInt(1, 5)}
+            position={[0, 0, 0]}
+          />
+        ))}
+        <PuterModel
+          scale={4}
+          position={[5, 0, -7]}
+          rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
+          setShowUI={setShowUI}
+          // onClick={() => console.log("Hello")}
         />
-      ))}
-      <PuterModel
-        scale={4}
-        position={[5, 0, -7]}
-        rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
-        setShowUI={setShowUI}
-        // onClick={() => console.log("Hello")}
-      />
-      <BubbleMesh />
-      <OceanMesh />
-      {/* <OrbitControls
-        enableZoom={true}
-        // minAzimuthAngle={-Math.PI / 4}
-        // maxAzimuthAngle={Math.PI / 4}
-        // minPolarAngle={Math.PI / 6}
-        // maxPolarAngle={Math.PI - Math.PI / 6}
-      /> */}
-      <Environment
-        files={hdr}
-        backgroundBlurriness={0.03}
-        near={1}
-        far={100}
-        background={true}
-      />
-      <EffectComposer>
-        <DepthOfField
-          // focusDistance={2}
-          worldFocusDistance={10}
-          focalLength={20}
-          bokehScale={3}
-          // height={1000}
+        <Box position={[0, 0, 0]} args={[16, 16, 0.2]} />
+
+        <BubbleMesh />
+        <OceanMesh />
+        <OrbitControls
+          enableZoom={true}
+          // minAzimuthAngle={-Math.PI / 4}
+          // maxAzimuthAngle={Math.PI / 4}
+          // minPolarAngle={Math.PI / 6}
+          // maxPolarAngle={Math.PI - Math.PI / 6}
         />
-        <HueSaturation staturation={1} />
-        <Noise opacity={0.02} />
-      </EffectComposer>
+        <Environment
+          files={hdr}
+          backgroundBlurriness={0.03}
+          near={1}
+          far={100}
+          background={true}
+        />
+        <EffectComposer>
+          <DepthOfField
+            // focusDistance={2}
+            worldFocusDistance={10}
+            focalLength={20}
+            bokehScale={3}
+            // height={1000}
+          />
+          <HueSaturation staturation={1} />
+          <Noise opacity={0.02} />
+        </EffectComposer>
+      </Physics>
     </Canvas>
   );
 }

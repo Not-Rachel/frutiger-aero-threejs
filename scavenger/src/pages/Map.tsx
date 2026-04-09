@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
 import Page from "../components/Page";
-
 import FadeIn from "../components/FadeIn";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -16,6 +15,7 @@ import NotateText from "../components/NotateText";
 import Home from "./Home";
 import Cart from "./Cart";
 import { pre } from "framer-motion/client";
+import Shop from "./Shop";
 
 interface itemProps {
   key: number;
@@ -36,22 +36,24 @@ function Map() {
   const pageRef = useRef(null);
 
   const location = useLocation();
-  const openMap = location.pathname.includes("map");
+  const rotateMap = location.pathname.includes("map");
+  console.log(location.pathname);
+
+  const [openMap, setOpenMap] = useState(rotateMap);
 
   return (
     <motion.div
-      drag
       className="saturate-75  relative  "
       transition={{ duration: 8, type: "spring" }}
-      initial={openMap ? {} : { rotate: "-90deg" }}
-      animate={openMap ? { rotate: "0deg" } : {}}
+      initial={rotateMap ? {} : { rotate: "-90deg" }}
+      animate={rotateMap ? { rotate: "0deg" } : {}}
       //   style={{ transformOrigin: "right center" }}
     >
       <FadeIn>
         {(onLoad) => (
           <div className="relative w-[100%] h-screen flex items-center ">
             <div
-              className={`absolute w-full top-0 z-60 flex flex-row justify-end items-center ${
+              className={`absolute w-full top-0 z-20 flex flex-row justify-end items-center ${
                 openMap ? "pointer-events-none" : ""
               }`}
             >
@@ -60,15 +62,24 @@ function Map() {
                 initial={!openMap ? {} : { x: "-90%" }}
                 animate={!openMap ? { x: 0 } : {}}
                 transition={{ duration: 4, type: "spring" }}
-                onClick={() => navigate("map")}
+                onClick={() => {
+                  navigate("scavenger/map");
+                  setOpenMap((prev) => !prev);
+                }}
+                // onClick={() => navigate("map")}
                 className="h-[95vh] w-1/2 z-50 flex justify-end brightness-90 pointer-events-auto  "
               >
-                <img
-                  src={oldParchmentLeft}
-                  alt={"Old Parchment Left"}
-                  onLoad={onLoad}
-                  className=" h-full brightness-70  "
-                />
+                <div className="relative h-full justify-center  flex items-center ">
+                  <button className="text-[7vh] text-red-100 absolute z-50 rotate-90 font-[Kashare] text-nowrap">
+                    {location.pathname !== "map" ? "Back Home" : ""}
+                  </button>
+                  <img
+                    src={oldParchmentLeft}
+                    alt={"Old Parchment Left"}
+                    onLoad={onLoad}
+                    className=" h-full brightness-70  "
+                  />
+                </div>
               </motion.div>
               <motion.div
                 onLoad={onLoad}
@@ -77,14 +88,14 @@ function Map() {
                 transition={{ duration: 4, type: "spring" }}
                 onClick={() => {
                   openMap ? navigate("scavenger") : navigate("scavenger/map");
-                  // setOpenMap((prev) => !prev);
+                  setOpenMap((prev) => !prev);
                 }}
                 className=" h-[95vh] w-1/2 z-50 flex justify-start brightness-90 pointer-events-auto  "
               >
                 <div className="relative h-full justify-center  flex items-center ">
-                  <h2 className="text-[7vh] absolute z-70 rotate-90 font-[Kashare] text-nowrap">
+                  <button className="text-[7vh] absolute z-70 rotate-90 font-[Kashare] text-nowrap">
                     {openMap ? "Close map" : "Open Map"}
-                  </h2>
+                  </button>
                   <img
                     src={oldParchmentRight}
                     alt={"Old Parchment Right"}
@@ -100,7 +111,7 @@ function Map() {
               animate={openMap ? { clipPath: "inset(0 0% 0 0%)" } : {}}
               transition={{ duration: 4, type: "spring" }}
               onLoad={onLoad}
-              className="relative pointer-events-auto z-50 "
+              className="relative pointer-events-auto z-10 "
             >
               <img
                 src={oldParchment}
@@ -109,7 +120,7 @@ function Map() {
                 className="w-full h-[90vh] brightness-70 "
               />
               <div className="absolute flex flex-row justify-center items-center inset-0 pointer-events-auto  ">
-                <div className="w-[90%]  z-50 flex-col m-8  text-orange-950 pointer-events-auto h-[90%]">
+                <div className="w-[90%]  z-50 flex-col   text-black pointer-events-auto h-full">
                   <div className="absolute pointer-events-none"></div>
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -122,6 +133,7 @@ function Map() {
                       <Routes>
                         <Route path="scavenger/map" element={<Home />} />
                         <Route path="scavenger/map/cart" element={<Cart />} />
+                        <Route path="scavenger/map/shop" element={<Shop />} />
                       </Routes>
                     </motion.div>
                   </AnimatePresence>

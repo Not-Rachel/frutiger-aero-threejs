@@ -12,6 +12,7 @@ import { use, useEffect, useRef, useState } from "react";
 import NotateText from "../components/NotateText";
 import NoteBook from "../components/Notebook";
 import { useLocation } from "react-router-dom";
+import ThreeModel from "../components/ThreeModel";
 // import Book3D from "../components/Book3D";
 
 function Home() {
@@ -24,20 +25,24 @@ function Home() {
   const fireImg = "/scavenger/assets/product-images/fire_starter.jpeg";
   const multitoolImg = "/scavenger/assets/product-images/multitool.jpg";
   const bookCover = "/scavenger/assets/product-images/oldbookcover.png";
+
+  const backpackGLB = "/scavenger/betterbag.glb";
+  const multitoolGLB = "/scavenger/Multitool_fixed.glb";
+
   const items = [
     {
       key: 0,
       image: multitoolImg,
       name: "Multitool",
       text: "A compact, all-in-one toolset designed for hikers—includes knife, pliers, screwdriver, and more for quick fixes and outdoor tasks.",
-      model: "/Multitool_fixed.glb",
+      model: "/scavenger/Multitool_fixed.glb",
     },
     {
       key: 1,
       image: bagImg,
       name: "Backpack",
       text: "Durable hiking backpack with reinforced straps, multiple compartments, and weather-resistant fabric—perfect for long treks and gear organization.",
-      model: "/betterbag.glb",
+      model: "/scavenger/betterbag.glb",
     },
     {
       key: 2,
@@ -87,6 +92,8 @@ function Home() {
   const openMap = location.pathname.includes("map");
   // const navigate = useNavigate();
 
+  const constraintRef = useRef(null);
+
   // const [openMap, setOpenMap] = useState(false);
 
   return (
@@ -104,10 +111,21 @@ function Home() {
         easing="ease-out"
         initialOpacity={0}
       >
-        <section className="relative flex h-screen bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_70%,rgba(0,0,0,1)_100%),url('assets/woof.jpg')] shadow-[inset_0_0_8px_8px_black]  bg-cover bg-no-repeat">
-          <div className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]">
+        <section className="relative flex h-screen bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_70%,rgba(0,0,0,1)_100%),url('/scavenger/assets/woof.jpg')] shadow-[inset_0_0_8px_8px_black]  bg-cover bg-no-repeat">
+          <div
+            ref={constraintRef}
+            className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]"
+          >
             <div className="absolute z-40  ">
-              <Map></Map>
+              <motion.div
+                className="absolute  h-96 w-96"
+                style={{ zIndex: 9999 }}
+                drag
+                dragConstraints={constraintRef}
+              >
+                <ThreeModel modelSource={backpackGLB} scale={1.5} />
+              </motion.div>
+              <Map />
             </div>
             <motion.div
               className={`flex flex-col justify-center items-center z-60 pt-8
