@@ -12,7 +12,7 @@
   "dependencies": {
     "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.5.0",
+    "@react-three/fiber": "^9.6.0",
     "@react-three/postprocessing": "^3.0.4",
     "@tailwindcss/vite": "^4.1.14",
     "@types/three": "^0.182.0",
@@ -21,6 +21,7 @@
     "dat.gui": "^0.7.9",
     "gasp": "^0.0.2",
     "gl-matrix": "^3.4.4",
+    "maath": "^0.10.8",
     "motion": "^12.34.3",
     "react": "^19.1.1",
     "react-audio-player": "^0.17.0",

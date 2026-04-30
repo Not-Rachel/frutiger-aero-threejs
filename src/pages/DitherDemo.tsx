@@ -10,10 +10,7 @@ function DitherDemo() {
   }, []);
   return (
     <div className="relative w-full h-full">
-      <canvas
-        ref={canvasRef}
-        className="w-full h-full z-50 pointer-events-auto"
-      ></canvas>
+      <canvas ref={canvasRef} className="z-50 pointer-events-auto"></canvas>
       <div id="gui-container" className="absolute top-0 right-0"></div>
     </div>
   );

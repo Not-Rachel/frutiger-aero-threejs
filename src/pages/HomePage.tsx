@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useDragControls } from "motion/react";
 import {
   useEffect,
   useRef,
@@ -20,18 +20,13 @@ import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
+import BlockStacking from "./BlockStacking";
+// import FluidGlass from "../components/LiquidGlass";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
 };
-// const musicTracksObj = import.meta.glob<{ default: string }>(
-//   "/assets/audio/tracks/*.mp3",
-//   {
-//     eager: true,
-//   },
-// );
-// const musicTracks = Object.values(musicTracksObj).map(
-//   (module) => module.default,
-// );
+// TODO: Add stackable windows
+// TODO: Add liquid glass effect to windows
 const musicTracks = [
   "/assets/audio/tracks/aphex_twin_delphium.mp3",
   "/assets/audio/tracks/aphex_twin_film.mp3",
@@ -50,6 +45,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   const [showScreen, setShowScreen] = useState(location.pathname.length > 1);
   const [navToClose, setNavToClose] = useState(false);
   const [showNav, setShowNav] = useState(true);
+  const [dragScreen, setDragScreen] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const buttonSound1 = new Audio(ui_1);
@@ -86,9 +82,9 @@ function HomePage({ setShowTHREE }: HomePageProps) {
 
   const [subIndex, setSubIndex] = useState(0);
   const subtitles = [
-    "est. 2002",
-    "Batteries not included",
-    "Now in technicolor",
+    "Check out some of my projects!",
+    "Looking for work",
+    "Web dev",
   ];
   useEffect(() => {
     const interval = setInterval(() => {
@@ -136,6 +132,8 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   useEffect(() => {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
+
+  const dragControls = useDragControls();
 
   return (
     <div
@@ -290,7 +288,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 Blue Dithering
               </motion.button>
               {/*TODO: fix scavenger*/}
-              {/* <motion.button
+              <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
                 onClick={() =>
                   navigate("/scavenger/", { replace: true }) ||
@@ -305,7 +303,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                 }
               >
                 Scavenger
-              </motion.button> */}
+              </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
                 onClick={() => buttonClick("offline")}
@@ -321,16 +319,16 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => buttonClick("art")}
-                onHoverStart={() => hoverSound.play()}
+                onClick={() => buttonClick("stacking")}
                 className={`p-1 aero rounded-xl`}
+                onHoverStart={() => hoverSound.play()}
                 style={
-                  showScreen && location.pathname === "/art"
+                  showScreen && location.pathname === "/stacking"
                     ? ({ "--saturation": 0.5 } as CSSProperties)
                     : {}
                 }
               >
-                Illustrations
+                Block Stacking
               </motion.button>
             </div>
 
@@ -349,14 +347,33 @@ function HomePage({ setShowTHREE }: HomePageProps) {
             </motion.button>
           </motion.nav>
         )}
-        {/* </AnimatePresence> */}
+        {/* MAIN SCREEN */}
         <motion.div
           layout
+          drag
+          dragControls={dragControls}
+          dragMomentum={false}
           layoutDependency={showNav}
           transition={{
             duration: 0.5,
           }}
-          className=" w-full h-full "
+          // onPointerDown={(e) => {
+          //   // Only allow drag to start from the top bar
+          //   console.log(
+          //     e.target,
+          //     (e.target as HTMLElement).attributes.getNamedItem(
+          //       "data-drag-handle",
+          //     )?.value,
+          //   );
+          //   if (
+          //     !(e.target as HTMLElement).attributes.getNamedItem(
+          //       "data-drag-handle",
+          //     )?.value
+          //   ) {
+          //     e.preventDefault();
+          //   }
+          // }}
+          className=" w-1/2 h-1/2 "
         >
           <motion.main
             key={"screen"}
@@ -373,7 +390,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               key={"projects"}
               initial={{ rotateY: 0, rotateX: -1 }}
               animate={{
-                rotateY: showNav ? -5 : 0,
+                rotateY: showNav ? -1 : 0,
                 rotateX: showNav ? 1 : 0,
 
                 transition: {
@@ -386,13 +403,25 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               }}
               className=" text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
             >
-              <div className="absolute -top-1 left-0 z-50">
+              <div
+                data-drag-handle
+                className="bg-blue-100/50 w-full  overflow-hidden left-0 -top-1 z-50"
+                onPointerDown={(e) => dragControls.start(e)}
+                // onPointerDown={() => setDragScreen(true)}
+              >
                 <button
                   onClick={closeScreen}
-                  className="aero   text-xl  rounded-lg rounded-r-sm px-2  "
+                  className="aero   text-xl px-2  "
                   style={{ "--hue": 20, "--saturation": 0.9 } as CSSProperties}
                 >
                   x
+                </button>
+                <button
+                  onClick={closeScreen}
+                  className="aero   text-xl px-2  "
+                  style={{ "--hue": 110, "--saturation": 0.9 } as CSSProperties}
+                >
+                  -
                 </button>
                 <button
                   onClick={() => {
@@ -400,18 +429,22 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                     setShowNav((prev) => !prev);
                     setNavToClose(false);
                   }}
-                  className="aero   text-xl  rounded-lg rounded-l-sm px-2 "
+                  className="aero   text-xl px-2 "
                   style={
                     {
-                      "--hue": showNav ? 110 : 150,
-                      "--saturation": 0.3,
+                      "--hue": 150,
+                      "--saturation": showNav ? 0.3 : 0.9,
                     } as CSSProperties
                   }
                 >
                   []
                 </button>
               </div>
-              <div className="overflow-y-scroll w-full h-full">
+
+              <div
+                className="overflow-y-scroll w-full h-full"
+                onPointerDown={() => dragControls.cancel()}
+              >
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={location.pathname}
@@ -424,6 +457,7 @@ function HomePage({ setShowTHREE }: HomePageProps) {
                       <Route path="/" element={<About />} />
                       <Route path="/art" element={<Art />} />
                       <Route path="/dither" element={<DitherDemo />} />
+                      <Route path="/stacking" element={<BlockStacking />} />
                       <Route path="/offline" element={<Offline />} />
                     </Routes>
                   </motion.div>

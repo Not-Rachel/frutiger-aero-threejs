@@ -28,6 +28,7 @@ function Home() {
 
   const backpackGLB = "/scavenger/betterbag.glb";
   const multitoolGLB = "/scavenger/Multitool_fixed.glb";
+  const boxGLB = "/scavenger/box.glb";
 
   const items = [
     {
