@@ -155,11 +155,9 @@ function FishModel(props: any) {
   return <primitive ref={fishRef} object={cloned} {...props} />;
 }
 
-type PuterModelProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
-  setShowUI: React.Dispatch<React.SetStateAction<boolean>>;
-};
+type PuterModelProps = Omit<JSX.IntrinsicElements["primitive"], "object">;
 
-function PuterModel({ setShowUI, ...props }: PuterModelProps) {
+function PuterModel({ ...props }: PuterModelProps) {
   const gltf = useGLTF(puterModel);
   const puterRef = useRef(null);
   if (puterRef && puterRef.current) {
@@ -173,7 +171,6 @@ function PuterModel({ setShowUI, ...props }: PuterModelProps) {
       {...props}
       onClick={(e: { stopPropagation: () => void }) => {
         e.stopPropagation();
-        setShowUI((prev) => !prev);
         console.log("hello");
       }}
     />
@@ -269,10 +266,6 @@ function OceanMesh() {
   );
 }
 
-type BackgroundProps = {
-  setShowUI: React.Dispatch<React.SetStateAction<boolean>>;
-};
-
 type BoxProps = {
   position: [number, number, number];
   args: [number, number, number];
@@ -310,7 +303,7 @@ function Box({ position, args }: BoxProps) {
   );
 }
 
-function Background({ setShowUI }: BackgroundProps) {
+function Background() {
   return (
     <Canvas
       camera={{ fov: 65 }}
@@ -342,7 +335,6 @@ function Background({ setShowUI }: BackgroundProps) {
           scale={4}
           position={[5, 0, -7]}
           rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
-          setShowUI={setShowUI}
           // onClick={() => console.log("Hello")}
         />
         <Box position={[0, 0, 0]} args={[16, 16, 0.2]} />

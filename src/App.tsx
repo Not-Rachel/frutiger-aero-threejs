@@ -27,11 +27,7 @@ function App() {
       )} */}
       {showTHREE && (
         <Suspense fallback={<Loader />}>
-          <ThreeScreen
-            setShowUI={() => {
-              console.log("Clicked");
-            }}
-          />
+          <ThreeScreen />
         </Suspense>
       )}
     </div>

@@ -7,6 +7,8 @@ import {
   type JSX,
 } from "react";
 import { Route, useLocation, useNavigate, Routes } from "react-router-dom";
+import { Rnd } from "react-rnd";
+import { Resizable } from "re-resizable";
 import Art from "./Art";
 import About from "./About";
 import itunes from "/assets/itunes.png";
@@ -21,6 +23,7 @@ import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
 import BlockStacking from "./BlockStacking";
+import Background from "../components/Background";
 // import FluidGlass from "../components/LiquidGlass";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
@@ -134,6 +137,11 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   }, [volume]);
 
   const dragControls = useDragControls();
+
+  const [size, setSize] = useState({
+    width: 600,
+    height: 400,
+  });
 
   return (
     <div
@@ -330,141 +338,156 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               >
                 Block Stacking
               </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+                onClick={() => {
+                  // clickLow.play();
+                  // closeScreen();
+                  // setShowTHREE((prev) => !prev);
+                  buttonClick("fish");
+                }}
+                onHoverStart={() => hoverSound.play()}
+                className=" h-8 aero px-2 text-amber-50 rounded-xl"
+                style={
+                  showScreen && location.pathname === "/stacking"
+                    ? ({ "--saturation": 0.5 } as CSSProperties)
+                    : {}
+                }
+              >
+                Fish Swimming
+              </motion.button>
             </div>
-
-            <motion.button
-              whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-              onClick={() => {
-                clickLow.play();
-                closeScreen();
-                setShowTHREE((prev) => !prev);
-              }}
-              onHoverStart={() => hoverSound.play()}
-              className=" h-8 aero px-2 text-amber-50 rounded-xl"
-              style={{ "--hue": 100, "--saturation": 0.7 } as CSSProperties}
-            >
-              Toggle3D
-            </motion.button>
           </motion.nav>
         )}
         {/* MAIN SCREEN */}
+
         <motion.div
           layout
-          drag
+          drag={showNav}
           dragControls={dragControls}
           dragMomentum={false}
           layoutDependency={showNav}
           transition={{
             duration: 0.5,
           }}
-          // onPointerDown={(e) => {
-          //   // Only allow drag to start from the top bar
-          //   console.log(
-          //     e.target,
-          //     (e.target as HTMLElement).attributes.getNamedItem(
-          //       "data-drag-handle",
-          //     )?.value,
-          //   );
-          //   if (
-          //     !(e.target as HTMLElement).attributes.getNamedItem(
-          //       "data-drag-handle",
-          //     )?.value
-          //   ) {
-          //     e.preventDefault();
-          //   }
-          // }}
-          className=" w-1/2 h-1/2 "
+          animate={{
+            x: !showNav ? 0 : 100,
+            y: !showNav ? 0 : 100,
+            width: !showNav ? "100vw" : 600,
+            height: !showNav ? "100vh" : 400,
+          }}
         >
-          <motion.main
-            key={"screen"}
-            initial={{ scaleY: showScreen ? 0 : "100%" }}
-            animate={{
-              scaleY: showScreen ? "100%" : 0,
-              transition: {
-                duration: 0.3,
-              },
+          <Resizable
+            defaultSize={{ width: 600, height: 400 }}
+            size={!showNav ? { width: "100vw", height: "100vh" } : size}
+            onResizeStop={(e, dir, ref, d) => {
+              console.log(d.width, d.height);
+              setSize({
+                width: size.width + d.width,
+                height: size.height + d.height,
+              });
             }}
-            className=" w-full h-full sm:perspective-[800px]"
+            onResize={() => dragControls.cancel()}
+
+            // onPointerDown={() => dragControls.cancel()}
           >
-            <motion.div
-              key={"projects"}
-              initial={{ rotateY: 0, rotateX: -1 }}
+            <motion.main
+              key={"screen"}
+              initial={{ scaleY: showScreen ? 0 : "100%" }}
               animate={{
-                rotateY: showNav ? -1 : 0,
-                rotateX: showNav ? 1 : 0,
-
+                scaleY: showScreen ? "100%" : 0,
                 transition: {
-                  duration: showNav ? 5 : 0.5,
-
-                  repeat: showNav ? Infinity : 0,
-                  repeatType: "mirror",
-                  ease: "easeInOut",
+                  duration: 0.3,
                 },
               }}
-              className=" text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
+              className=" w-full h-full sm:perspective-[800px]"
             >
-              <div
-                data-drag-handle
-                className="bg-blue-100/50 w-full  overflow-hidden left-0 -top-1 z-50"
-                onPointerDown={(e) => dragControls.start(e)}
-                // onPointerDown={() => setDragScreen(true)}
-              >
-                <button
-                  onClick={closeScreen}
-                  className="aero   text-xl px-2  "
-                  style={{ "--hue": 20, "--saturation": 0.9 } as CSSProperties}
-                >
-                  x
-                </button>
-                <button
-                  onClick={closeScreen}
-                  className="aero   text-xl px-2  "
-                  style={{ "--hue": 110, "--saturation": 0.9 } as CSSProperties}
-                >
-                  -
-                </button>
-                <button
-                  onClick={() => {
-                    buttonSound1.play();
-                    setShowNav((prev) => !prev);
-                    setNavToClose(false);
-                  }}
-                  className="aero   text-xl px-2 "
-                  style={
-                    {
-                      "--hue": 150,
-                      "--saturation": showNav ? 0.3 : 0.9,
-                    } as CSSProperties
-                  }
-                >
-                  []
-                </button>
-              </div>
+              <motion.div
+                key={"projects"}
+                // initial={{ rotateY: 0, rotateX: -1 }}
+                // animate={{
+                //   rotateY: showNav ? -1 : 0,
+                //   rotateX: showNav ? 1 : 0,
 
-              <div
-                className="overflow-y-scroll w-full h-full"
-                onPointerDown={() => dragControls.cancel()}
+                //   transition: {
+                //     duration: showNav ? 5 : 0.5,
+
+                //     repeat: showNav ? Infinity : 0,
+                //     repeatType: "mirror",
+                //     ease: "easeInOut",
+                //   },
+                // }}
+                className="  text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
               >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={location.pathname}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 2 }}
-                    className=" w-full h-full"
+                <motion.div
+                  layout
+                  data-drag-handle
+                  className={`  flex  overflow-hidden left-0  ${showNav ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
+                  style={
+                    !showNav ? { position: "absolute", top: 0, zIndex: 99 } : {}
+                  }
+                  onPointerDown={(e) => dragControls.start(e)}
+                  // onPointerDown={() => setDragScreen(true)}
+                >
+                  <button
+                    onClick={closeScreen}
+                    className="aero text-center  text-xl px-2  "
+                    style={
+                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
+                    }
                   >
-                    <Routes>
-                      <Route path="/" element={<About />} />
-                      <Route path="/art" element={<Art />} />
-                      <Route path="/dither" element={<DitherDemo />} />
-                      <Route path="/stacking" element={<BlockStacking />} />
-                      <Route path="/offline" element={<Offline />} />
-                    </Routes>
-                  </motion.div>
-                </AnimatePresence>
-              </div>
-            </motion.div>
-          </motion.main>
+                    x
+                  </button>
+                  <button
+                    onClick={closeScreen}
+                    className="aero text-center   text-xl px-2  "
+                    style={
+                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
+                    }
+                  >
+                    -
+                  </button>
+                  <button
+                    onClick={() => {
+                      buttonSound1.play();
+                      setShowNav((prev) => !prev);
+                      setNavToClose(false);
+                    }}
+                    className="aero text-center  text-xl px-2 "
+                    style={
+                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
+                    }
+                  >
+                    []
+                  </button>
+                </motion.div>
+
+                <div
+                  className="overflow-y-scroll w-full h-full"
+                  onPointerDown={() => dragControls.cancel()}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={location.pathname}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 2 }}
+                      className=" w-full h-full"
+                    >
+                      <Routes>
+                        <Route path="/" element={<About />} />
+                        <Route path="/art" element={<Art />} />
+                        <Route path="/dither" element={<DitherDemo />} />
+                        <Route path="/stacking" element={<BlockStacking />} />
+                        <Route path="/offline" element={<Offline />} />
+                        <Route path="/fish" element={<Background />} />
+                      </Routes>
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            </motion.main>
+          </Resizable>
         </motion.div>
       </motion.div>
     </div>
