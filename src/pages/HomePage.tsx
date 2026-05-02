@@ -1,21 +1,10 @@
-import { motion, AnimatePresence, useDragControls } from "motion/react";
-import {
-  ReactElement,
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type JSX,
-} from "react";
-import { Route, useLocation, useNavigate, Routes } from "react-router-dom";
-import { Rnd } from "react-rnd";
-import { Resizable } from "re-resizable";
-import Art from "./Art";
-import About from "./About";
+import { motion } from "motion/react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Window from "./Window";
 import itunes from "/assets/itunes.png";
 
-import ui_1 from "/assets/audio/ui1.mp3";
+// import ui_1 from "/assets/audio/ui1.mp3";
 import hover from "/assets/audio/hover.mp3";
 import click_low from "/assets/audio/click_low.mp3";
 
@@ -27,10 +16,7 @@ import BlockStacking from "./BlockStacking";
 import Background from "../components/Background";
 
 // import FluidGlass from "../components/LiquidGlass";
-type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
-  setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
-};
-// TODO: Add stackable windows
+
 // TODO: Add liquid glass effect to windows
 const musicTracks = [
   "/assets/audio/tracks/aphex_twin_delphium.mp3",
@@ -39,7 +25,7 @@ const musicTracks = [
   "/assets/audio/tracks/sd_card_gallery.mp3",
 ];
 
-function HomePage({ setShowTHREE }: HomePageProps) {
+function HomePage() {
   const [playMusic, setPlayMusic] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(
     randInt(0, musicTracks.length - 1),
@@ -50,10 +36,9 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   const [showScreen, setShowScreen] = useState(location.pathname.length > 1);
   const [navToClose, setNavToClose] = useState(false);
   const [showNav, setShowNav] = useState(true);
-  const [dragScreen, setDragScreen] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
-  const buttonSound1 = new Audio(ui_1);
+  // const buttonSound1 = new Audio(ui_1);
   // const TVoffSound = new Audio(TVOff);
 
   const hoverSound = new Audio(hover);
@@ -150,7 +135,6 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   const [topZ, setTopZ] = useState(1);
 
   function openProject(id: string) {
-    console.log("Clicked", id);
     setTopZ((prev) => prev + 1);
     setProjects((prev) =>
       prev.map((p) =>
@@ -159,35 +143,19 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     );
   }
   function closeProject(id: string) {
-    console.log("Clicked", id);
     setTopZ((prev) => prev + 1);
     setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, open: false, zIndex: topZ - 1 } : p,
-      ),
+      prev.map((p) => (p.id === id ? { ...p, open: false, zIndex: topZ } : p)),
     );
+    console.log("Closed window:", id, projects);
   }
 
-  const routeMap = {
-    dither: <DitherDemo />,
-    scavenger: "scavenger",
-    offline: <Offline />,
-    stacking: <BlockStacking />,
-    fish: <Background />,
-  };
-
-  const [subIndex, setSubIndex] = useState(0);
-  const subtitles = [
-    "Check out some of my projects!",
-    "Looking for work",
-    "Web dev",
-  ];
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSubIndex((prev) => (prev + 1) % subtitles.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  });
+  function bringToFront(id: string) {
+    setTopZ((prev) => prev + 1);
+    setProjects((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, zIndex: topZ + 1 } : p)),
+    );
+  }
 
   function toggleAudio() {
     if (audioRef.current) {
@@ -229,30 +197,8 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
-  // const dragControls = useDragControls();
-
-  // const dragScreenRef = useRef<HTMLDivElement>(null!);
-  // const [lastScreenPosition, setLastScreenPosition] = useState({ x: 0, y: 0 });
-
-  // const [screenSize, setScreenSize] = useState({
-  //   width: window.innerWidth / 2,
-  //   height: window.innerHeight * 0.9,
-  // });
-
-  // useEffect(() => {
-  //   if (dragScreenRef.current) {
-  //     console.log("set screenref", dragScreenRef.current);
-  //     setScreenSize({
-  //       width: dragScreenRef.current.clientWidth,
-  //       height: dragScreenRef.current.clientHeight,
-  //     });
-  //   }
-  // }, [dragScreenRef]);
-
   return (
-    <div
-      className={`${showNav ? "p-4" : "p-0"} relative flex flex-col items-center  w-full h-full`}
-    >
+    <div className={`p-4 relative flex flex-col items-center  w-full h-full`}>
       {/* <div className="absolute right-0 bottom-0 m-2 z-50"> */}
       <audio
         ref={audioRef}
@@ -327,41 +273,56 @@ function HomePage({ setShowTHREE }: HomePageProps) {
         )}
       </motion.div>
 
-      <AnimatePresence
-        onExitComplete={() => {
-          if (!showScreen) setShowTHREE(true);
-        }}
+      {/* {!showScreen && ( */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        style={{ zIndex: 2 }}
+        className="absolute  pointer-events-auto  "
       >
-        {!showScreen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0 }}
-            className="absolute  pointer-none"
-          >
-            <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
-              Rachel Brinkman
-            </h1>
+        <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
+          Rachel Brinkman
+        </h1>
 
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={subIndex}
-                layout
-                initial={{ opacity: 0, y: 0 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: "50%" }}
-                className="fixed text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+        {/* <AnimatePresence mode="wait">
+                <motion.p
+                  key={subIndex}
+                  layout
+                  initial={{ opacity: 0, y: 0 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: "50%" }}
+                  className="fixed text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+                >
+                  {subtitles[subIndex]}
+                </motion.p>
+              </AnimatePresence> */}
+        <motion.h2
+          initial={{ opacity: 0, y: "-100%" }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+        >
+          <a
+            href="https://github.com/Not-Rachel"
+            className="pointer-events-auto"
+          >
+            github.com/Not-Rachel
+          </a>
+        </motion.h2>
+        {/* <h2 className="text-xl text-white/90 font-light text-shadow-lg ">
+              <a
+                href="https://github.com/Not-Rachel"
+                className="pointer-events-auto"
               >
-                {subtitles[subIndex]}
-              </motion.p>
-            </AnimatePresence>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                github.com/Not-Rachel
+              </a>
+            </h2> */}
+      </motion.div>
+      {/* )} */}
       <motion.div
         layout
         transition={{ duration: 0.3 }}
-        className=" absolute flex flex-row  w-full h-full"
+        className="  flex flex-row  w-full h-full"
       >
         {/* <AnimatePresence mode="wait"> */}
         {showNav && (
@@ -399,26 +360,25 @@ function HomePage({ setShowTHREE }: HomePageProps) {
           </motion.nav>
         )}
         {/* MAIN SCREEN */}
-
         {projects
           .filter((p) => p.open)
           .map((p) => {
+            console.log(p);
             return (
               <Window
                 href={p.href}
+                key={p.id}
                 showNav={showNav}
                 setShowNav={setShowNav}
                 setNavToClose={setNavToClose}
-                onClose={() => closeProject(p.id)}
+                onClose={() => {
+                  closeProject(p.id);
+                }}
+                onFocus={() => bringToFront(p.id)}
+                zIndex={p.zIndex}
               />
             );
           })}
-        {/* <Window
-          showNav={showNav}
-          active={true}
-          setShowNav={setShowNav}
-          setNavToClose={setNavToClose}
-        /> */}
       </motion.div>
     </div>
   );

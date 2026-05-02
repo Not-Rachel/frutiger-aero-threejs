@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Canvas,
   // extend,
-  useFrame,
+  // useFrame,
 } from "@react-three/fiber";
-import { Physics, useBox, usePlane, useSphere } from "@react-three/cannon";
+import { Physics, useBox, usePlane } from "@react-three/cannon";
 import {
-  Float,
-  MeshDistortMaterial,
-  Environment,
+  // Float,
+  // MeshDistortMaterial,
+  // Environment,
   OrbitControls,
 } from "@react-three/drei";
 

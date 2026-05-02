@@ -1,6 +1,6 @@
 import { motion, AnimatePresence, useDragControls } from "motion/react";
 import { Resizable } from "re-resizable";
-import React, {
+import {
   useEffect,
   useRef,
   useState,
@@ -9,16 +9,12 @@ import React, {
   type JSX,
   type SetStateAction,
 } from "react";
-import { Route, Routes } from "react-router-dom";
-import { screenSize } from "three/src/nodes/TSL.js";
 import Background from "../components/Background";
 import About from "./About";
-import Art from "./Art";
 import BlockStacking from "./BlockStacking";
 import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
 import ui_1 from "/assets/audio/ui1.mp3";
-import PlaceHolder from "./PlaceHolder";
 import TVOff from "/assets/audio/TVOff2.mp3";
 
 const routeMap: Record<string, JSX.Element> = {
@@ -33,18 +29,21 @@ type WindowProps = {
   href: string;
   showNav: boolean;
   //   showScreen: boolean;
+  zIndex: number;
   setShowNav: Dispatch<SetStateAction<boolean>>;
   setNavToClose: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
+  onFocus: () => void;
 };
 
 function Window({
   href,
   showNav,
-  //   showScreen,
+  zIndex,
   setShowNav,
   setNavToClose,
   onClose,
+  onFocus,
 }: WindowProps) {
   const dragControls = useDragControls();
   const dragScreenRef = useRef<HTMLDivElement>(null!);
@@ -71,20 +70,22 @@ function Window({
     setShowNav(true);
     setNavToClose(false);
     setShowScreen(false);
+    // onClose();
   }
 
   return (
     <motion.div
       ref={dragScreenRef}
-      layout
+      // layout
       drag={showNav && showScreen}
       dragControls={dragControls}
       dragMomentum={false}
-      layoutDependency={showNav}
+      onPointerDown={onFocus}
+      // layoutDependency={showNav}
       transition={{
         duration: 0.5,
       }}
-      onDragEnd={(e, info) => {
+      onDragEnd={(_e, info) => {
         setLastScreenPosition((prev) => ({
           x: prev.x + info.offset.x,
           y: prev.y + info.offset.y,
@@ -95,12 +96,16 @@ function Window({
           ? { width: screenSize.width, height: screenSize.height } // no animation when dragging
           : { x: 0, y: 0, width: "100vw", height: "100vh" }
       }
-      style={{ x: lastScreenPosition.x, y: lastScreenPosition.y }}
-      className="border-2"
+      style={{
+        x: lastScreenPosition.x,
+        y: lastScreenPosition.y,
+        zIndex: zIndex,
+      }}
+      className="border-2 absolute"
     >
       <Resizable
         size={!showNav ? { width: "100vw", height: "100vh" } : screenSize}
-        onResizeStop={(e, dir, ref, d) => {
+        onResizeStop={(_e, _dir, _ref, d) => {
           console.log(d.width, d.height);
           setScreenSize({
             width: screenSize.width + d.width,
@@ -140,7 +145,7 @@ function Window({
             //     ease: "easeInOut",
             //   },
             // }}
-            className="  text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
+            className="  text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-900/90 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
           >
             <motion.div
               layout
