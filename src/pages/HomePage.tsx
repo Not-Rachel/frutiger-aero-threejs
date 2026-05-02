@@ -1,5 +1,6 @@
 import { motion, AnimatePresence, useDragControls } from "motion/react";
 import {
+  ReactElement,
   useEffect,
   useRef,
   useState,
@@ -11,12 +12,12 @@ import { Rnd } from "react-rnd";
 import { Resizable } from "re-resizable";
 import Art from "./Art";
 import About from "./About";
+import Window from "./Window";
 import itunes from "/assets/itunes.png";
 
 import ui_1 from "/assets/audio/ui1.mp3";
 import hover from "/assets/audio/hover.mp3";
 import click_low from "/assets/audio/click_low.mp3";
-import TVOff from "/assets/audio/TVOff2.mp3";
 
 import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
@@ -24,6 +25,7 @@ import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
 import BlockStacking from "./BlockStacking";
 import Background from "../components/Background";
+
 // import FluidGlass from "../components/LiquidGlass";
 type HomePageProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
   setShowTHREE: React.Dispatch<React.SetStateAction<boolean>>;
@@ -52,9 +54,10 @@ function HomePage({ setShowTHREE }: HomePageProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const buttonSound1 = new Audio(ui_1);
+  // const TVoffSound = new Audio(TVOff);
+
   const hoverSound = new Audio(hover);
   const clickLow = new Audio(click_low);
-  const TVoffSound = new Audio(TVOff);
   // TVoffSound.volume = 0.9;
   clickLow.volume = 0.7;
   hoverSound.volume = 0.5;
@@ -64,24 +67,114 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     navigate(`/${param}`);
   }
 
-  function closeScreen() {
-    TVoffSound.play();
-    setShowNav(true);
-    setNavToClose(false);
-    setShowScreen(false);
+  function NavButton({
+    title,
+    href,
+    onClick,
+  }: {
+    title: string;
+    href: string;
+    onClick: () => void;
+  }) {
+    return (
+      <motion.button
+        whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+        onClick={() => {
+          buttonClick(href);
+          onClick();
+        }}
+        onHoverStart={() => hoverSound.play()}
+        className=" h-8 aero px-2 text-amber-50 rounded-xl"
+        style={
+          showScreen && location.pathname === "/stacking"
+            ? ({ "--saturation": 0.5 } as CSSProperties)
+            : {}
+        }
+      >
+        {title}
+      </motion.button>
+    );
   }
 
-  function navDrag(event: any, info: { point: { x: number; y: number } }) {
-    console.log(event);
-    setNavToClose(info.point.x < 0 || info.point.y < 0);
+  const [projects, setProjects] = useState([
+    {
+      id: "dither",
+      title: "Blue Dithering",
+      href: "dither",
+      project: <DitherDemo />,
+      open: false,
+      position: { x: 0, y: 0 },
+      zIndex: 0,
+    },
+    {
+      id: "scavenger",
+      title: "Scavenger",
+      href: "scavenger",
+
+      open: false,
+      position: { x: 40, y: 40 },
+      zIndex: 0,
+    },
+    {
+      id: "offline",
+      title: "Offline",
+      href: "offline",
+      project: <Offline />,
+
+      open: false,
+      position: { x: 80, y: 80 },
+      zIndex: 0,
+    },
+    {
+      id: "stacking",
+      title: "BlockStacking",
+      href: "stacking",
+      project: <BlockStacking />,
+
+      open: false,
+      position: { x: 100, y: 80 },
+      zIndex: 0,
+    },
+    {
+      id: "fish",
+      title: "Fish Swimming",
+      href: "fish",
+      project: <Background />,
+
+      open: false,
+      position: { x: 200, y: 80 },
+      zIndex: 0,
+    },
+  ]);
+
+  const [topZ, setTopZ] = useState(1);
+
+  function openProject(id: string) {
+    console.log("Clicked", id);
+    setTopZ((prev) => prev + 1);
+    setProjects((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, open: true, zIndex: topZ + 1 } : p,
+      ),
+    );
   }
-  function navDragEnd(event: any, info: { point: { x: number; y: number } }) {
-    // console.log(info.point.x, info.point.y);
-    console.log(event);
-    if (info.point.x < 0 || info.point.y < 0) {
-      setShowNav(false);
-    }
+  function closeProject(id: string) {
+    console.log("Clicked", id);
+    setTopZ((prev) => prev + 1);
+    setProjects((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, open: false, zIndex: topZ - 1 } : p,
+      ),
+    );
   }
+
+  const routeMap = {
+    dither: <DitherDemo />,
+    scavenger: "scavenger",
+    offline: <Offline />,
+    stacking: <BlockStacking />,
+    fish: <Background />,
+  };
 
   const [subIndex, setSubIndex] = useState(0);
   const subtitles = [
@@ -136,16 +229,29 @@ function HomePage({ setShowTHREE }: HomePageProps) {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
-  const dragControls = useDragControls();
+  // const dragControls = useDragControls();
 
-  const [size, setSize] = useState({
-    width: 600,
-    height: 400,
-  });
+  // const dragScreenRef = useRef<HTMLDivElement>(null!);
+  // const [lastScreenPosition, setLastScreenPosition] = useState({ x: 0, y: 0 });
+
+  // const [screenSize, setScreenSize] = useState({
+  //   width: window.innerWidth / 2,
+  //   height: window.innerHeight * 0.9,
+  // });
+
+  // useEffect(() => {
+  //   if (dragScreenRef.current) {
+  //     console.log("set screenref", dragScreenRef.current);
+  //     setScreenSize({
+  //       width: dragScreenRef.current.clientWidth,
+  //       height: dragScreenRef.current.clientHeight,
+  //     });
+  //   }
+  // }, [dragScreenRef]);
 
   return (
     <div
-      className={`${showNav ? "p-4" : "p-0"} flex flex-col items-center absolute w-full h-full`}
+      className={`${showNav ? "p-4" : "p-0"} relative flex flex-col items-center  w-full h-full`}
     >
       {/* <div className="absolute right-0 bottom-0 m-2 z-50"> */}
       <audio
@@ -255,15 +361,16 @@ function HomePage({ setShowTHREE }: HomePageProps) {
       <motion.div
         layout
         transition={{ duration: 0.3 }}
-        className="flex flex-row  w-full h-full"
+        className=" absolute flex flex-row  w-full h-full"
       >
         {/* <AnimatePresence mode="wait"> */}
         {showNav && (
           <motion.nav
-            drag
-            onDrag={navDrag}
-            onDragEnd={navDragEnd}
-            dragSnapToOrigin
+            // drag
+            // onDrag={navDrag}
+            // onDragEnd={navDragEnd}
+            // dragSnapToOrigin
+
             initial={{ scaleX: showNav ? 0 : "100%" }}
             animate={{
               scaleX: showNav ? "100%" : 0,
@@ -279,216 +386,39 @@ function HomePage({ setShowTHREE }: HomePageProps) {
               key={"menu"}
               className="flex  flex-col gap-8 w-full   text-white font-extrabold"
             >
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => {
-                  setShowTHREE(false);
-                  buttonClick("dither");
-                }}
-                onHoverStart={() => hoverSound.play()}
-                className={`p-1 aero rounded-xl`}
-                style={
-                  showScreen && location.pathname === "/dither"
-                    ? ({ "--saturation": 0.5 } as CSSProperties)
-                    : {}
-                }
-              >
-                Blue Dithering
-              </motion.button>
-              {/*TODO: fix scavenger*/}
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() =>
-                  navigate("/scavenger/", { replace: true }) ||
-                  window.location.reload()
-                }
-                className={`p-1 aero rounded-xl`}
-                onHoverStart={() => hoverSound.play()}
-                style={
-                  showScreen && location.pathname.includes("scavenger")
-                    ? ({ "--saturation": 0.5 } as CSSProperties)
-                    : {}
-                }
-              >
-                Scavenger
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => buttonClick("offline")}
-                className={`p-1 aero rounded-xl`}
-                onHoverStart={() => hoverSound.play()}
-                style={
-                  showScreen && location.pathname === "/offline"
-                    ? ({ "--saturation": 0.5 } as CSSProperties)
-                    : {}
-                }
-              >
-                Offline
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => buttonClick("stacking")}
-                className={`p-1 aero rounded-xl`}
-                onHoverStart={() => hoverSound.play()}
-                style={
-                  showScreen && location.pathname === "/stacking"
-                    ? ({ "--saturation": 0.5 } as CSSProperties)
-                    : {}
-                }
-              >
-                Block Stacking
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-                onClick={() => {
-                  // clickLow.play();
-                  // closeScreen();
-                  // setShowTHREE((prev) => !prev);
-                  buttonClick("fish");
-                }}
-                onHoverStart={() => hoverSound.play()}
-                className=" h-8 aero px-2 text-amber-50 rounded-xl"
-                style={
-                  showScreen && location.pathname === "/stacking"
-                    ? ({ "--saturation": 0.5 } as CSSProperties)
-                    : {}
-                }
-              >
-                Fish Swimming
-              </motion.button>
+              {projects.map((p) => {
+                return (
+                  <NavButton
+                    onClick={() => openProject(p.id)}
+                    title={p.title}
+                    href={p.href}
+                  />
+                );
+              })}
             </div>
           </motion.nav>
         )}
         {/* MAIN SCREEN */}
 
-        <motion.div
-          layout
-          drag={showNav}
-          dragControls={dragControls}
-          dragMomentum={false}
-          layoutDependency={showNav}
-          transition={{
-            duration: 0.5,
-          }}
-          animate={{
-            x: !showNav ? 0 : 100,
-            y: !showNav ? 0 : 100,
-            width: !showNav ? "100vw" : 600,
-            height: !showNav ? "100vh" : 400,
-          }}
-        >
-          <Resizable
-            defaultSize={{ width: 600, height: 400 }}
-            size={!showNav ? { width: "100vw", height: "100vh" } : size}
-            onResizeStop={(e, dir, ref, d) => {
-              console.log(d.width, d.height);
-              setSize({
-                width: size.width + d.width,
-                height: size.height + d.height,
-              });
-            }}
-            onResize={() => dragControls.cancel()}
-
-            // onPointerDown={() => dragControls.cancel()}
-          >
-            <motion.main
-              key={"screen"}
-              initial={{ scaleY: showScreen ? 0 : "100%" }}
-              animate={{
-                scaleY: showScreen ? "100%" : 0,
-                transition: {
-                  duration: 0.3,
-                },
-              }}
-              className=" w-full h-full sm:perspective-[800px]"
-            >
-              <motion.div
-                key={"projects"}
-                // initial={{ rotateY: 0, rotateX: -1 }}
-                // animate={{
-                //   rotateY: showNav ? -1 : 0,
-                //   rotateX: showNav ? 1 : 0,
-
-                //   transition: {
-                //     duration: showNav ? 5 : 0.5,
-
-                //     repeat: showNav ? Infinity : 0,
-                //     repeatType: "mirror",
-                //     ease: "easeInOut",
-                //   },
-                // }}
-                className="  text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-500/20 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
-              >
-                <motion.div
-                  layout
-                  data-drag-handle
-                  className={`  flex  overflow-hidden left-0  ${showNav ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
-                  style={
-                    !showNav ? { position: "absolute", top: 0, zIndex: 99 } : {}
-                  }
-                  onPointerDown={(e) => dragControls.start(e)}
-                  // onPointerDown={() => setDragScreen(true)}
-                >
-                  <button
-                    onClick={closeScreen}
-                    className="aero text-center  text-xl px-2  "
-                    style={
-                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
-                    }
-                  >
-                    x
-                  </button>
-                  <button
-                    onClick={closeScreen}
-                    className="aero text-center   text-xl px-2  "
-                    style={
-                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
-                    }
-                  >
-                    -
-                  </button>
-                  <button
-                    onClick={() => {
-                      buttonSound1.play();
-                      setShowNav((prev) => !prev);
-                      setNavToClose(false);
-                    }}
-                    className="aero text-center  text-xl px-2 "
-                    style={
-                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
-                    }
-                  >
-                    []
-                  </button>
-                </motion.div>
-
-                <div
-                  className="overflow-y-scroll w-full h-full"
-                  onPointerDown={() => dragControls.cancel()}
-                >
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={location.pathname}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 2 }}
-                      className=" w-full h-full"
-                    >
-                      <Routes>
-                        <Route path="/" element={<About />} />
-                        <Route path="/art" element={<Art />} />
-                        <Route path="/dither" element={<DitherDemo />} />
-                        <Route path="/stacking" element={<BlockStacking />} />
-                        <Route path="/offline" element={<Offline />} />
-                        <Route path="/fish" element={<Background />} />
-                      </Routes>
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            </motion.main>
-          </Resizable>
-        </motion.div>
+        {projects
+          .filter((p) => p.open)
+          .map((p) => {
+            return (
+              <Window
+                href={p.href}
+                showNav={showNav}
+                setShowNav={setShowNav}
+                setNavToClose={setNavToClose}
+                onClose={() => closeProject(p.id)}
+              />
+            );
+          })}
+        {/* <Window
+          showNav={showNav}
+          active={true}
+          setShowNav={setShowNav}
+          setNavToClose={setNavToClose}
+        /> */}
       </motion.div>
     </div>
   );
