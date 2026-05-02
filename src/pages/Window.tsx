@@ -1,4 +1,4 @@
-import { motion, AnimatePresence, useDragControls } from "motion/react";
+import { motion, useDragControls } from "motion/react";
 import { Resizable } from "re-resizable";
 import {
   useEffect,
@@ -106,7 +106,6 @@ function Window({
       <Resizable
         size={!showNav ? { width: "100vw", height: "100vh" } : screenSize}
         onResizeStop={(_e, _dir, _ref, d) => {
-          console.log(d.width, d.height);
           setScreenSize({
             width: screenSize.width + d.width,
             height: screenSize.height + d.height,
@@ -188,28 +187,11 @@ function Window({
               className="overflow-y-scroll w-full h-full"
               onPointerDown={() => dragControls.cancel()}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={location.pathname}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 2 }}
-                  className=" w-full h-full"
-                >
-                  {/* <Routes>
-                    <Route path="/" element={<About />} />
-                    <Route path="/art" element={<Art />} />
-                    <Route path="/dither" element={<DitherDemo />} />
-                    <Route path="/stacking" element={<BlockStacking />} />
-                    <Route path="/offline" element={<Offline />} />
-                    <Route path="/fish" element={<Background />} />
-                    <Route path="/placeholder" element={<PlaceHolder />} />
-                  </Routes> */}
-                  {routeMap[href] ?? (
-                    <p className="text-white p-4">Not found: {href}</p>
-                  )}
-                </motion.div>
-              </AnimatePresence>
+              <div className=" w-full h-full">
+                {routeMap[href] ?? (
+                  <p className="text-white p-4">Not found: {href}</p>
+                )}
+              </div>
             </div>
           </motion.div>
         </motion.main>

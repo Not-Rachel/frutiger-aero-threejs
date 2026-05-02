@@ -76,6 +76,11 @@ function BlockStacking() {
         onCreated={({ gl }) => {
           gl.outputColorSpace = "srgb";
           gl.setClearColor("#22362c");
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          });
         }}
       >
         <ambientLight color={"#22362c"} />

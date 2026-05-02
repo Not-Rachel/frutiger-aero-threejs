@@ -171,7 +171,6 @@ function PuterModel({ ...props }: PuterModelProps) {
       {...props}
       onClick={(e: { stopPropagation: () => void }) => {
         e.stopPropagation();
-        console.log("hello");
       }}
     />
   );
@@ -315,7 +314,14 @@ function Background() {
       }}
       onCreated={({ gl }) => {
         gl.outputColorSpace = "srgb";
+        console.log("Window w h", window.innerWidth, window.innerHeight);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            window.dispatchEvent(new Event("resize"));
+          });
+        });
       }}
+      style={{ width: "100%", height: "100%" }}
       // linear
     >
       <Physics
@@ -335,7 +341,6 @@ function Background() {
           scale={4}
           position={[5, 0, -7]}
           rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
-          // onClick={() => console.log("Hello")}
         />
         <Box position={[0, 0, 0]} args={[16, 16, 0.2]} />
 
