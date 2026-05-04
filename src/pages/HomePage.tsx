@@ -10,7 +10,7 @@ import click_low from "/assets/audio/click_low.mp3";
 import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 import DitherDemo from "./DitherDemo";
-import Offline from "./Offline";
+// import Offline from "./Offline";
 import BlockStacking from "./BlockStacking";
 import Background from "../components/Background";
 
@@ -96,16 +96,16 @@ function HomePage() {
       position: { x: 40, y: 40 },
       zIndex: 0,
     },
-    {
-      id: "offline",
-      title: "Offline",
-      href: "offline",
-      project: <Offline />,
+    // {
+    //   id: "offline",
+    //   title: "Offline",
+    //   href: "offline",
+    //   project: <Offline />,
 
-      open: false,
-      position: { x: 80, y: 80 },
-      zIndex: 0,
-    },
+    //   open: false,
+    //   position: { x: 80, y: 80 },
+    //   zIndex: 0,
+    // },
     {
       id: "stacking",
       title: "BlockStacking",

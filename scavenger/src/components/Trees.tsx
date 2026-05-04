@@ -84,7 +84,7 @@ function Trees() {
           style={{
             top: tree.top,
             left: tree.left ?? undefined,
-            overflow: "hidden", // clips only this tree
+            overflow: "hidden",
           }}
         >
           <motion.img

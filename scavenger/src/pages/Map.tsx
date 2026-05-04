@@ -17,6 +17,7 @@ import Cart from "./Cart";
 import { pre } from "framer-motion/client";
 import Shop from "./Shop";
 import Trees from "../components/Trees";
+import { useSearchParams } from "react-router-dom";
 
 interface itemProps {
   key: number;
@@ -42,6 +43,8 @@ function Map() {
 
   const [openMap, setOpenMap] = useState(rotateMap);
 
+  // const [searchParams] = useSearchParams();
+
   return (
     <motion.div
       className="saturate-75  relative  "
@@ -64,8 +67,10 @@ function Map() {
                 animate={!openMap ? { x: 0 } : {}}
                 transition={{ duration: 4, type: "spring" }}
                 onClick={() => {
+                  console.log(location.pathname);
+
                   navigate("scavenger/map");
-                  setOpenMap((prev) => !prev);
+                  setOpenMap(true);
                 }}
                 // onClick={() => navigate("map")}
                 className="h-[95vh] w-1/2 z-50 flex justify-end brightness-90 pointer-events-auto  "
@@ -127,11 +132,18 @@ function Map() {
                     <motion.div
                       key={location.pathname}
                       initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 2 }}
-                      className=" w-full h-full"
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{
+                        opacity: 0,
+                        x: "50%",
+                      }}
+                      transition={{
+                        duration: 1,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="w-full h-full absolute inset-0"
                     >
-                      <Routes>
+                      <Routes location={location} key={location.pathname}>
                         <Route path="scavenger/map" element={<Home />} />
                         <Route path="scavenger/map/cart" element={<Cart />} />
                         <Route path="scavenger/map/shop" element={<Shop />} />

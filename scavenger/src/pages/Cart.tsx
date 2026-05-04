@@ -17,7 +17,9 @@ function Cart() {
   }, []);
   return (
     <div>
-      <div className="flex flex-col -space-y-210">
+      <div className="flex flex-col -space-y-210 p-8 font-[Kashare] text-[7vh] tracking-widest">
+        <p>CART</p>
+
         {cart.map((item) => {
           const rotate = item.key % 2 === 0 ? 2 : -2;
           return (
@@ -30,7 +32,7 @@ function Cart() {
             </div>
           );
         })}
-        <button
+        {/* <button
           className=" absolute bg-amber-200 rounded-xl right-16 p-4"
           onClick={() => {
             localStorage.clear();
@@ -38,8 +40,7 @@ function Cart() {
           }}
         >
           Clear cart
-        </button>
-        <p>Welcome to the cart</p>
+        </button> */}
       </div>
     </div>
   );

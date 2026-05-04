@@ -40,7 +40,6 @@ function Home() {
             setHovered(null);
           }}
         >
-          {/* <img src={fireImg} className="w-32 h-32" alt="" /> */}
           <NotateText type="circle">Camping</NotateText>
         </div>
         <div
