@@ -37,6 +37,7 @@ https://codepen.io/fkeiler/pen/gOZzNzj
 
 body {
   background: var(--stripes);
+  /* background-color: #2f444c; */
 }
 
 .aero {

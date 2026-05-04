@@ -13,12 +13,14 @@ import {
   useGLTF,
   useAnimations,
   OrbitControls,
+  useProgress,
   // shaderMaterial,
 } from "@react-three/drei";
+
 import fishModel from "/assets/scene.gltf?url";
 import puterModel from "/assets/retroComputer.gltf?url";
 import * as YUKA from "yuka";
-import { useEffect, useMemo, useRef, type JSX } from "react";
+import { Suspense, useEffect, useMemo, useRef, type JSX } from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
 import { Physics, useBox, usePlane, useSphere } from "@react-three/cannon";
 // import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
@@ -302,77 +304,107 @@ function Box({ position, args }: BoxProps) {
   );
 }
 
+function LoadingOverlay() {
+  const { progress, active } = useProgress();
+
+  return (
+    <div
+      className="absolute inset-0 bg-black flex items-center justify-center transition-opacity duration-500"
+      style={{
+        opacity: active ? 1 : 0,
+        pointerEvents: active ? "auto" : "none",
+      }}
+    >
+      <div className="text-white text-center">
+        <div className="w-48 h-1 bg-white/20 rounded-full">
+          <div
+            className="h-full bg-white rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-xs mt-2 opacity-60">{Math.round(progress)}%</p>
+      </div>
+    </div>
+  );
+}
+
 function Background() {
   return (
-    <Canvas
-      camera={{ fov: 65 }}
-      gl={{
-        preserveDrawingBuffer: true,
-        powerPreference: "high-performance",
-        antialias: true,
-        alpha: false,
-      }}
-      onCreated={({ gl }) => {
-        gl.outputColorSpace = "srgb";
-        console.log("Window w h", window.innerWidth, window.innerHeight);
-        requestAnimationFrame(() => {
+    <div className="relative w-full h-full border-2 border-white">
+      <Canvas
+        camera={{ fov: 65 }}
+        frameloop="demand"
+        gl={{
+          preserveDrawingBuffer: true,
+          powerPreference: "high-performance",
+          antialias: true,
+          alpha: false,
+        }}
+        onCreated={({ gl }) => {
+          gl.outputColorSpace = "srgb";
+          console.log("Window w h", window.innerWidth, window.innerHeight);
           requestAnimationFrame(() => {
-            window.dispatchEvent(new Event("resize"));
+            requestAnimationFrame(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
           });
-        });
-      }}
-      style={{ width: "100%", height: "100%" }}
-      // linear
-    >
-      <Physics
-        gravity={[0, 0.1, 0]}
-        defaultContactMaterial={{ restitution: 1.0 }}
+        }}
+        style={{ width: "100%", height: "100%" }}
+        // linear
       >
-        {Array.from({ length: 10 }).map((_, i) => (
-          <FishModel
-            key={i}
-            scale={7}
-            // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
-            speed={randInt(1, 5)}
-            position={[0, 0, 0]}
-          />
-        ))}
-        <PuterModel
-          scale={4}
-          position={[5, 0, -7]}
-          rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
-        />
-        <Box position={[0, 0, 0]} args={[16, 16, 0.2]} />
+        <Suspense fallback={null}>
+          <Physics
+            gravity={[0, 0.1, 0]}
+            defaultContactMaterial={{ restitution: 1.0 }}
+          >
+            {Array.from({ length: 10 }).map((_, i) => (
+              <FishModel
+                key={i}
+                scale={7}
+                // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
+                speed={randInt(1, 5)}
+                position={[0, 0, 0]}
+              />
+            ))}
+            <PuterModel
+              scale={4}
+              position={[5, 0, -7]}
+              rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
+            />
+            <Box position={[0, 0, 0]} args={[16, 16, 0.2]} />
 
-        <BubbleMesh />
-        <OceanMesh />
-        <OrbitControls
-          enableZoom={true}
-          // minAzimuthAngle={-Math.PI / 4}
-          // maxAzimuthAngle={Math.PI / 4}
-          // minPolarAngle={Math.PI / 6}
-          // maxPolarAngle={Math.PI - Math.PI / 6}
-        />
-        <Environment
-          files={hdr}
-          backgroundBlurriness={0.03}
-          near={1}
-          far={100}
-          background={true}
-        />
-        <EffectComposer>
-          <DepthOfField
-            // focusDistance={2}
-            worldFocusDistance={10}
-            focalLength={20}
-            bokehScale={3}
-            // height={1000}
+            <BubbleMesh />
+            <OceanMesh />
+            <OrbitControls
+              enableZoom={true}
+              // minAzimuthAngle={-Math.PI / 4}
+              // maxAzimuthAngle={Math.PI / 4}
+              // minPolarAngle={Math.PI / 6}
+              // maxPolarAngle={Math.PI - Math.PI / 6}
+            />
+          </Physics>
+          <Environment
+            files={hdr}
+            backgroundBlurriness={0.03}
+            near={1}
+            far={100}
+            background={true}
           />
-          <HueSaturation staturation={1} />
-          <Noise opacity={0.02} />
-        </EffectComposer>
-      </Physics>
-    </Canvas>
+          <EffectComposer>
+            <DepthOfField
+              // focusDistance={2}
+              worldFocusDistance={10}
+              focalLength={20}
+              bokehScale={3}
+              // height={1000}
+            />
+            <HueSaturation staturation={1} />
+            <Noise opacity={0.02} />
+          </EffectComposer>
+        </Suspense>
+      </Canvas>
+      <LoadingOverlay />
+    </div>
   );
 }
 

@@ -10,10 +10,12 @@ import {
   type SetStateAction,
 } from "react";
 import Background from "../components/Background";
-import About from "./About";
 import BlockStacking from "./BlockStacking";
 import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
+import PhysicsSim from "./PhysicsSim";
+// import Scavenger from "../../scavenger/src/pages/Scavenger";
+import ScavengerPortal from "./ScavengerPortal";
 import ui_1 from "/assets/audio/ui1.mp3";
 import TVOff from "/assets/audio/TVOff2.mp3";
 
@@ -22,7 +24,8 @@ const routeMap: Record<string, JSX.Element> = {
   dither: <DitherDemo />,
   stacking: <BlockStacking />,
   fish: <Background />,
-  about: <About />,
+  physics: <PhysicsSim />,
+  scavenger: <ScavengerPortal />,
 };
 
 type WindowProps = {
@@ -73,11 +76,25 @@ function Window({
     // onClose();
   }
 
+  function changeScreen(param: string) {
+    setShowScreen(true);
+    window.open(`/${param}`, "_blank");
+  }
+
   return (
     <motion.div
       ref={dragScreenRef}
       // layout
       drag={showNav && showScreen}
+      dragConstraints={{
+        top: 0,
+        left: 0,
+        bottom: window.screen.height,
+        right: window.screen.width,
+      }}
+      whileDrag={{
+        boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
+      }}
       dragControls={dragControls}
       dragMomentum={false}
       onPointerDown={onFocus}
@@ -149,37 +166,49 @@ function Window({
             <motion.div
               layout
               data-drag-handle
-              className={`  flex  overflow-hidden left-0  ${showNav ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
+              className={`  flex  overflow-hidden left-0 justify-between items-start  ${showNav ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
               style={
                 !showNav ? { position: "absolute", top: 0, zIndex: 99 } : {}
               }
               onPointerDown={(e) => dragControls.start(e)}
               // onPointerDown={() => setDragScreen(true)}
             >
-              <button
-                onClick={closeScreen}
-                className="aero text-center  text-xl px-2  "
-                style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
-              >
-                x
-              </button>
-              <button
-                onClick={closeScreen}
-                className="aero text-center   text-xl px-2  "
-                style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
-              >
-                -
-              </button>
+              <div className="flex">
+                <button
+                  onClick={closeScreen}
+                  className="aero text-center  text-xl px-2  "
+                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                >
+                  x
+                </button>
+                <button
+                  onClick={closeScreen}
+                  className="aero text-center   text-xl px-2  "
+                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                >
+                  -
+                </button>
+                <button
+                  onClick={() => {
+                    buttonSound1.play();
+                    setShowNav((prev) => !prev);
+                    setNavToClose(false);
+                  }}
+                  className="aero text-center  text-xl px-2 "
+                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                >
+                  []
+                </button>
+              </div>
+
               <button
                 onClick={() => {
-                  buttonSound1.play();
-                  setShowNav((prev) => !prev);
-                  setNavToClose(false);
+                  changeScreen(href);
                 }}
                 className="aero text-center  text-xl px-2 "
                 style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
               >
-                []
+                Open to new tab
               </button>
             </motion.div>
 

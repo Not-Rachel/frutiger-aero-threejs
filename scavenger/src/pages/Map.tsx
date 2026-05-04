@@ -16,6 +16,7 @@ import Home from "./Home";
 import Cart from "./Cart";
 import { pre } from "framer-motion/client";
 import Shop from "./Shop";
+import Trees from "../components/Trees";
 
 interface itemProps {
   key: number;
@@ -119,9 +120,9 @@ function Map() {
                 onLoad={onLoad}
                 className="w-full h-[90vh] brightness-70 "
               />
+
               <div className="absolute flex flex-row justify-center items-center inset-0 pointer-events-auto  ">
                 <div className="w-[90%]  z-50 flex-col   text-black pointer-events-auto h-full">
-                  <div className="absolute pointer-events-none"></div>
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={location.pathname}

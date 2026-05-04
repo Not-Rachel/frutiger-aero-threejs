@@ -23,5 +23,9 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src", "threejs/src/scripts/BlueDitheringPass.js"]
+  "include": [
+    "src",
+    "threejs/src/scripts/BlueDitheringPass.js",
+    "public/physics"
+  ]
 }

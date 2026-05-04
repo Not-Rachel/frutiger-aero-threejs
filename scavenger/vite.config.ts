@@ -9,6 +9,7 @@ export default defineConfig({
   publicDir: "public",
 
   build: {
-    outDir: "../dist/scavenger",
+    outDir: "../public/scavenger", // into parent's public, not dist
+    emptyOutDir: true,
   },
 });

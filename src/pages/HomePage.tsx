@@ -1,6 +1,5 @@
 import { motion } from "motion/react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import Window from "./Window";
 import itunes from "/assets/itunes.png";
 
@@ -31,9 +30,6 @@ function HomePage() {
     randInt(0, musicTracks.length - 1),
   );
   const [playUI, setPlayUI] = useState(true);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [showScreen, setShowScreen] = useState(location.pathname.length > 1);
   const [navToClose, setNavToClose] = useState(false);
   const [showNav, setShowNav] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -47,34 +43,34 @@ function HomePage() {
   clickLow.volume = 0.7;
   hoverSound.volume = 0.5;
 
-  function changeScreen(param: string) {
-    setShowScreen(true);
-    navigate(`/${param}`);
-  }
+  // function changeScreen(param: string) {
+  //   setShowScreen(true);
+  //   // navigate(`/${param}`);
+  // }
 
   function NavButton({
     title,
-    href,
+
     onClick,
   }: {
     title: string;
-    href: string;
+
     onClick: () => void;
   }) {
     return (
       <motion.button
         whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
         onClick={() => {
-          buttonClick(href);
+          buttonClick();
           onClick();
         }}
         onHoverStart={() => hoverSound.play()}
         className=" h-8 aero px-2 text-amber-50 rounded-xl"
-        style={
-          showScreen && location.pathname === "/stacking"
-            ? ({ "--saturation": 0.5 } as CSSProperties)
-            : {}
-        }
+        // style={
+        //   showScreen && location.pathname === "/stacking"
+        //     ? ({ "--saturation": 0.5 } as CSSProperties)
+        //     : {}
+        // }
       >
         {title}
       </motion.button>
@@ -130,6 +126,16 @@ function HomePage() {
       position: { x: 200, y: 80 },
       zIndex: 0,
     },
+    {
+      id: "physics",
+      title: "WebGl Physics Simulation",
+      href: "physics",
+      project: <Background />,
+
+      open: false,
+      position: { x: 200, y: 80 },
+      zIndex: 0,
+    },
   ]);
 
   const [topZ, setTopZ] = useState(1);
@@ -179,8 +185,8 @@ function HomePage() {
     }
   }, [currentTrack, playMusic]);
 
-  function buttonClick(path: string) {
-    changeScreen(path);
+  function buttonClick() {
+    // changeScreen(path);
     if (playUI) clickLow.play();
   }
 
@@ -198,7 +204,7 @@ function HomePage() {
   }, [volume]);
 
   return (
-    <div className={`p-4 relative flex flex-col items-center  w-full h-full`}>
+    <div className={`relative flex flex-col items-center  w-full h-full`}>
       {/* <div className="absolute right-0 bottom-0 m-2 z-50"> */}
       <audio
         ref={audioRef}
@@ -322,7 +328,7 @@ function HomePage() {
       <motion.div
         layout
         transition={{ duration: 0.3 }}
-        className="  flex flex-row  w-full h-full"
+        className=" flex flex-row  w-full h-full "
       >
         {/* <AnimatePresence mode="wait"> */}
         {showNav && (
@@ -340,7 +346,7 @@ function HomePage() {
               },
             }}
             layout
-            className=" h-full p-2 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+            className=" h-full p-2 m-4 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
             style={{ backgroundColor: navToClose ? "#f3255151" : "#06B6D451" }}
           >
             <div
@@ -352,7 +358,6 @@ function HomePage() {
                   <NavButton
                     onClick={() => openProject(p.id)}
                     title={p.title}
-                    href={p.href}
                   />
                 );
               })}

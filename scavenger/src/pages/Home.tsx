@@ -3,6 +3,7 @@ import NotateText from "../components/NotateText";
 import { useNavigate } from "react-router-dom";
 import Xarrow from "react-xarrows";
 import { AnimatePresence, hover, motion } from "framer-motion";
+import Trees from "../components/Trees";
 // import fishImg from "/assets/map-icons/fish-hook.png";
 const fishImg = "/scavenger/assets/map-icons/fish-hook.png";
 const fireImg = "/scavenger/assets/map-icons/Fire.gif";
@@ -25,6 +26,8 @@ function Home() {
 
   return (
     <>
+      <Trees />
+
       <div className="flex z-50 font-[Kashare] lg:text-5xl  md:text-4xl text-3xl flex-1 justify-center items-center h-full w-full pointer-events-auto">
         <div
           id="camping"
@@ -37,7 +40,7 @@ function Home() {
             setHovered(null);
           }}
         >
-          <img src={fireImg} className="w-32 h-32" alt="" />
+          {/* <img src={fireImg} className="w-32 h-32" alt="" /> */}
           <NotateText type="circle">Camping</NotateText>
         </div>
         <div
@@ -51,7 +54,6 @@ function Home() {
             setHovered(null);
           }}
         >
-          <img src={hikerImg} className="h-24 w-24" alt="" />
           <NotateText type="circle">Hiking</NotateText>
         </div>
 
@@ -66,7 +68,7 @@ function Home() {
             setHovered(null);
           }}
         >
-          <img src={mountImg} className="h-32 w-32" alt="" />
+          {/* <img src={mountImg} className="h-32 w-32" alt="" /> */}
           <NotateText type="circle">Climbing</NotateText>
         </div>
         <div
@@ -80,11 +82,29 @@ function Home() {
             setHovered(null);
           }}
         >
-          <img src={fishImg} alt="" className="h-32 w-32" />
+          {/* <img src={fishImg} alt="" className="h-32 w-32" /> */}
           <NotateText type="circle">Fishing</NotateText>
         </div>
         <div id="cart-link" onClick={() => navigate(`./cart`)}>
-          <img src={cabinImg} className="h-32 w-32" alt="" />
+          <motion.img
+            // animate={{
+            //   rotate: [0, 1.5, -1.5, 0],
+            //   y: [0, -2, 0],
+            // }}
+            // transition={{
+            //   duration: 3, // slightly different speed per tree
+            //   repeat: Infinity,
+            //   repeatType: "mirror",
+            //   ease: "easeInOut",
+            //   delay: 0.2, // offset so they don't all sway in sync
+            // }}
+            whileHover={{
+              scale: 1.1,
+            }}
+            src={cabinImg}
+            className="h-32 w-32"
+            alt=""
+          />
           <NotateText type="underline">Go to cart</NotateText>
         </div>
       </div>
