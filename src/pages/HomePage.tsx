@@ -13,16 +13,19 @@ import DitherDemo from "./DitherDemo";
 // import Offline from "./Offline";
 import BlockStacking from "./BlockStacking";
 import Background from "../components/Background";
+import { Resizable } from "re-resizable";
+import Offline from "./Offline";
 
 // import FluidGlass from "../components/LiquidGlass";
 
 // TODO: Add liquid glass effect to windows
 const musicTracks = [
-  "/assets/audio/tracks/aphex_twin_delphium.mp3",
   "/assets/audio/tracks/aphex_twin_film.mp3",
   "/assets/audio/tracks/aphex_twin_I.mp3",
   "/assets/audio/tracks/sd_card_gallery.mp3",
 ];
+
+const wallpaper = "/assets/meadow_wallpaper.mp4";
 
 function HomePage() {
   const [playMusic, setPlayMusic] = useState(false);
@@ -31,7 +34,8 @@ function HomePage() {
   );
   const [playUI, setPlayUI] = useState(true);
   const [navToClose, setNavToClose] = useState(false);
-  const [showNav, setShowNav] = useState(true);
+  const [fullScreen, setFullscreen] = useState(false);
+  // const [showNav, setShowNav] = useState(true);
   const audioRef = useRef<HTMLAudioElement>(null);
 
   // const buttonSound1 = new Audio(ui_1);
@@ -50,7 +54,6 @@ function HomePage() {
 
   function NavButton({
     title,
-
     onClick,
   }: {
     title: string;
@@ -65,7 +68,7 @@ function HomePage() {
           onClick();
         }}
         onHoverStart={() => hoverSound.play()}
-        className=" h-8 aero px-2 text-amber-50 rounded-xl"
+        className=" aero p-1 text-amber-50 rounded-xl overflow-hidden"
         // style={
         //   showScreen && location.pathname === "/stacking"
         //     ? ({ "--saturation": 0.5 } as CSSProperties)
@@ -96,19 +99,19 @@ function HomePage() {
       position: { x: 40, y: 40 },
       zIndex: 0,
     },
-    // {
-    //   id: "offline",
-    //   title: "Offline",
-    //   href: "offline",
-    //   project: <Offline />,
+    {
+      id: "offline",
+      title: "Offline",
+      href: "offline",
+      project: <Offline />,
 
-    //   open: false,
-    //   position: { x: 80, y: 80 },
-    //   zIndex: 0,
-    // },
+      open: false,
+      position: { x: 80, y: 80 },
+      zIndex: 0,
+    },
     {
       id: "stacking",
-      title: "BlockStacking",
+      title: "Block Stacking",
       href: "stacking",
       project: <BlockStacking />,
 
@@ -128,7 +131,7 @@ function HomePage() {
     },
     {
       id: "physics",
-      title: "WebGl Physics Simulation",
+      title: "Physics Simulation",
       href: "physics",
       project: <Background />,
 
@@ -215,7 +218,7 @@ function HomePage() {
       <motion.div
         onHoverStart={() => setVolumeSilder(true)}
         onHoverEnd={() => setVolumeSilder(false)}
-        className="flex w-48 flex-col justify-center items-center gap-1  fixed right-0 z-50 bottom-0 m-4  "
+        className="flex w-48  flex-col justify-center items-center gap-1  fixed right-0 z-50 bottom-0 m-4  "
       >
         <div className="flex gap-2 items-center text-white text-2xl font-black">
           <button
@@ -284,75 +287,77 @@ function HomePage() {
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         style={{ zIndex: 2 }}
-        className="absolute  pointer-events-auto  "
+        className="absolute w-full flex flex-row  pointer-events-auto  "
       >
-        <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
-          Rachel Brinkman
-        </h1>
-
-        {/* <AnimatePresence mode="wait">
-                <motion.p
-                  key={subIndex}
-                  layout
-                  initial={{ opacity: 0, y: 0 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: "50%" }}
-                  className="fixed text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
-                >
-                  {subtitles[subIndex]}
-                </motion.p>
-              </AnimatePresence> */}
-        <motion.h2
-          initial={{ opacity: 0, y: "-100%" }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="fixed text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
-        >
-          <a
-            href="https://github.com/Not-Rachel"
-            className="pointer-events-auto"
-          >
-            github.com/Not-Rachel
-          </a>
-        </motion.h2>
-        {/* <h2 className="text-xl text-white/90 font-light text-shadow-lg ">
-              <a
-                href="https://github.com/Not-Rachel"
-                className="pointer-events-auto"
-              >
-                github.com/Not-Rachel
-              </a>
-            </h2> */}
-      </motion.div>
-      {/* )} */}
-      <motion.div
-        layout
-        transition={{ duration: 0.3 }}
-        className=" flex flex-row  w-full h-full "
-      >
-        {/* <AnimatePresence mode="wait"> */}
-        {showNav && (
-          <motion.nav
-            // drag
-            // onDrag={navDrag}
-            // onDragEnd={navDragEnd}
-            // dragSnapToOrigin
-
-            initial={{ scaleX: showNav ? 0 : "100%" }}
-            animate={{
-              scaleX: showNav ? "100%" : 0,
-              transition: {
-                duration: 0.3,
-              },
-            }}
-            layout
-            className=" h-full p-2 m-4 rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
-            style={{ backgroundColor: navToClose ? "#f3255151" : "#06B6D451" }}
-          >
-            <div
-              key={"menu"}
-              className="flex  flex-col gap-8 w-full   text-white font-extrabold"
+        {/* LARGE NAV */}
+        {!fullScreen && (
+          <div className="hidden sm:block">
+            <Resizable
+              defaultSize={{ width: window.screen.width / 8, height: "100vh" }}
+              enable={{
+                top: false,
+                right: true,
+                bottom: false,
+                left: false,
+                topRight: false,
+                bottomRight: false,
+                bottomLeft: false,
+                topLeft: false,
+              }}
+              minWidth={50}
+              maxWidth={300}
+              className="z-50  m-4"
             >
+              <motion.nav
+                initial={{ scaleX: !fullScreen ? 0 : "100%" }}
+                animate={{
+                  scaleX: !fullScreen ? "100%" : 0,
+                  transition: {
+                    duration: 0.3,
+                  },
+                }}
+                layout
+                className="z-40 h-[95%] p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+                style={{
+                  backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                }}
+              >
+                <div
+                  key={"menu"}
+                  className="flex flex-col gap-8 w-full   text-white font-extrabold "
+                >
+                  {projects.map((p) => {
+                    return (
+                      <NavButton
+                        onClick={() => openProject(p.id)}
+                        title={p.title}
+                      />
+                    );
+                  })}
+                </div>
+              </motion.nav>
+            </Resizable>
+          </div>
+        )}
+        <div className="w-full h-auto items-center  flex flex-col">
+          <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
+            Rachel Brinkman
+          </h1>
+
+          <motion.h2
+            initial={{ opacity: 0, y: "-100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className=" w-full items-center flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+          >
+            <a
+              href="https://github.com/Not-Rachel"
+              className="pointer-events-auto"
+            >
+              github.com/Not-Rachel
+            </a>
+            {/* SMALL NAV */}
+            <div className=" text-sm grid grid-cols-3 gap-1 sm:hidden mx-2">
               {projects.map((p) => {
                 return (
                   <NavButton
@@ -362,8 +367,18 @@ function HomePage() {
                 );
               })}
             </div>
-          </motion.nav>
-        )}
+          </motion.h2>
+        </div>
+      </motion.div>
+      {/* NAV */}
+
+      <motion.div
+        layout
+        transition={{ duration: 0.3 }}
+        className=" flex  flex-row  w-full h-full "
+      >
+        {/* <AnimatePresence mode="wait"> */}
+
         {/* MAIN SCREEN */}
         {projects
           .filter((p) => p.open)
@@ -373,8 +388,8 @@ function HomePage() {
               <Window
                 href={p.href}
                 key={p.id}
-                showNav={showNav}
-                setShowNav={setShowNav}
+                fullScreen={fullScreen}
+                setFullScreen={setFullscreen}
                 setNavToClose={setNavToClose}
                 onClose={() => {
                   closeProject(p.id);
@@ -385,6 +400,17 @@ function HomePage() {
             );
           })}
       </motion.div>
+
+      <video
+        className="absolute inset-0 z-0 w-full h-full object-cover"
+        autoPlay={true}
+        loop={true}
+        muted={true}
+        // controls
+      >
+        <source src={wallpaper} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
     </div>
   );
 }

@@ -30,10 +30,10 @@ const routeMap: Record<string, JSX.Element> = {
 
 type WindowProps = {
   href: string;
-  showNav: boolean;
+  fullScreen: boolean;
   //   showScreen: boolean;
   zIndex: number;
-  setShowNav: Dispatch<SetStateAction<boolean>>;
+  setFullScreen: Dispatch<SetStateAction<boolean>>;
   setNavToClose: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   onFocus: () => void;
@@ -41,9 +41,9 @@ type WindowProps = {
 
 function Window({
   href,
-  showNav,
+  fullScreen,
   zIndex,
-  setShowNav,
+  setFullScreen,
   setNavToClose,
   onClose,
   onFocus,
@@ -70,7 +70,7 @@ function Window({
 
   function closeScreen() {
     TVoffSound.play();
-    setShowNav(true);
+    setFullScreen(false);
     setNavToClose(false);
     setShowScreen(false);
     // onClose();
@@ -85,7 +85,7 @@ function Window({
     <motion.div
       ref={dragScreenRef}
       // layout
-      drag={showNav && showScreen}
+      drag={!fullScreen && showScreen}
       dragConstraints={{
         top: 0,
         left: 0,
@@ -98,7 +98,7 @@ function Window({
       dragControls={dragControls}
       dragMomentum={false}
       onPointerDown={onFocus}
-      // layoutDependency={showNav}
+      // layoutDependency={!fullScreen}
       transition={{
         duration: 0.5,
       }}
@@ -109,7 +109,7 @@ function Window({
         }));
       }}
       animate={
-        showNav
+        !fullScreen
           ? { width: screenSize.width, height: screenSize.height } // no animation when dragging
           : { x: 0, y: 0, width: "100vw", height: "100vh" }
       }
@@ -118,10 +118,10 @@ function Window({
         y: lastScreenPosition.y,
         zIndex: zIndex,
       }}
-      className="border-2 absolute"
+      className="absolute"
     >
       <Resizable
-        size={!showNav ? { width: "100vw", height: "100vh" } : screenSize}
+        size={fullScreen ? { width: "100vw", height: "100vh" } : screenSize}
         onResizeStop={(_e, _dir, _ref, d) => {
           setScreenSize({
             width: screenSize.width + d.width,
@@ -144,31 +144,18 @@ function Window({
               onClose();
             }
           }}
-          className=" w-full h-full sm:perspective-[800px]"
+          className=" w-full h-full "
         >
           <motion.div
             key={"projects"}
-            // initial={{ rotateY: 0, rotateX: -1 }}
-            // animate={{
-            //   rotateY: showNav ? -1 : 0,
-            //   rotateX: showNav ? 1 : 0,
-
-            //   transition: {
-            //     duration: showNav ? 5 : 0.5,
-
-            //     repeat: showNav ? Infinity : 0,
-            //     repeatType: "mirror",
-            //     ease: "easeInOut",
-            //   },
-            // }}
-            className="  text-white relative preserve-3d text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-900/90 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
+            className="  text-white relative text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-900/90 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
           >
             <motion.div
               layout
               data-drag-handle
-              className={`  flex  overflow-hidden left-0 justify-between items-start  ${showNav ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
+              className={`  flex  overflow-hidden left-0 justify-between items-start  ${!fullScreen ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
               style={
-                !showNav ? { position: "absolute", top: 0, zIndex: 99 } : {}
+                fullScreen ? { position: "absolute", top: 0, zIndex: 99 } : {}
               }
               onPointerDown={(e) => dragControls.start(e)}
               // onPointerDown={() => setDragScreen(true)}
@@ -191,7 +178,7 @@ function Window({
                 <button
                   onClick={() => {
                     buttonSound1.play();
-                    setShowNav((prev) => !prev);
+                    setFullScreen((prev) => !prev);
                     setNavToClose(false);
                   }}
                   className="aero text-center  text-xl px-2 "
@@ -201,15 +188,17 @@ function Window({
                 </button>
               </div>
 
-              <button
-                onClick={() => {
-                  changeScreen(href);
-                }}
-                className="aero text-center  text-xl px-2 "
-                style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
-              >
-                Open to new tab
-              </button>
+              {!fullScreen && (
+                <button
+                  onClick={() => {
+                    changeScreen(href);
+                  }}
+                  className="aero text-center  text-lg px-2 "
+                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                >
+                  Open link to new tab
+                </button>
+              )}
             </motion.div>
 
             <div
