@@ -44,22 +44,22 @@ function Model2({
   const gltf = useGLTF(modelSource);
   const puterRef = useRef(null);
 
-  useEffect(() => {
-    if (gltf.scene) {
-      gltf.scene.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-        }
-      });
-    }
-  }, [gltf]);
+  // useEffect(() => {
+  //   if (gltf.scene) {
+  //     gltf.scene.traverse((child) => {
+  //       if ((child as THREE.Mesh).isMesh) {
+  //         child.castShadow = true;
+  //         child.receiveShadow = true;
+  //       }
+  //     });
+  //   }
+  // }, [gltf]);
 
-  useFrame(() => {
-    if (puterRef.current) {
-      (puterRef.current as THREE.Object3D).rotation.y += 0.005;
-    }
-  });
+  // useFrame(() => {
+  //   if (puterRef.current) {
+  //     (puterRef.current as THREE.Object3D).rotation.y += 0.005;
+  //   }
+  // });
 
   return <primitive ref={puterRef} scale={scale} object={gltf.scene} />;
 }
@@ -90,16 +90,16 @@ function Lights() {
       /> */}
       <pointLight
         ref={blueLightRef}
-        position={[-1, 1, 6]}
-        intensity={100}
+        position={[-1, 6, 6]}
+        intensity={200}
         color={0xffc963}
-        castShadow
-        shadow-radius={90}
-        shadow-mapSize={[2048, 2048]}
-        shadow-camera-far={50}
-        shadow-camera-near={0.1}
+        // castShadow
+        // shadow-radius={90}
+        // shadow-mapSize={[2048, 2048]}
+        // shadow-camera-far={50}
+        // shadow-camera-near={0.1}
       />
-      <ambientLight intensity={0.25} color={0xa8beff} />
+      <ambientLight intensity={1.0} color={0xa8beff} />
     </>
   );
 }
@@ -141,13 +141,14 @@ function ThreeModel({
         {/* <Model modelSource={modelSource} scale={scale} /> */}
         <Model2 modelSource={modelSource} scale={scale} />
         <ShadowPlane />
-        {/* <OrbitControls
+        <OrbitControls
           autoRotate={false}
           enablePan={true}
           enableRotate={true}
           enableDamping={true}
           enableZoom={true}
-        /> */}
+          maxPolarAngle={Math.PI / 2}
+        />
       </Canvas>
     </div>
   );

@@ -71,18 +71,18 @@ function Home() {
           <NotateText type="circle">Climbing</NotateText>
         </div>
         <div
-          id="fishing"
+          id="survival"
           className="absolute bottom-1/8 right-1/8 "
-          onClick={() => navigate(`./shop?category=fishing`)}
+          onClick={() => navigate(`./shop?category=survival`)}
           onMouseEnter={() => {
-            setHovered("fishing");
+            setHovered("survival");
           }}
           onMouseLeave={() => {
             setHovered(null);
           }}
         >
           {/* <img src={fishImg} alt="" className="h-32 w-32" /> */}
-          <NotateText type="circle">Fishing</NotateText>
+          <NotateText type="circle">Survival</NotateText>
         </div>
         <div id="cart-link" onClick={() => navigate(`./cart`)}>
           <motion.img

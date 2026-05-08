@@ -26,9 +26,11 @@ function Home() {
   const multitoolImg = "/scavenger/assets/product-images/multitool.jpg";
   const bookCover = "/scavenger/assets/product-images/oldbookcover.png";
 
-  const backpackGLB = "/scavenger/betterbag.glb";
-  const multitoolGLB = "/scavenger/Multitool_fixed.glb";
-  const boxGLB = "/scavenger/box.glb";
+  const backpackGLB = "/scavenger/glb/betterbag.glb";
+  const coordGLB = "/scavenger/glb/coordFinal.glb";
+  const toteGLB = "/scavenger/glb/toteFinal.glb";
+  const multitoolGLB = "/scavenger/glb/Multitool_fixed.glb";
+  const boxGLB = "/scavenger/glb/box.glb";
 
   const items = [
     {
@@ -118,14 +120,15 @@ function Home() {
             className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]"
           >
             <div className="absolute z-40  ">
-              <motion.div
+              {/* <motion.div
                 className="absolute  h-96 w-96"
                 style={{ zIndex: 9999 }}
-                drag
+                // drag
                 dragConstraints={constraintRef}
               >
                 <ThreeModel modelSource={backpackGLB} scale={1.5} />
-              </motion.div>
+                <ThreeModel modelSource={coordGLB} scale={2.0} />
+              </motion.div> */}
               <Map />
             </div>
             <motion.div
@@ -150,12 +153,6 @@ function Home() {
                   Find top of the line gear for hiking, biking, camping and
                   more...
                 </h1>
-                {/* <div onClick={clickOpenMap}>
-                  <NotateText>begin your journey</NotateText>
-                </div> */}
-                <button onClick={() => console.log("cart")}>
-                  <NotateText>Open Cart</NotateText>
-                </button>
               </div>
             </motion.div>
           </div>
