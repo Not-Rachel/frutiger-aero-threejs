@@ -32,21 +32,50 @@ const House = "/scavenger/assets/home.png";
 const oldParchmentRight = "/scavenger/assets/old-parchment-edge-right.png";
 const oldParchmentLeft = "/scavenger/assets/old-parchment-edge-left.png";
 
+type MapState = "closed" | "open" | "halfOpen";
+
+const PANEL_ANIMATIONS: Record<
+  MapState,
+  {
+    left: Record<string, any>;
+    right: Record<string, any>;
+    middle: Record<string, any>;
+  }
+> = {
+  closed: {
+    left: { x: "0%" },
+    right: { x: "0%" },
+    middle: { clipPath: "inset(0 45% 0 45%)" },
+  },
+  open: {
+    left: { x: "-90%" },
+    right: { x: "90%" },
+    middle: { clipPath: "inset(0 0% 0 0%)" },
+  },
+  halfOpen: {
+    left: { x: "0%" },
+    right: { x: "90%" },
+    middle: { clipPath: "inset(0 0% 0 45%)" },
+  },
+};
+
 function Map() {
   const navigate = useNavigate();
 
-  const pageRef = useRef(null);
-
   const location = useLocation();
-  const rotateMap = location.pathname.includes("map");
+  const isMapRoute = location.pathname.includes("map");
 
   const [searchParams] = useSearchParams();
   const viewingProduct = searchParams.get("product");
   console.log("VIEWING PRODUCT", viewingProduct);
 
-  const [openMap, setOpenMap] = useState(rotateMap);
+  const mapState: MapState = viewingProduct
+    ? "halfOpen"
+    : isMapRoute
+      ? "open"
+      : "closed";
 
-  // const [searchParams] = useSearchParams();
+  const panels = PANEL_ANIMATIONS[mapState];
 
   return (
     <motion.div
@@ -56,35 +85,26 @@ function Map() {
       <motion.div
         className="saturate-75  relative  "
         transition={{ duration: 8, type: "spring" }}
-        initial={rotateMap ? {} : { rotate: "-90deg" }}
-        animate={rotateMap ? { rotate: "0deg" } : {}}
-        //   style={{ transformOrigin: "right center" }}
+        initial={isMapRoute ? {} : { rotate: "-90deg" }}
+        animate={isMapRoute ? { rotate: "0deg" } : {}}
       >
         <FadeIn>
           {(onLoad) => (
             <div className="relative w-[100%] h-screen flex items-center ">
               <div
                 className={`absolute w-full top-0 z-20 flex flex-row justify-end items-center ${
-                  openMap ? "pointer-events-none" : ""
+                  isMapRoute ? "pointer-events-none" : ""
                 }`}
               >
+                {/* LEFT PARCHMENT */}
                 <motion.div
-                  key={`left-${viewingProduct}`}
                   onLoad={onLoad}
-                  animate={
-                    viewingProduct ? { x: 0 } : openMap ? { x: "-90%" } : {}
-                  }
-                  initial={
-                    !openMap ? { x: 0 } : viewingProduct ? { x: "-90%" } : {}
-                  }
+                  animate={panels.left}
                   transition={{ duration: 4, type: "spring" }}
                   onClick={() => {
                     console.log(location.pathname);
-
                     navigate("scavenger/map");
-                    setOpenMap(true);
                   }}
-                  // onClick={() => navigate("map")}
                   className="h-[95vh] w-1/2 z-50 flex justify-end brightness-90 pointer-events-auto  "
                 >
                   <div className="relative h-full justify-center  flex items-center ">
@@ -99,21 +119,21 @@ function Map() {
                     />
                   </div>
                 </motion.div>
+                {/* RIGHT PARCHMENT */}
                 <motion.div
-                  // key={`right-${viewingProduct}`}
                   onLoad={onLoad}
-                  animate={!openMap ? {} : { x: "90%" }}
-                  initial={!openMap ? { x: 0 } : {}}
+                  animate={panels.right}
                   transition={{ duration: 4, type: "spring" }}
                   onClick={() => {
-                    openMap ? navigate("scavenger") : navigate("scavenger/map");
-                    setOpenMap((prev) => !prev);
+                    isMapRoute
+                      ? navigate("scavenger")
+                      : navigate("scavenger/map");
                   }}
                   className=" h-[95vh] w-1/2 z-50 flex justify-start brightness-90 pointer-events-auto  "
                 >
                   <div className="relative h-full justify-center  flex items-center ">
                     <button className="text-[7vh] absolute z-70 rotate-90 font-[Kashare] text-nowrap">
-                      {openMap ? "Close map" : "Open Map"}
+                      {isMapRoute ? "Close map" : "Open Map"}
                     </button>
                     <img
                       src={oldParchmentRight}
@@ -124,41 +144,14 @@ function Map() {
                   </div>
                 </motion.div>
               </div>
+              {/* MIDDLE PAGE */}
               <motion.div
-                // ref={pageRef}
-                key={`main-${viewingProduct}`}
-                // initial={
-                //   openMap
-                //     ? viewingProduct
-                //       ? { clipPath: "inset(0 22% 0 22%)" }
-                //       : { clipPath: "inset(0 45% 0 45%)" }
-                //     : {}
-                // }
-                // animate={
-                //   openMap
-                //     ? { scaleX: 1.0 }
-                //     : viewingProduct
-                //       ? { scaleX: 0.5 }
-                //       : {}
-                // }
-                animate={
-                  viewingProduct
-                    ? { clipPath: "inset(0 0% 0 45%)" }
-                    : openMap
-                      ? { clipPath: "inset(0 0% 0 0%)" }
-                      : { clipPath: "inset(0 45% 0 45%)" }
-                }
                 initial={
                   viewingProduct
                     ? { clipPath: "inset(0 0% 0 0%)" }
                     : { clipPath: "inset(0 45% 0 45%)" }
                 }
-                // openMap
-                //   ? { clipPath: "inset(0 0% 0 0%)" }
-                //   : viewingProduct
-                //     ? { clipPath: "inset(0 22% 0 22%)" }
-                //     : { clipPath: "inset(0 45% 0 45%)" }
-
+                animate={panels.middle}
                 transition={{ duration: 4, type: "spring" }}
                 onLoad={onLoad}
                 className="relative pointer-events-auto z-10 "
@@ -185,7 +178,7 @@ function Map() {
                           duration: 1,
                           ease: [0.25, 0.46, 0.45, 0.94],
                         }}
-                        className="w-full h-full border border-amber-300 absolute inset-0 overflow-y-scroll"
+                        className="w-full h-full absolute inset-0 overflow-y-scroll"
                       >
                         <Routes location={location} key={location.pathname}>
                           <Route path="scavenger/map" element={<Home />} />
