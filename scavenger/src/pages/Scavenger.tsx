@@ -13,6 +13,8 @@ function Home() {
 
   const constraintRef = useRef(null);
 
+  const logoPattern = "/scavenger/assets/logo-pattern.svg";
+
   //BACKGROUND -- bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_70%,rgba(0,0,0,1)_100%),url('/scavenger/assets/forestColor.jpg')]
   return (
     <div className="bg-black snap-mandatory snap-y overflow-hidden h-[100vh] flex flex-col no-scrollbar">
@@ -29,7 +31,12 @@ function Home() {
         easing="ease-out"
         initialOpacity={0}
       >
-        <section className="relative flex h-screen shadow-[inset_0_0_8px_8px_black]  bg-cover bg-no-repeat">
+        <section
+          className="relative flex h-screen bg-repeat"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.85), rgba(20,20,20,0.85)), url(${logoPattern})`,
+          }}
+        >
           <div
             ref={constraintRef}
             className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]"

@@ -20,6 +20,7 @@ function Cart() {
   const multitoolImg = "/scavenger/assets/product-images/multitool.jpg";
 
   const [cart, setCart] = useState<itemProps[]>([]);
+
   useEffect(() => {
     const items = localStorage.getItem("cart");
     console.log("CART:", items);
@@ -29,54 +30,18 @@ function Cart() {
     <div className="border-white h-full flex justify-center items-center  flex-col p-8 font-[Kashare] text-[7vh] tracking-widest overflow-y-scroll overflow-visible">
       <p>CART</p>
       <div className="  w-[90%] border overflow-scroll">
-        <div className=" flex flex-row">
-          <motion.img
-            whileHover={{ scale: 1.1, rotateZ: 10 }}
-            src={bagImg}
-            className="w-1/4  z-30 "
-            style={{ filter: "drop-shadow(2px 10px 2px rgba(0, 0, 0, 0.6))" }}
-            alt=""
-          />
-          <p className="text-[4vh] text-left ">
-            High-performance Backpack for hiking, camping, 2 liters of storage
-          </p>
-        </div>
-        <div className=" flex flex-row">
-          <img
-            src={toteImg}
-            className="w-1/4  z-30 "
-            style={{ filter: "drop-shadow(2px 10px 2px rgba(0, 0, 0, 0.6))" }}
-            alt=""
-          />
-          <p className="text-[4vh] text-left ">
-            Advanced storage system, carries what you can't.
-          </p>
-        </div>
-        <div className=" flex flex-row">
-          <img
-            src={fireImg}
-            className="w-1/4  z-30 "
-            style={{ filter: "drop-shadow(2px 10px 2px rgba(0, 0, 0, 0.6))" }}
-            alt=""
-          />
-          <div>
-            <p className="text-[4vh] text-left ">
-              Excellence fire starter, works just as well rain or shine
-            </p>
-            <button>Remove</button>
+        {cart.map((cartItem) => (
+          <div className=" flex flex-row">
+            <motion.img
+              whileHover={{ scale: 1.1, rotateZ: 10 }}
+              src={cartItem.image}
+              className="w-1/4  z-30 "
+              style={{ filter: "drop-shadow(2px 10px 2px rgba(0, 0, 0, 0.6))" }}
+              alt=""
+            />
+            <p className="text-[4vh] text-left ">{cartItem.text}</p>
           </div>
-        </div>
-        <div className=" flex flex-row">
-          <img
-            src={fireImg}
-            className="w-1/4  z-30 "
-            style={{ filter: "drop-shadow(2px 10px 2px rgba(0, 0, 0, 0.6))" }}
-            alt=""
-          />
-          <p className="text-[4vh] text-left ">
-            High-performance Backpack for hiking, camping, 2 liters of storage
-          </p>
-        </div>
+        ))}
       </div>
 
       {/* {cart.map((item) => {

@@ -108,9 +108,6 @@ function Map() {
                   className="h-[95vh] w-1/2 z-50 flex justify-end brightness-90 pointer-events-auto  "
                 >
                   <div className="relative h-full justify-center  flex items-center ">
-                    <button className="text-[7vh] text-red-100 absolute z-50 rotate-90 font-[Kashare] text-nowrap">
-                      {location.pathname !== "map" ? "Back Home" : ""}
-                    </button>
                     <img
                       src={oldParchmentLeft}
                       alt={"Old Parchment Left"}
