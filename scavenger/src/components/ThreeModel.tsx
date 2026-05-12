@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF, SoftShadows } from "@react-three/drei";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
 function Model({ modelSource, scale }: { modelSource: string; scale: number }) {
   const modelRef = useRef<THREE.Group>(null);
@@ -124,6 +124,12 @@ function ThreeModel({
   modelSource: string;
   scale: number;
 }) {
+  const [autoRotateEnabled, setAutoRotateEnabled] = useState(true);
+
+  const handleControlsStart = () => {
+    setAutoRotateEnabled(false);
+  };
+
   return (
     <div className="w-full h-full max-w-screen overflow-hidden">
       <Canvas
@@ -142,12 +148,13 @@ function ThreeModel({
         <Model2 modelSource={modelSource} scale={scale} />
         <ShadowPlane />
         <OrbitControls
-          autoRotate={false}
+          autoRotate={autoRotateEnabled}
           enablePan={true}
           enableRotate={true}
           enableDamping={true}
           enableZoom={true}
           maxPolarAngle={Math.PI / 2}
+          onStart={handleControlsStart}
         />
       </Canvas>
     </div>

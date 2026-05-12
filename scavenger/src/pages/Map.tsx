@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, scale } from "motion/react";
 import Page from "../components/Page";
 import FadeIn from "../components/FadeIn";
 import { useEffect, useRef, useState } from "react";
@@ -40,22 +40,26 @@ const PANEL_ANIMATIONS: Record<
     left: Record<string, any>;
     right: Record<string, any>;
     middle: Record<string, any>;
+    content: Record<string, any>;
   }
 > = {
   closed: {
     left: { x: "0%" },
     right: { x: "0%" },
     middle: { clipPath: "inset(0 45% 0 45%)" },
+    content: {},
   },
   open: {
     left: { x: "-90%" },
     right: { x: "90%" },
     middle: { clipPath: "inset(0 0% 0 0%)" },
+    content: {},
   },
   halfOpen: {
     left: { x: "0%" },
     right: { x: "90%" },
-    middle: { clipPath: "inset(0 0% 0 45%)" },
+    middle: { x: "45%", clipPath: "inset(0 45% 0 0%)" },
+    content: { width: "55%" },
   },
 };
 
@@ -143,6 +147,7 @@ function Map() {
               </div>
               {/* MIDDLE PAGE */}
               <motion.div
+                layout
                 initial={
                   viewingProduct
                     ? { clipPath: "inset(0 0% 0 0%)" }
@@ -162,28 +167,29 @@ function Map() {
 
                 <div className="absolute flex flex-row justify-center items-center inset-0 pointer-events-auto  ">
                   <div className="w-[90%]  z-50 flex-col   text-black pointer-events-auto h-full">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={location.pathname}
-                        initial={{ opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        exit={{
-                          opacity: 0,
-                          x: "50%",
-                        }}
-                        transition={{
-                          duration: 1,
-                          ease: [0.25, 0.46, 0.45, 0.94],
-                        }}
-                        className="w-full h-full absolute inset-0 overflow-y-scroll"
-                      >
-                        <Routes location={location} key={location.pathname}>
-                          <Route path="scavenger/map" element={<Home />} />
-                          <Route path="scavenger/map/cart" element={<Cart />} />
-                          <Route path="scavenger/map/shop" element={<Shop />} />
-                        </Routes>
-                      </motion.div>
-                    </AnimatePresence>
+                    {/* <AnimatePresence mode="wait"> */}
+                    <motion.div
+                      key={location.pathname}
+                      // initial={{ opacity: 0 }}
+                      // animate={{ x: 0, opacity: 1, }}
+                      // exit={{
+                      //   opacity: 0,
+                      //   x: "50%",
+                      // }}
+                      animate={panels.content}
+                      transition={{
+                        duration: 1,
+                        ease: [0.25, 0.46, 0.45, 0.94],
+                      }}
+                      className="w-full h-full absolute inset-0 overflow-y-scroll "
+                    >
+                      <Routes location={location} key={location.pathname}>
+                        <Route path="scavenger/map" element={<Home />} />
+                        <Route path="scavenger/map/cart" element={<Cart />} />
+                        <Route path="scavenger/map/shop" element={<Shop />} />
+                      </Routes>
+                    </motion.div>
+                    {/* </AnimatePresence> */}
                   </div>
                 </div>
               </motion.div>
