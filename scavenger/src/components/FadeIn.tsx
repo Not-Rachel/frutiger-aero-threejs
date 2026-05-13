@@ -1,6 +1,5 @@
-import { div } from "framer-motion/client";
 import { motion } from "motion/react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 interface FadeInProps {
   children: (onLoad: () => void) => ReactNode;

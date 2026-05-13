@@ -3,8 +3,8 @@ import Noise from "../components/Noise";
 import FadeContent from "../components/FadeContent";
 import Map from "./Map";
 
-import { AnimatePresence, motion } from "motion/react";
-import { use, useEffect, useRef, useState } from "react";
+import { motion } from "motion/react";
+import { useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 function Home() {
@@ -42,15 +42,6 @@ function Home() {
             className="w-full mt-8 mx-auto flex flex-col items-center text-center text-white [text-shadow:0_0_20px_black]"
           >
             <div className="absolute z-40  ">
-              {/* <motion.div
-                className="absolute  h-96 w-96"
-                style={{ zIndex: 9999 }}
-                // drag
-                dragConstraints={constraintRef}
-              >
-                <ThreeModel modelSource={backpackGLB} scale={1.5} />
-                <ThreeModel modelSource={coordGLB} scale={2.0} />
-              </motion.div> */}
               <Map />
             </div>
             <motion.div

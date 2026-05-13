@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import NotateText from "../components/NotateText";
 import { useNavigate } from "react-router-dom";
 import Xarrow from "react-xarrows";
-import { AnimatePresence, hover, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Trees from "../components/Trees";
 // import fishImg from "/assets/map-icons/fish-hook.png";
-const fishImg = "/scavenger/assets/map-icons/fish-hook.png";
-const fireImg = "/scavenger/assets/map-icons/Fire.gif";
-const hikerImg = "/scavenger/assets/map-icons/hiker.png";
-const mountImg = "/scavenger/assets/map-icons/mount3.png";
+// const fishImg = "/scavenger/assets/map-icons/fish-hook.png";
+// const fireImg = "/scavenger/assets/map-icons/Fire.gif";
+// const hikerImg = "/scavenger/assets/map-icons/hiker.png";
+// const mountImg = "/scavenger/assets/map-icons/mount3.png";
 const cabinImg = "/scavenger/assets/map-icons/cabin.png";
 
 function Home() {

@@ -1,38 +1,7 @@
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { OrbitControls, useGLTF, SoftShadows } from "@react-three/drei";
-import { useRef, useEffect, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
+import { useRef, useState } from "react";
 import * as THREE from "three";
-function Model({ modelSource, scale }: { modelSource: string; scale: number }) {
-  const modelRef = useRef<THREE.Group>(null);
-  const { scene } = useThree();
-  const { scene: gltfScene } = useGLTF(modelSource);
-
-  useEffect(() => {
-    console.log("Useeffect");
-    if (gltfScene && modelRef.current) {
-      const model = gltfScene.clone();
-      model.scale.set(scale, scale, scale);
-      model.rotateY(110);
-      model.castShadow = true;
-      modelRef.current = model;
-      console.log(modelRef.current);
-      scene.add(model);
-
-      return () => {
-        scene.remove(model);
-      };
-    }
-  }, [gltfScene, scale, scene]);
-
-  useFrame(({ clock }) => {
-    if (modelRef.current) {
-      modelRef.current.position.y =
-        Math.sin(clock.getElapsedTime() * 0.8) * 0.07;
-    }
-  });
-
-  return null;
-}
 
 function Model2({
   modelSource,
@@ -66,13 +35,6 @@ function Model2({
 
 function Lights() {
   const blueLightRef = useRef<THREE.PointLight>(null);
-
-  // useFrame(({ clock }) => {
-  //   if (blueLightRef.current) {
-  //     blueLightRef.current.position.y =
-  //       Math.sin(clock.getElapsedTime() * 0.8) * 0.07;
-  //   }
-  // });
 
   return (
     <>
@@ -144,7 +106,6 @@ function ThreeModel({
         }}
       >
         <Lights />
-        {/* <Model modelSource={modelSource} scale={scale} /> */}
         <Model2 modelSource={modelSource} scale={scale} />
         <ShadowPlane />
         <OrbitControls

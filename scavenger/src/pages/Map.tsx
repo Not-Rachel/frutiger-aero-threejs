@@ -1,34 +1,14 @@
-import { AnimatePresence, motion, scale } from "motion/react";
-import Page from "../components/Page";
+import { AnimatePresence, motion } from "motion/react";
 import FadeIn from "../components/FadeIn";
-import { useEffect, useRef, useState } from "react";
-import {
-  Route,
-  BrowserRouter as Router,
-  Routes,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 // import { round } from "three/src/nodes/TSL.js";
-import NotateText from "../components/NotateText";
 import Home from "./Home";
 import Cart from "./Cart";
-import { pre } from "framer-motion/client";
 import Shop from "./Shop";
-import Trees from "../components/Trees";
 import { useSearchParams } from "react-router-dom";
 
-interface itemProps {
-  key: number;
-  image: any;
-  name: string;
-  text: string;
-  model: string;
-}
-
 const oldParchment = "/scavenger/assets/old-parchment-center-l.png";
-const House = "/scavenger/assets/home.png";
 const oldParchmentRight = "/scavenger/assets/old-parchment-edge-right.png";
 const oldParchmentLeft = "/scavenger/assets/old-parchment-edge-left.png";
 
@@ -167,29 +147,28 @@ function Map() {
 
                 <div className="absolute flex flex-row justify-center items-center inset-0 pointer-events-auto  ">
                   <div className="w-[90%]  z-50 flex-col   text-black pointer-events-auto h-full">
-                    {/* <AnimatePresence mode="wait"> */}
-                    <motion.div
-                      key={location.pathname}
-                      // initial={{ opacity: 0 }}
-                      // animate={{ x: 0, opacity: 1, }}
-                      // exit={{
-                      //   opacity: 0,
-                      //   x: "50%",
-                      // }}
-                      animate={panels.content}
-                      transition={{
-                        duration: 1,
-                        ease: [0.25, 0.46, 0.45, 0.94],
-                      }}
-                      className="w-full h-full absolute inset-0 overflow-y-scroll "
-                    >
-                      <Routes location={location} key={location.pathname}>
-                        <Route path="scavenger/map" element={<Home />} />
-                        <Route path="scavenger/map/cart" element={<Cart />} />
-                        <Route path="scavenger/map/shop" element={<Shop />} />
-                      </Routes>
-                    </motion.div>
-                    {/* </AnimatePresence> */}
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={location.pathname}
+                        initial={{ opacity: 0 }}
+                        animate={{ x: 0, opacity: 1, ...panels.content }}
+                        exit={{
+                          opacity: 0,
+                          x: "50%",
+                        }}
+                        transition={{
+                          duration: 1,
+                          ease: [0.25, 0.46, 0.45, 0.94],
+                        }}
+                        className="w-full h-full absolute inset-0 overflow-y-scroll "
+                      >
+                        <Routes location={location} key={location.pathname}>
+                          <Route path="scavenger/map" element={<Home />} />
+                          <Route path="scavenger/map/cart" element={<Cart />} />
+                          <Route path="scavenger/map/shop" element={<Shop />} />
+                        </Routes>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
               </motion.div>

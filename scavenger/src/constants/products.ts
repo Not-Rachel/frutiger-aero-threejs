@@ -6,7 +6,7 @@ const toteImg = "/scavenger/assets/product-images/toteTorn.png";
 const fireImg = "/scavenger/assets/product-images/firestarter.png";
 const multitoolImg = "/scavenger/assets/product-images/multitoolTorn.png";
 
-export const items = [
+export const products = [
   {
     key: 0,
     image: bagImg,

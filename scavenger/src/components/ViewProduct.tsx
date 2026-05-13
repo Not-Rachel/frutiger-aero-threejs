@@ -3,71 +3,74 @@ import { createPortal } from "react-dom";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ThreeModel from "./ThreeModel";
 import { useEffect, useState } from "react";
-import { items } from "../constants/products";
+import { products } from "../constants/products";
 
-interface itemProps {
-  key: number;
-  image: any;
-  name: string;
-  category: string[];
-  text: string;
-  model: string | null;
-}
-function ViewProduct() {
+// interface itemProps {
+//   key: number;
+//   image: any;
+//   name: string;
+//   category: string[];
+//   text: string;
+//   model: string | null;
+// }
+function ViewProduct({
+  handleCart,
+  itemInCart,
+  productId,
+}: {
+  handleCart: (productId: number) => void;
+  itemInCart: boolean;
+  productId: number;
+}) {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const productId = searchParams.get("product");
+  // const productId = searchParams.get("product");
   const [model, setModel] = useState<null | string>(null);
-  const [itemInCart, setItemInCart] = useState<boolean>(false);
+  // // const [itemInCart, setItemInCart] = useState<boolean>(false);
 
   useEffect(() => {
-    if (productId) {
-      const item = items.find((i) => i.key === parseInt(productId));
-      if (item) {
-        setModel(item.model);
-      }
-    } else {
-      setModel(null);
-    }
+    const item = products.find((i) => i.key === productId);
+    if (item) setModel(item.model);
+    else setModel(null);
   }, [productId]);
 
-  const [cart, setCart] = useState<itemProps[]>([]);
+  // const [cart, setCart] = useState<itemProps[]>([]);
 
-  useEffect(() => {
-    const prevCart = localStorage.getItem("cart");
-    if (prevCart) {
-      setCart(JSON.parse(prevCart));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const prevCart = localStorage.getItem("cart");
+  //   if (prevCart) {
+  //     setCart(JSON.parse(prevCart));
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    if (productId) {
-      setItemInCart(
-        cart.some((cartItem) => cartItem.key === parseInt(productId)),
-      );
-    }
-  }, [cart, productId]);
+  // useEffect(() => {
+  //   if (productId) {
+  //     setItemInCart(
+  //       cart.some((cartItem) => cartItem.key === parseInt(productId)),
+  //     );
+  //   }
+  // }, [cart, productId]);
 
-  function handleCart(): void {
-    if (!productId) return;
+  // function handleCart(): void {
+  //   if (!productId) return;
 
-    const item = items[parseInt(productId)];
-    let newCart;
-    if (itemInCart) {
-      newCart = cart.filter((cartItem) => cartItem.key !== item.key);
-    } else {
-      newCart = [...cart, item];
-    }
+  //   const item = items[parseInt(productId)];
+  //   let newCart;
+  //   if (itemInCart) {
+  //     newCart = cart.filter((cartItem) => cartItem.key !== item.key);
+  //   } else {
+  //     newCart = [...cart, item];
+  //   }
 
-    setCart(newCart);
-    localStorage.setItem("cart", JSON.stringify(newCart));
+  //   setCart(newCart);
+  //   localStorage.setItem("cart", JSON.stringify(newCart));
 
-    // Close the product modal
-    const params = new URLSearchParams(searchParams);
-    params.delete("product");
-    navigate(`?${params.toString()}`);
-  }
+  //   // Close the product modal
+  //   const params = new URLSearchParams(searchParams);
+  //   params.delete("product");
+  //   navigate(`?${params.toString()}`);
+  // }
   return (
     model &&
     createPortal(
@@ -81,12 +84,19 @@ function ViewProduct() {
               const params = new URLSearchParams(searchParams);
               params.delete("product");
               navigate(`?${params.toString()}`);
+              // navigate(0);
             }}
             className=""
           >
             GO BACK
           </button>
-          <button onClick={handleCart} className="">
+          <button
+            onClick={() => {
+              console.log("Clicked", { productId });
+              handleCart(productId);
+            }}
+            className=""
+          >
             {itemInCart ? "REMOVE FROM CART" : "ADD TO CART"}
           </button>
         </div>

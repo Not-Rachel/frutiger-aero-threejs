@@ -1,14 +1,14 @@
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-import { items } from "../constants/products";
+import { products } from "../constants/products";
 import ProductList from "../components/ProductList";
 
 function Shop() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const category = searchParams.get("category");
-  const productId = searchParams.get("product");
+  // const productId = searchParams.get("product");
 
   const categories = ["hiking", "camping", "survival", "climbing"];
 
@@ -34,10 +34,13 @@ function Shop() {
           );
         })}
       </nav>
+      <button onClick={() => navigate("/scavenger/map/cart")}>
+        Go to cart
+      </button>
       <div className="overflow-y-scroll  flex-1 backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
         {category && (
           <ProductList
-            items={items.filter((item) => item.category.includes(category))}
+            items={products.filter((item) => item.category.includes(category))}
           />
         )}
       </div>
