@@ -170,6 +170,7 @@ function HomePage() {
   }
 
   function toggleAudio() {
+    setMusicPrompt(false);
     if (audioRef.current) {
       playMusic ? audioRef.current.pause() : audioRef.current.play();
       setPlayMusic((prev) => !prev);
@@ -183,6 +184,10 @@ function HomePage() {
         musicTracks.length,
     );
   }
+
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = 0.25;
+  }, []);
 
   // Avoid race conditions with playing next track
   useEffect(() => {
@@ -266,6 +271,10 @@ function HomePage() {
           // <VolumeSlider onChange={handleVolumeChange} />
           <input
             type="range"
+            defaultValue={
+              audioRef && audioRef.current ? audioRef.current.volume * 200 : 0.1
+            }
+            // defaultValue={50}
             onChange={(e) =>
               handleVolumeChange(Number(e.currentTarget.value) / 200)
             }
