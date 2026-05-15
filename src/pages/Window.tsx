@@ -6,33 +6,17 @@ import {
   useState,
   type CSSProperties,
   type Dispatch,
-  type JSX,
   type RefObject,
   type SetStateAction,
 } from "react";
-import Background from "../components/Background";
-import BlockStacking from "./BlockStacking";
-import DitherDemo from "./DitherDemo";
-import Offline from "./Offline";
-import PhysicsSim from "./PhysicsSim";
-// import Scavenger from "../../scavenger/src/pages/Scavenger";
-import ScavengerPortal from "./ScavengerPortal";
+
 import ui_1 from "/assets/audio/ui1.mp3";
 import TVOff from "/assets/audio/TVOff2.mp3";
-
-const routeMap: Record<string, JSX.Element> = {
-  offline: <Offline />,
-  dither: <DitherDemo />,
-  stacking: <BlockStacking />,
-  fish: <Background />,
-  physics: <PhysicsSim />,
-  scavenger: <ScavengerPortal />,
-};
 
 type WindowProps = {
   href: string;
   fullScreen: boolean;
-  //   showScreen: boolean;
+  component: any;
   zIndex: number;
   setFullScreen: Dispatch<SetStateAction<boolean>>;
   setNavToClose: Dispatch<SetStateAction<boolean>>;
@@ -43,6 +27,7 @@ type WindowProps = {
 
 function Window({
   href,
+  component,
   fullScreen,
   zIndex,
   setFullScreen,
@@ -59,8 +44,9 @@ function Window({
     width: window.innerWidth / 2,
     height: window.innerHeight * 0.9,
   });
-  const buttonSound1 = new Audio(ui_1);
-  const TVoffSound = new Audio(TVOff);
+  const buttonSound1 = useRef(new Audio(ui_1));
+  // const TVoffSound = new Audio(TVOff);
+  const TVoffSound = useRef(new Audio(TVOff));
 
   console.log(constraintsRef);
 
@@ -74,7 +60,8 @@ function Window({
   }, [dragScreenRef]);
 
   function closeScreen() {
-    TVoffSound.play();
+    TVoffSound.current.currentTime = 0; // rewind in case it was played before
+    TVoffSound.current.play();
     setFullScreen(false);
     setNavToClose(false);
     setShowScreen(false);
@@ -85,6 +72,8 @@ function Window({
     setShowScreen(true);
     window.open(`/${param}`, "_blank");
   }
+
+  const ProjectComponent = component;
 
   return (
     <motion.div
@@ -177,7 +166,7 @@ function Window({
                 </button>
                 <button
                   onClick={() => {
-                    buttonSound1.play();
+                    buttonSound1.current.play();
                     setFullScreen((prev) => !prev);
                     setNavToClose(false);
                   }}
@@ -206,7 +195,9 @@ function Window({
               onPointerDown={() => dragControls.cancel()}
             >
               <div className=" w-full h-full">
-                {routeMap[href] ?? (
+                {ProjectComponent ? (
+                  <ProjectComponent />
+                ) : (
                   <p className="text-white p-4">Not found: {href}</p>
                 )}
               </div>

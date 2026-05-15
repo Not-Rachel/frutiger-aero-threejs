@@ -1,5 +1,11 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import Window from "./Window";
 import itunes from "/assets/itunes.png";
 
@@ -10,10 +16,12 @@ import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 
 // Projects
+import Background from "../components/Background";
+import BlockStacking from "./BlockStacking";
 import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
-import BlockStacking from "./BlockStacking";
-import Background from "../components/Background";
+import PhysicsSim from "./PhysicsSim";
+import ScavengerPortal from "./ScavengerPortal";
 
 import { Resizable } from "re-resizable";
 
@@ -35,6 +43,7 @@ const PROJECT_DEFS: Record<
   scavenger: {
     title: "Scavenger",
     href: "scavenger",
+    component: ScavengerPortal,
     position: { x: 40, y: 40 },
   },
   offline: {
@@ -58,7 +67,7 @@ const PROJECT_DEFS: Record<
   physics: {
     title: "Physics Simulation",
     href: "physics",
-    component: Background,
+    component: PhysicsSim,
     position: { x: 200, y: 80 },
   },
 };
@@ -71,12 +80,13 @@ const musicTracks = [
   "/assets/audio/tracks/aphex_twin_WithMyFamily.mp3",
   "/assets/audio/tracks/EarlyMorningClissold.mp3",
   "/assets/audio/tracks/aphex_twin_I.mp3",
+  "/assets/audio/tracks/BlueCarpet.mp3",
+  "/assets/audio/tracks/rainworld_Breathing_Hyometer.mp3",
+  "/assets/audio/tracks/rainworld_Raindeer_Ride.mp3",
+  "/assets/audio/tracks/rainworld_sundown.mp3",
 ];
 
 const wallpaper = "/assets/meadow_wallpaper.mp4";
-
-const hoverSound = new Audio(hover);
-const clickLow = new Audio(click_low);
 
 function NavButton({
   active,
@@ -87,15 +97,21 @@ function NavButton({
   title: string;
   onClick: () => void;
 }) {
+  const hoverSound = useRef(new Audio(hover));
+  const clickLow = useRef(new Audio(click_low));
+  clickLow.current.volume = 0.7;
+  hoverSound.current.volume = 0.5;
+  // hoverSound.load();
+  // clickLow.load();
   return (
     <motion.button
       whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
       onClick={() => {
         // buttonClick();
-        clickLow.play();
+        clickLow.current.play();
         onClick();
       }}
-      onHoverStart={() => hoverSound.play()}
+      onHoverStart={() => hoverSound.current.play()}
       className=" aero p-1 text-amber-50 rounded-xl overflow-hidden"
       style={
         active
@@ -121,8 +137,6 @@ function HomePage() {
   const [zIndices, setZIndices] = useState<Record<string, number>>({});
 
   // const [showNav, setShowNav] = useState(true);
-  clickLow.volume = 0.7;
-  hoverSound.volume = 0.5;
 
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -178,11 +192,10 @@ function HomePage() {
   }, [currentTrack, playMusic]);
 
   const [volumeSlider, setVolumeSilder] = useState(false);
-  const [volume, setVolume] = useState(0.25);
 
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
-  }, [volume]);
+  const handleVolumeChange = useCallback((v: number) => {
+    if (audioRef.current) audioRef.current.volume = v;
+  }, []);
 
   const constraintsRef = useRef<HTMLDivElement>(null);
 
@@ -250,14 +263,13 @@ function HomePage() {
               : "Click icon to play music"}
           </motion.p>
         ) : (
+          // <VolumeSlider onChange={handleVolumeChange} />
           <input
             type="range"
-            id="volume-slider"
-            value={volume * 200}
-            onChange={(e: any) => {
-              setVolume(e.currentTarget.value / 200);
-            }}
-          ></input>
+            onChange={(e) =>
+              handleVolumeChange(Number(e.currentTarget.value) / 200)
+            }
+          />
         )}
       </motion.div>
       <div className="flex flex-row w-full">
@@ -412,6 +424,7 @@ function HomePage() {
               <Window
                 key={id}
                 href={def.href}
+                component={def.component}
                 zIndex={zIndices[id] ?? 1}
                 fullScreen={fullScreen}
                 setFullScreen={setFullscreen}
@@ -428,11 +441,12 @@ function HomePage() {
       </div>
 
       <video
-        className="absolute inset-0 z-0 w-full h-full object-cover"
+        className="absolute inset-0 z-0 w-full h-full object-cover will-change-transform"
         autoPlay={true}
         loop={true}
         muted={true}
-        // controls
+        playsInline
+        preload="auto"
       >
         <source src={wallpaper} type="video/mp4" />
         Your browser does not support the video tag.
