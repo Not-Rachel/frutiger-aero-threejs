@@ -13,7 +13,7 @@ function Shop() {
   const categories = ["hiking", "camping", "survival", "climbing"];
 
   return (
-    <div className=" w-full h-[90%] pt-8 px-16 font-[Daubmark] text-3xl  flex flex-col  ">
+    <div className="overflow-hidden  w-full h-[90%] pt-8 px-16 font-[Daubmark] text-3xl  flex flex-col  ">
       <nav className="flex flex-row gap-4 justify-center items-center ">
         {categories.map((cat) => {
           return (
@@ -37,7 +37,7 @@ function Shop() {
       <button onClick={() => navigate("/scavenger/map/cart")}>
         Go to cart
       </button>
-      <div className="overflow-y-scroll  flex-1 backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
+      <div className="overflow-y-auto scrollbar-transparent  flex-1 backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
         {category && (
           <ProductList
             items={products.filter((item) => item.category.includes(category))}

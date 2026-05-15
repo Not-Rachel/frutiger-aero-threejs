@@ -66,7 +66,7 @@ function ProductList({ items }: { items: itemProps[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-[90%] overflow-scroll backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
+    <div className="flex flex-col gap-4 w-[90%] overflow-hidden backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
       {items.map((item) => {
         return (
           <div key={item.key} className="flex flex-row gap-4 w-full">

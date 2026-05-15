@@ -7,6 +7,7 @@ import {
   type CSSProperties,
   type Dispatch,
   type JSX,
+  type RefObject,
   type SetStateAction,
 } from "react";
 import Background from "../components/Background";
@@ -37,6 +38,7 @@ type WindowProps = {
   setNavToClose: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   onFocus: () => void;
+  constraintsRef: RefObject<HTMLDivElement | null>;
 };
 
 function Window({
@@ -47,6 +49,7 @@ function Window({
   setNavToClose,
   onClose,
   onFocus,
+  constraintsRef,
 }: WindowProps) {
   const dragControls = useDragControls();
   const dragScreenRef = useRef<HTMLDivElement>(null!);
@@ -58,6 +61,8 @@ function Window({
   });
   const buttonSound1 = new Audio(ui_1);
   const TVoffSound = new Audio(TVOff);
+
+  console.log(constraintsRef);
 
   useEffect(() => {
     if (dragScreenRef.current) {
@@ -84,21 +89,16 @@ function Window({
   return (
     <motion.div
       ref={dragScreenRef}
-      // layout
+      layout
       drag={!fullScreen && showScreen}
-      dragConstraints={{
-        top: 0,
-        left: 0,
-        bottom: window.screen.height,
-        right: window.screen.width,
-      }}
+      // dragConstraints={constraintsRef}
       whileDrag={{
         boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
       }}
       dragControls={dragControls}
       dragMomentum={false}
       onPointerDown={onFocus}
-      // layoutDependency={!fullScreen}
+      layoutDependency={!fullScreen}
       transition={{
         duration: 0.5,
       }}

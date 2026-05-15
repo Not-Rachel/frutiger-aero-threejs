@@ -1,169 +1,158 @@
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import Window from "./Window";
 import itunes from "/assets/itunes.png";
 
-// import ui_1 from "/assets/audio/ui1.mp3";
 import hover from "/assets/audio/hover.mp3";
 import click_low from "/assets/audio/click_low.mp3";
 
 import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
+
+// Projects
 import DitherDemo from "./DitherDemo";
-// import Offline from "./Offline";
+import Offline from "./Offline";
 import BlockStacking from "./BlockStacking";
 import Background from "../components/Background";
+
 import { Resizable } from "re-resizable";
-import Offline from "./Offline";
 
-// import FluidGlass from "../components/LiquidGlass";
+const PROJECT_DEFS: Record<
+  string,
+  {
+    title: string;
+    href: string;
+    component?: React.ComponentType;
+    position: { x: number; y: number };
+  }
+> = {
+  dither: {
+    title: "Blue Dithering",
+    href: "dither",
+    component: DitherDemo,
+    position: { x: 0, y: 0 },
+  },
+  scavenger: {
+    title: "Scavenger",
+    href: "scavenger",
+    position: { x: 40, y: 40 },
+  },
+  offline: {
+    title: "Offline",
+    href: "offline",
+    component: Offline,
+    position: { x: 80, y: 80 },
+  },
+  stacking: {
+    title: "Block Stacking",
+    href: "stacking",
+    component: BlockStacking,
+    position: { x: 100, y: 80 },
+  },
+  fish: {
+    title: "Fish Swimming",
+    href: "fish",
+    component: Background,
+    position: { x: 200, y: 80 },
+  },
+  physics: {
+    title: "Physics Simulation",
+    href: "physics",
+    component: Background,
+    position: { x: 200, y: 80 },
+  },
+};
 
-// TODO: Add liquid glass effect to windows
+const PROJECT_IDS = Object.keys(PROJECT_DEFS) as (keyof typeof PROJECT_DEFS)[];
+
 const musicTracks = [
   "/assets/audio/tracks/aphex_twin_film.mp3",
+  "/assets/audio/tracks/aphex_twin_Nocares.mp3",
+  "/assets/audio/tracks/aphex_twin_WithMyFamily.mp3",
+  "/assets/audio/tracks/EarlyMorningClissold.mp3",
   "/assets/audio/tracks/aphex_twin_I.mp3",
-  "/assets/audio/tracks/sd_card_gallery.mp3",
 ];
 
 const wallpaper = "/assets/meadow_wallpaper.mp4";
 
+const hoverSound = new Audio(hover);
+const clickLow = new Audio(click_low);
+
+function NavButton({
+  active,
+  title,
+  onClick,
+}: {
+  active: boolean;
+  title: string;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
+      onClick={() => {
+        // buttonClick();
+        clickLow.play();
+        onClick();
+      }}
+      onHoverStart={() => hoverSound.play()}
+      className=" aero p-1 text-amber-50 rounded-xl overflow-hidden"
+      style={
+        active
+          ? ({ "--hue": 600, "--saturation": 0.8 } as React.CSSProperties)
+          : {}
+      }
+    >
+      {title}
+    </motion.button>
+  );
+}
+
 function HomePage() {
   const [playMusic, setPlayMusic] = useState(false);
+  const [musicPrompt, setMusicPrompt] = useState(true);
   const [currentTrack, setCurrentTrack] = useState(
     randInt(0, musicTracks.length - 1),
   );
-  const [playUI, setPlayUI] = useState(true);
+  // const [playUI, setPlayUI] = useState(true);
   const [navToClose, setNavToClose] = useState(false);
   const [fullScreen, setFullscreen] = useState(false);
+  const [activeProjects, setActiveProject] = useState<string[]>([]);
+  const [zIndices, setZIndices] = useState<Record<string, number>>({});
+
   // const [showNav, setShowNav] = useState(true);
-  const audioRef = useRef<HTMLAudioElement>(null);
-
-  // const buttonSound1 = new Audio(ui_1);
-  // const TVoffSound = new Audio(TVOff);
-
-  const hoverSound = new Audio(hover);
-  const clickLow = new Audio(click_low);
-  // TVoffSound.volume = 0.9;
   clickLow.volume = 0.7;
   hoverSound.volume = 0.5;
 
-  // function changeScreen(param: string) {
-  //   setShowScreen(true);
-  //   // navigate(`/${param}`);
-  // }
+  const audioRef = useRef<HTMLAudioElement>(null);
 
-  function NavButton({
-    title,
-    onClick,
-  }: {
-    title: string;
-
-    onClick: () => void;
-  }) {
-    return (
-      <motion.button
-        whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-        onClick={() => {
-          buttonClick();
-          onClick();
-        }}
-        onHoverStart={() => hoverSound.play()}
-        className=" aero p-1 text-amber-50 rounded-xl overflow-hidden"
-        // style={
-        //   showScreen && location.pathname === "/stacking"
-        //     ? ({ "--saturation": 0.5 } as CSSProperties)
-        //     : {}
-        // }
-      >
-        {title}
-      </motion.button>
-    );
-  }
-
-  const [projects, setProjects] = useState([
-    {
-      id: "dither",
-      title: "Blue Dithering",
-      href: "dither",
-      project: <DitherDemo />,
-      open: false,
-      position: { x: 0, y: 0 },
-      zIndex: 0,
-    },
-    {
-      id: "scavenger",
-      title: "Scavenger",
-      href: "scavenger",
-
-      open: false,
-      position: { x: 40, y: 40 },
-      zIndex: 0,
-    },
-    {
-      id: "offline",
-      title: "Offline",
-      href: "offline",
-      project: <Offline />,
-
-      open: false,
-      position: { x: 80, y: 80 },
-      zIndex: 0,
-    },
-    {
-      id: "stacking",
-      title: "Block Stacking",
-      href: "stacking",
-      project: <BlockStacking />,
-
-      open: false,
-      position: { x: 100, y: 80 },
-      zIndex: 0,
-    },
-    {
-      id: "fish",
-      title: "Fish Swimming",
-      href: "fish",
-      project: <Background />,
-
-      open: false,
-      position: { x: 200, y: 80 },
-      zIndex: 0,
-    },
-    {
-      id: "physics",
-      title: "Physics Simulation",
-      href: "physics",
-      project: <Background />,
-
-      open: false,
-      position: { x: 200, y: 80 },
-      zIndex: 0,
-    },
-  ]);
-
-  const [topZ, setTopZ] = useState(1);
+  const topZRef = useRef(1);
 
   function openProject(id: string) {
-    setTopZ((prev) => prev + 1);
-    setProjects((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, open: true, zIndex: topZ + 1 } : p,
-      ),
-    );
+    setMusicPrompt(false);
+    topZRef.current += 1;
+    setActiveProject((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    setZIndices((prev) => ({ ...prev, [id]: topZRef.current }));
   }
   function closeProject(id: string) {
-    setTopZ((prev) => prev + 1);
-    setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, open: false, zIndex: topZ } : p)),
-    );
-    console.log("Closed window:", id, projects);
+    setActiveProject((prev) => prev.filter((p) => p !== id));
+    console.log("Closed window:", id, activeProjects);
+    setZIndices((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  }
+
+  function resetProject(id: string) {
+    closeProject(id);
+    setTimeout(() => openProject(id), 0); // Delay so change is made
   }
 
   function bringToFront(id: string) {
-    setTopZ((prev) => prev + 1);
-    setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, zIndex: topZ + 1 } : p)),
-    );
+    topZRef.current += 1;
+    setZIndices((prev) => ({ ...prev, [id]: topZRef.current }));
+    console.log(topZRef.current);
   }
 
   function toggleAudio() {
@@ -188,17 +177,6 @@ function HomePage() {
     }
   }, [currentTrack, playMusic]);
 
-  function buttonClick() {
-    // changeScreen(path);
-    if (playUI) clickLow.play();
-  }
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
-    }
-  }, []);
-
   const [volumeSlider, setVolumeSilder] = useState(false);
   const [volume, setVolume] = useState(0.25);
 
@@ -206,9 +184,13 @@ function HomePage() {
     if (audioRef.current) audioRef.current.volume = volume;
   }, [volume]);
 
+  const constraintsRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className={`relative flex flex-col items-center  w-full h-full`}>
-      {/* <div className="absolute right-0 bottom-0 m-2 z-50"> */}
+    <div
+      ref={constraintsRef}
+      className={`relative flex flex-col items-center  w-full h-full`}
+    >
       <audio
         ref={audioRef}
         src={musicTracks[currentTrack]}
@@ -242,7 +224,7 @@ function HomePage() {
             src={itunes}
             alt=""
             onClick={toggleAudio}
-            onDoubleClick={() => setPlayUI(true)}
+            // onDoubleClick={() => setPlayUI(true)}
             animate={{ opacity: playMusic ? 1 : 0.4 }}
             className=" h-16 w-16 "
           />
@@ -268,9 +250,6 @@ function HomePage() {
               : "Click icon to play music"}
           </motion.p>
         ) : (
-          // <p className=" text-center z-50  text-white text-sm text-shadow-lg text-shadow-black/40">
-          //   set the volume
-          // </p>
           <input
             type="range"
             id="volume-slider"
@@ -281,125 +260,172 @@ function HomePage() {
           ></input>
         )}
       </motion.div>
-
-      {/* {!showScreen && ( */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: 1, scale: 1 }}
-        style={{ zIndex: 2 }}
-        className="absolute w-full flex flex-row  pointer-events-auto  "
-      >
-        {/* LARGE NAV */}
-        {!fullScreen && (
-          <div className="hidden sm:block">
-            <Resizable
-              defaultSize={{ width: window.screen.width / 8, height: "100vh" }}
-              enable={{
-                top: false,
-                right: true,
-                bottom: false,
-                left: false,
-                topRight: false,
-                bottomRight: false,
-                bottomLeft: false,
-                topLeft: false,
-              }}
-              minWidth={50}
-              maxWidth={300}
-              className="z-50  m-4"
-            >
-              <motion.nav
-                initial={{ scaleX: !fullScreen ? 0 : "100%" }}
-                animate={{
-                  scaleX: !fullScreen ? "100%" : 0,
-                  transition: {
-                    duration: 0.3,
-                  },
+      <div className="flex flex-row w-full">
+        {/*CONTENTS*/}
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          style={{ zIndex: 2 }}
+          className=" w-auto flex flex-row  pointer-events-auto  "
+        >
+          {/* LARGE NAV */}
+          {!fullScreen && (
+            <div className="hidden sm:block ">
+              <Resizable
+                defaultSize={{
+                  width: window.screen.width / 8,
+                  height: "100vh",
                 }}
-                layout
-                className="z-40 h-[95%] p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
-                style={{
-                  backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                enable={{
+                  top: false,
+                  right: true,
+                  bottom: false,
+                  left: false,
+                  topRight: false,
+                  bottomRight: false,
+                  bottomLeft: false,
+                  topLeft: false,
                 }}
+                minWidth={50}
+                maxWidth={300}
+                className="z-50  m-4"
               >
-                <div
-                  key={"menu"}
-                  className="flex flex-col gap-8 w-full   text-white font-extrabold "
+                <motion.nav
+                  initial={{ scaleX: !fullScreen ? 0 : "100%" }}
+                  animate={{
+                    scaleX: !fullScreen ? "100%" : 0,
+                    transition: {
+                      duration: 0.3,
+                    },
+                  }}
+                  // layout
+                  className="z-40 h-[95%] p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+                  style={{
+                    backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                  }}
                 >
-                  {projects.map((p) => {
-                    return (
-                      <NavButton
-                        onClick={() => openProject(p.id)}
-                        title={p.title}
-                      />
-                    );
-                  })}
-                </div>
-              </motion.nav>
-            </Resizable>
-          </div>
-        )}
-        <div className="w-full h-auto items-center  flex flex-col">
-          <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
-            Rachel Brinkman
-          </h1>
-
-          <motion.h2
-            initial={{ opacity: 0, y: "-100%" }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className=" w-full items-center flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
-          >
-            <a
-              href="https://github.com/Not-Rachel"
-              className="pointer-events-auto"
-            >
-              github.com/Not-Rachel
-            </a>
-            {/* SMALL NAV */}
-            <div className=" text-sm grid grid-cols-3 gap-1 sm:hidden mx-2">
-              {projects.map((p) => {
-                return (
-                  <NavButton
-                    onClick={() => openProject(p.id)}
-                    title={p.title}
-                  />
-                );
-              })}
+                  <div
+                    key={"menu"}
+                    className="flex flex-col gap-8 w-full   text-white font-extrabold "
+                  >
+                    {PROJECT_IDS.map((id) => {
+                      const isActive = activeProjects.includes(id);
+                      return (
+                        <NavButton
+                          key={id}
+                          active={isActive}
+                          onClick={() => {
+                            isActive ? resetProject(id) : openProject(id);
+                          }}
+                          title={PROJECT_DEFS[id].title}
+                        />
+                      );
+                    })}
+                  </div>
+                </motion.nav>
+              </Resizable>
             </div>
-          </motion.h2>
-        </div>
-      </motion.div>
-      {/* NAV */}
+          )}
+          <div className="absolute w-full h-auto items-center  flex flex-col">
+            <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
+              Rachel Brinkman
+            </h1>
 
-      <motion.div
-        layout
-        transition={{ duration: 0.3 }}
-        className=" flex  flex-row  w-full h-full "
-      >
-        {/* <AnimatePresence mode="wait"> */}
-
-        {/* MAIN SCREEN */}
-        {projects
-          .filter((p) => p.open)
-          .map((p) => {
-            console.log(p);
+            <motion.h2
+              initial={{ opacity: 0, y: "-100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className=" w-full items-center flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+            >
+              <a
+                href="https://github.com/Not-Rachel"
+                className="pointer-events-auto"
+              >
+                github.com/Not-Rachel
+              </a>
+              {/* SMALL NAV */}
+              <div className=" text-sm grid grid-cols-3 gap-1 sm:hidden mx-2">
+                {PROJECT_IDS.map((id) => {
+                  const isActive = activeProjects.includes(id);
+                  return (
+                    <NavButton
+                      key={id}
+                      active={isActive}
+                      onClick={() => {
+                        isActive ? resetProject(id) : openProject(id);
+                      }}
+                      title={PROJECT_DEFS[id].title}
+                    />
+                  );
+                })}
+              </div>
+              <AnimatePresence mode="wait">
+                {musicPrompt && (
+                  <motion.div
+                    initial={{ scaleY: 0 }}
+                    animate={{
+                      scaleY: "100%",
+                      y: "160%",
+                      transition: {
+                        duration: 0.3,
+                      },
+                    }}
+                    exit={{ scaleY: 0 }}
+                    className="z-40   p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col items-center "
+                    style={{
+                      backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                    }}
+                  >
+                    <h2>Play Music?</h2>
+                    <div className="flex justify-around w-full">
+                      <button
+                        onClick={() => {
+                          setPlayMusic(true);
+                          setMusicPrompt(false);
+                        }}
+                        className="aero px-1 rounded-lg"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        onClick={() => setMusicPrompt(false)}
+                        className="aero px-1 rounded-lg"
+                      >
+                        No
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.h2>
+          </div>
+        </motion.div>
+        {/* WINDOW AREA */}
+        <motion.main
+          // layout
+          transition={{ duration: 0.3 }}
+          className="border border-white flex  flex-row  w-full h-full "
+        >
+          {activeProjects.map((id) => {
+            const def = PROJECT_DEFS[id];
             return (
               <Window
-                href={p.href}
-                key={p.id}
+                key={id}
+                href={def.href}
+                zIndex={zIndices[id] ?? 1}
                 fullScreen={fullScreen}
                 setFullScreen={setFullscreen}
                 setNavToClose={setNavToClose}
                 onClose={() => {
-                  closeProject(p.id);
+                  closeProject(id);
                 }}
-                onFocus={() => bringToFront(p.id)}
-                zIndex={p.zIndex}
+                onFocus={() => bringToFront(id)}
+                constraintsRef={constraintsRef}
               />
             );
           })}
-      </motion.div>
+        </motion.main>
+      </div>
 
       <video
         className="absolute inset-0 z-0 w-full h-full object-cover"
