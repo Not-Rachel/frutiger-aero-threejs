@@ -42,11 +42,13 @@ function Window({
   const [lastScreenPosition, setLastScreenPosition] = useState({ x: 0, y: 0 });
   const [screenSize, setScreenSize] = useState({
     width: window.innerWidth / 2,
-    height: window.innerHeight * 0.9,
+    height: window.innerHeight / 2,
   });
   const buttonSound1 = useRef(new Audio(ui_1));
   // const TVoffSound = new Audio(TVOff);
   const TVoffSound = useRef(new Audio(TVOff));
+  // const firstDrag = useRef(false);
+  const [firstDrag, setFirstDrag] = useState(false); // TODO: use better hook?
 
   console.log(constraintsRef);
 
@@ -65,7 +67,6 @@ function Window({
     setFullScreen(false);
     setNavToClose(false);
     setShowScreen(false);
-    // onClose();
   }
 
   function changeScreen(param: string) {
@@ -84,6 +85,9 @@ function Window({
       whileDrag={{
         boxShadow: "0px 10px 20px rgba(0,0,0,0.2)",
       }}
+      onDrag={() => {
+        if (!firstDrag) setFirstDrag(true);
+      }}
       dragControls={dragControls}
       dragMomentum={false}
       onPointerDown={onFocus}
@@ -99,7 +103,7 @@ function Window({
       }}
       animate={
         !fullScreen
-          ? { width: screenSize.width, height: screenSize.height } // no animation when dragging
+          ? { width: screenSize.width, height: screenSize.height / 2 } // no animation when dragging
           : { x: 0, y: 0, width: "100vw", height: "100vh" }
       }
       style={{
@@ -107,7 +111,8 @@ function Window({
         y: lastScreenPosition.y,
         zIndex: zIndex,
       }}
-      className="absolute"
+      className={firstDrag || fullScreen ? "absolute" : ""}
+      // className="absolute"
     >
       <Resizable
         size={fullScreen ? { width: "100vw", height: "100vh" } : screenSize}
@@ -137,12 +142,12 @@ function Window({
         >
           <motion.div
             key={"projects"}
-            className="  text-white relative text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-900/90 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
+            className="   text-white relative text-2xl flex flex-col  w-full h-full items-center rounded-md bg-cyan-900/90 border-2 border-cyan-100 overflow-hidden  inset-shadow-sm inset-shadow-indigo-100 "
           >
             <motion.div
               layout
               data-drag-handle
-              className={`  flex  overflow-hidden left-0 justify-between items-start  ${!fullScreen ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
+              className={`flex  overflow-hidden left-0 justify-between items-start  ${!fullScreen ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
               style={
                 fullScreen ? { position: "absolute", top: 0, zIndex: 99 } : {}
               }
@@ -191,16 +196,14 @@ function Window({
             </motion.div>
 
             <div
-              className="overflow-y-scroll w-full h-full"
+              className="overflow-hidden w-full h-full"
               onPointerDown={() => dragControls.cancel()}
             >
-              <div className=" w-full h-full">
-                {ProjectComponent ? (
-                  <ProjectComponent />
-                ) : (
-                  <p className="text-white p-4">Not found: {href}</p>
-                )}
-              </div>
+              {ProjectComponent ? (
+                <ProjectComponent />
+              ) : (
+                <p className="text-white p-4">Not found: {href}</p>
+              )}
             </div>
           </motion.div>
         </motion.main>

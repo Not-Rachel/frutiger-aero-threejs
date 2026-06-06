@@ -64,3 +64,11 @@ export const products = [
     model: "/scavenger/glb/MultitoolFinal.glb",
   },
 ];
+
+// Preload each img
+if (typeof window !== "undefined") {
+  products.forEach(({ image }) => {
+    const img = new Image();
+    img.src = image;
+  });
+}

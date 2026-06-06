@@ -3,7 +3,7 @@ import {
   // extend,
   useFrame,
 } from "@react-three/fiber";
-import hdr from "/assets/puresky.hdr?url";
+import hdr from "/assets/citrus.hdr?url";
 import {
   Environment,
   // OrbitControls,
@@ -250,7 +250,7 @@ function OceanMesh() {
       // scale={1}
       // position={[0, -1, 0]}
     >
-      <planeGeometry args={[64, 64]} />
+      <planeGeometry args={[128, 128]} />
       <MeshReflectorMaterial
         blur={[400, 100]}
         resolution={1024}
@@ -353,6 +353,8 @@ function Background() {
         // linear
       >
         <Suspense fallback={null}>
+          {/* <pointLight position={[10, 10, 10]} color="yellow" intensity={1000} /> */}
+
           <Physics
             gravity={[0, 0.1, 0]}
             defaultContactMaterial={{ restitution: 1.0 }}

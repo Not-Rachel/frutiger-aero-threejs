@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, useGLTF } from "@react-three/drei";
-import { useRef, useState } from "react";
+import { OrbitControls, useGLTF, useProgress } from "@react-three/drei";
+import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 function Model2({
@@ -79,6 +79,29 @@ function ShadowPlane() {
   );
 }
 
+function LoadingOverlay() {
+  const { progress, active } = useProgress();
+
+  return (
+    <div
+      className="absolute inset-0 bg-black flex items-center justify-center transition-opacity duration-500"
+      style={{
+        opacity: active ? 1 : 0,
+        pointerEvents: active ? "auto" : "none",
+      }}
+    >
+      <div className="text-white text-center">
+        <div className="w-48 h-1  rounded-full">
+          <div
+            className="h-full bg-white rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-xs mt-2 opacity-60">{Math.round(progress)}%</p>
+      </div>
+    </div>
+  );
+}
 function ThreeModel({
   modelSource,
   scale,
@@ -91,6 +114,9 @@ function ThreeModel({
   const handleControlsStart = () => {
     setAutoRotateEnabled(false);
   };
+  useEffect(() => {
+    useGLTF.preload(modelSource);
+  }, [modelSource]);
 
   return (
     <div className="w-full h-full max-w-screen overflow-hidden">
@@ -100,13 +126,15 @@ function ThreeModel({
         shadows
         onCreated={({ gl }) => {
           gl.setClearColor(0x0, 0);
-          gl.shadowMap.enabled = true;
-          gl.shadowMap.type = THREE.PCFSoftShadowMap;
+          // gl.shadowMap.enabled = true;
+          // gl.shadowMap.type = THREE.PCFSoftShadowMap;
           gl.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         }}
       >
         <Lights />
-        <Model2 modelSource={modelSource} scale={scale} />
+        <Suspense fallback={null}>
+          <Model2 modelSource={modelSource} scale={scale} />
+        </Suspense>
         <ShadowPlane />
         <OrbitControls
           autoRotate={autoRotateEnabled}
@@ -118,6 +146,7 @@ function ThreeModel({
           onStart={handleControlsStart}
         />
       </Canvas>
+      <LoadingOverlay />
     </div>
   );
 }

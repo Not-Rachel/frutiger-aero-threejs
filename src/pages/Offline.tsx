@@ -8,7 +8,7 @@ function Offline() {
   const img7 = "/assets/offline_imgs/image7.gif";
   const img8 = "/assets/offline_imgs/image8.gif";
   return (
-    <div className="flex flex-col gap-8 p-8 pt-16 overflow-x-hidden w-full bg-black/20">
+    <div className="flex flex-col gap-8 p-8 pt-16 overflow-x-hidden overflow-y-scroll w-full bg-black/20">
       <p className="text-red-400">!!Page is not quite finished!!</p>
       <div className="text-5xl font-bold tracking-widest flex items-center">
         <FaPowerOff />

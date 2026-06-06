@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 
 import { products } from "../constants/products";
 import ProductList from "../components/ProductList";
+import { AnimatePresence, motion } from "motion/react";
 
 function Shop() {
   const [searchParams] = useSearchParams();
@@ -37,13 +38,24 @@ function Shop() {
       <button onClick={() => navigate("/scavenger/map/cart")}>
         Go to cart
       </button>
-      <div className="overflow-y-auto scrollbar-transparent  flex-1 backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
-        {category && (
-          <ProductList
-            items={products.filter((item) => item.category.includes(category))}
-          />
-        )}
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={category}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+          className="overflow-y-auto scrollbar-transparent  flex-1 backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] "
+        >
+          {category && (
+            <ProductList
+              items={products.filter((item) =>
+                item.category.includes(category),
+              )}
+            />
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

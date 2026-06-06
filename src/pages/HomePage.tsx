@@ -70,6 +70,30 @@ const PROJECT_DEFS: Record<
     component: PhysicsSim,
     position: { x: 200, y: 80 },
   },
+  ex: {
+    title: "null",
+    href: "null",
+    component: undefined,
+    position: { x: 200, y: 80 },
+  },
+  ex2: {
+    title: "null",
+    href: "null",
+    component: undefined,
+    position: { x: 200, y: 80 },
+  },
+  ex3: {
+    title: "null",
+    href: "null",
+    component: undefined,
+    position: { x: 200, y: 80 },
+  },
+  ex4: {
+    title: "null",
+    href: "null",
+    component: undefined,
+    position: { x: 200, y: 80 },
+  },
 };
 
 const PROJECT_IDS = Object.keys(PROJECT_DEFS) as (keyof typeof PROJECT_DEFS)[];
@@ -79,11 +103,11 @@ const musicTracks = [
   "/assets/audio/tracks/aphex_twin_Nocares.mp3",
   "/assets/audio/tracks/aphex_twin_WithMyFamily.mp3",
   "/assets/audio/tracks/EarlyMorningClissold.mp3",
-  "/assets/audio/tracks/aphex_twin_I.mp3",
   "/assets/audio/tracks/BlueCarpet.mp3",
   "/assets/audio/tracks/rainworld_Breathing_Hyometer.mp3",
   "/assets/audio/tracks/rainworld_Raindeer_Ride.mp3",
   "/assets/audio/tracks/rainworld_sundown.mp3",
+  "/assets/audio/tracks/rainworld_Open_Skies.mp3",
 ];
 
 const wallpaper = "/assets/meadow_wallpaper.mp4";
@@ -97,21 +121,21 @@ function NavButton({
   title: string;
   onClick: () => void;
 }) {
-  const hoverSound = useRef(new Audio(hover));
-  const clickLow = useRef(new Audio(click_low));
-  clickLow.current.volume = 0.7;
-  hoverSound.current.volume = 0.5;
-  // hoverSound.load();
-  // clickLow.load();
+  const hoverSound = new Audio(hover);
+  const clickLow = new Audio(click_low);
+  clickLow.volume = 0.7;
+  clickLow.load();
+  hoverSound.volume = 0.5;
+  hoverSound.load();
   return (
     <motion.button
       whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
       onClick={() => {
         // buttonClick();
-        clickLow.current.play();
+        clickLow.play();
         onClick();
       }}
-      onHoverStart={() => hoverSound.current.play()}
+      onHoverStart={() => hoverSound.play()}
       className=" aero p-1 text-amber-50 rounded-xl overflow-hidden"
       style={
         active
@@ -142,40 +166,42 @@ function HomePage() {
 
   const topZRef = useRef(1);
 
-  function openProject(id: string) {
+  const openProject = useCallback((id: string) => {
     setMusicPrompt(false);
     topZRef.current += 1;
     setActiveProject((prev) => (prev.includes(id) ? prev : [...prev, id]));
     setZIndices((prev) => ({ ...prev, [id]: topZRef.current }));
-  }
-  function closeProject(id: string) {
+  }, []);
+
+  const closeProject = useCallback((id: string) => {
     setActiveProject((prev) => prev.filter((p) => p !== id));
-    console.log("Closed window:", id, activeProjects);
     setZIndices((prev) => {
       const next = { ...prev };
       delete next[id];
       return next;
     });
-  }
+  }, []);
 
-  function resetProject(id: string) {
+  const resetProject = useCallback((id: string) => {
     closeProject(id);
     setTimeout(() => openProject(id), 0); // Delay so change is made
-  }
+  }, []);
 
-  function bringToFront(id: string) {
+  const bringToFront = useCallback((id: string) => {
     topZRef.current += 1;
     setZIndices((prev) => ({ ...prev, [id]: topZRef.current }));
     console.log(topZRef.current);
-  }
+  }, []);
 
-  function toggleAudio() {
+  const toggleAudio = useCallback(() => {
     setMusicPrompt(false);
     if (audioRef.current) {
-      playMusic ? audioRef.current.pause() : audioRef.current.play();
-      setPlayMusic((prev) => !prev);
+      setPlayMusic((prev) => {
+        prev ? audioRef.current!.pause() : audioRef.current!.play();
+        return !prev;
+      });
     }
-  }
+  }, []);
 
   function playNextTrack(steps = 1) {
     setCurrentTrack(
@@ -207,7 +233,7 @@ function HomePage() {
   return (
     <div
       ref={constraintsRef}
-      className={`relative flex flex-col items-center  w-full h-full`}
+      className={`relative flex flex-col items-center   w-full h-full`}
     >
       <audio
         ref={audioRef}
@@ -275,13 +301,14 @@ function HomePage() {
               audioRef && audioRef.current ? audioRef.current.volume * 200 : 0.1
             }
             // defaultValue={50}
+            className="bg-green-300"
             onChange={(e) =>
               handleVolumeChange(Number(e.currentTarget.value) / 200)
             }
           />
         )}
       </motion.div>
-      <div className="flex flex-row w-full">
+      <div className="flex sm:flex-row flex-col h-full w-full">
         {/*CONTENTS*/}
         <motion.div
           initial={{ opacity: 0, scale: 0 }}
@@ -291,81 +318,66 @@ function HomePage() {
         >
           {/* LARGE NAV */}
           {!fullScreen && (
-            <div className="hidden sm:block ">
-              <Resizable
-                defaultSize={{
-                  width: window.screen.width / 8,
-                  height: "100vh",
-                }}
-                enable={{
-                  top: false,
-                  right: true,
-                  bottom: false,
-                  left: false,
-                  topRight: false,
-                  bottomRight: false,
-                  bottomLeft: false,
-                  topLeft: false,
-                }}
-                minWidth={50}
-                maxWidth={300}
-                className="z-50  m-4"
-              >
-                <motion.nav
-                  initial={{ scaleX: !fullScreen ? 0 : "100%" }}
-                  animate={{
-                    scaleX: !fullScreen ? "100%" : 0,
-                    transition: {
-                      duration: 0.3,
-                    },
+            <div>
+              <div className="hidden sm:block ">
+                <Resizable
+                  defaultSize={{
+                    width: window.screen.width / 8,
+                    height: "100vh",
                   }}
-                  // layout
-                  className="z-40 h-[95%] p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
-                  style={{
-                    backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                  enable={{
+                    top: false,
+                    right: true,
+                    bottom: false,
+                    left: false,
+                    topRight: false,
+                    bottomRight: false,
+                    bottomLeft: false,
+                    topLeft: false,
                   }}
+                  minWidth={50}
+                  maxWidth={300}
+                  className="z-50  m-4"
                 >
-                  <div
-                    key={"menu"}
-                    className="flex flex-col gap-8 w-full   text-white font-extrabold "
+                  <motion.nav
+                    initial={{ scaleX: !fullScreen ? 0 : "100%" }}
+                    animate={{
+                      scaleX: !fullScreen ? "100%" : 0,
+                      transition: {
+                        duration: 0.3,
+                      },
+                    }}
+                    // layout
+                    className="z-40 h-[95%] p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col justify-between "
+                    style={{
+                      backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                    }}
                   >
-                    {PROJECT_IDS.map((id) => {
-                      const isActive = activeProjects.includes(id);
-                      return (
-                        <NavButton
-                          key={id}
-                          active={isActive}
-                          onClick={() => {
-                            isActive ? resetProject(id) : openProject(id);
-                          }}
-                          title={PROJECT_DEFS[id].title}
-                        />
-                      );
-                    })}
-                  </div>
-                </motion.nav>
-              </Resizable>
-            </div>
-          )}
-          <div className="absolute w-full h-auto items-center  flex flex-col">
-            <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
-              Rachel Brinkman
-            </h1>
-
-            <motion.h2
-              initial={{ opacity: 0, y: "-100%" }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className=" w-full items-center flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
-            >
-              <a
-                href="https://github.com/Not-Rachel"
-                className="pointer-events-auto"
-              >
-                github.com/Not-Rachel
-              </a>
+                    <div
+                      key={"menu"}
+                      className="flex flex-col gap-8 w-full   text-white font-extrabold "
+                    >
+                      {PROJECT_IDS.map((id) => {
+                        const isActive = activeProjects.includes(id);
+                        return (
+                          <NavButton
+                            key={id}
+                            active={isActive}
+                            onClick={() => {
+                              isActive ? resetProject(id) : openProject(id);
+                            }}
+                            title={PROJECT_DEFS[id].title}
+                          />
+                        );
+                      })}
+                    </div>
+                  </motion.nav>
+                </Resizable>
+              </div>
               {/* SMALL NAV */}
-              <div className=" text-sm grid grid-cols-3 gap-1 sm:hidden mx-2">
+              <div
+                className={`text-sm grid grid-cols-3 gap-1 sm:hidden mx-2 border z-50 pointer-events-auto`}
+              >
                 {PROJECT_IDS.map((id) => {
                   const isActive = activeProjects.includes(id);
                   return (
@@ -375,11 +387,32 @@ function HomePage() {
                       onClick={() => {
                         isActive ? resetProject(id) : openProject(id);
                       }}
+                      // onClick={() => {}}
                       title={PROJECT_DEFS[id].title}
                     />
                   );
                 })}
               </div>
+            </div>
+          )}
+          <div className="absolute w-full border h-auto items-center  flex flex-col">
+            <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
+              Rachel Brinkman
+            </h1>
+
+            <motion.h2
+              initial={{ opacity: 0, y: "-100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className=" items-center border flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+            >
+              <a
+                href="https://github.com/Not-Rachel"
+                className="pointer-events-auto"
+              >
+                github.com/Not-Rachel
+              </a>
+
               <AnimatePresence mode="wait">
                 {musicPrompt && (
                   <motion.div
@@ -424,8 +457,9 @@ function HomePage() {
         {/* WINDOW AREA */}
         <motion.main
           // layout
+          // ref={containerRef}
           transition={{ duration: 0.3 }}
-          className="border border-white flex  flex-row  w-full h-full "
+          className={`sm:grid sm:grid-cols-2 z-10  w-full h-full overflow-scroll `}
         >
           {activeProjects.map((id) => {
             const def = PROJECT_DEFS[id];

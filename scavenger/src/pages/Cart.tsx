@@ -24,7 +24,7 @@ function Cart() {
     if (items) setCart(JSON.parse(items));
   }, [productId]);
   return (
-    <div className=" h-full flex  items-center  flex-col p-8 font-[Daubmark] text-3xl  overflow-y-auto overflow-visible">
+    <div className=" h-full flex  items-center  flex-col p-8 font-[Daubmark] text-3xl   overflow-visible">
       <p className="font-[Kashare] tracking-wide text-[3vw] ">CART</p>
       <ProductList items={cart} />
     </div>
