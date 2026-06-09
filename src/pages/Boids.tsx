@@ -45,10 +45,18 @@ import { MathUtils, Object3D, type Object3DEventMap } from "three";
 // import { Color } from "three";
 
 const radius = 15;
-function randInt(min: number, max: number) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+// function randInt(min: number, max: number) {
+//   min = Math.ceil(min);
+//   max = Math.floor(max);
+//   return Math.floor(Math.random() * (max - min + 1)) + min;
+// }
+function randFloat(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
+
+// Avoid wrapping around an angle
+function shortestAngle(x: number, y: number) {
+  return ((x - y + Math.PI * 3) % (Math.PI * 2)) - Math.PI;
 }
 // const glsl = (x: any) => x;
 
@@ -68,6 +76,16 @@ function Boid(props: any) {
   const verticalTargetHeading = useRef(0);
   const lastTime = useRef(0);
   const nextInterval = useRef(2);
+
+  const obstacleRef = props.obstacleRef;
+  // function avoidCollision(position: Vector3) {
+
+  //   targetHeading.current = 0;
+  // }
+
+  // const forward = useRef<Vector3>(new Vector3(0, 0, 0));
+  // const target = useRef<Vector3>(new Vector3(0, 0, 0));
+
   useEffect(() => {
     if (fishRef.current) {
       fishRef.current.rotation.order = "YXZ";
@@ -81,38 +99,22 @@ function Boid(props: any) {
   }, []);
 
   useFrame(({ clock }, delta) => {
-    if (!fishRef.current) return;
+    if (!fishRef.current || !obstacleRef.current) return;
 
     const t = clock.getElapsedTime();
 
     const pos = fishRef.current.position;
+    const obPos = obstacleRef.current.position;
+    // const radius = 8;
 
     if (pos.length() > radius * 0.8) {
-      // Set heading and/or vertical heading to the opposite direction
-
+      // Set heading and/or vertical heading to avoid
       const angleToCenter = Math.atan2(-pos.x, -pos.z);
-
       const vertAngle = -Math.atan2(-pos.y, Math.sqrt(pos.x ** 2 + pos.z ** 2));
 
-      // console.log(
-      //   "position y",
-      //   pos.y,
-      //   "vert angle",
-      //   vertAngle,
-      //   "current",
-      //   verticalTargetHeading.current,
-      // );
-
       //Normalize
-      const headingDiff =
-        ((angleToCenter - targetHeading.current + Math.PI * 3) %
-          (Math.PI * 2)) -
-        Math.PI;
-
-      const vertDiff =
-        ((vertAngle - verticalTargetHeading.current + Math.PI * 3) %
-          (Math.PI * 2)) -
-        Math.PI;
+      const headingDiff = shortestAngle(angleToCenter, targetHeading.current);
+      const vertDiff = shortestAngle(vertAngle, verticalTargetHeading.current);
 
       targetHeading.current += headingDiff;
       verticalTargetHeading.current += vertDiff;
@@ -120,14 +122,26 @@ function Boid(props: any) {
       lastTime.current = t;
     } else if (t - lastTime.current > nextInterval.current) {
       const newHeading = (targetHeading.current =
-        heading.current + (Math.random() - 0.5) * 4);
+        heading.current + randFloat(-2, 2));
       verticalTargetHeading.current =
-        verticalHeading.current + (Math.random() - 0.5) * 0.5;
+        verticalHeading.current + randFloat(-0.25, 0.25);
 
       nextInterval.current = Math.abs(newHeading - heading.current) * 2.5;
       lastTime.current = t;
 
       // console.log(nextInterval.current, lastTime.current);
+    }
+
+    const obbyToFish = pos.clone().sub(obPos); //Subtract vectors
+    const distance = obbyToFish.length();
+    if (distance < 5) {
+      const force = 1 / distance ** 2;
+      // const repluse = obbyToFish.normalize().multiplyScalar(force);
+      // console.log("Too close to computer", repluse.length());
+
+      const repulseYaw = Math.atan2(obbyToFish.x, obbyToFish.z);
+      const headingDiff = shortestAngle(repulseYaw, heading.current);
+      targetHeading.current += headingDiff * force;
     }
 
     const lerpFactor = 1 - Math.pow(0.5, delta);
@@ -148,16 +162,6 @@ function Boid(props: any) {
       Math.cos(heading.current) * 0.03 * speedRef.current;
     fishRef.current.position.y +=
       Math.sin(-verticalHeading.current) * 0.03 * speedRef.current;
-
-    // if (pos.x > radius || pos.x < -radius) fishRef.current.position.x = -pos.x;
-    // if (pos.y > radius || pos.y < -radius) fishRef.current.position.y = -pos.y;
-    // if (pos.z > radius || pos.z < -radius) fishRef.current.position.z = -pos.z;
-    // if (pos.x > radius) fishRef.current.position.x = -radius;
-    // if (pos.x < -radius) fishRef.current.position.x = radius;
-    // if (pos.y > radius) fishRef.current.position.y = -radius;
-    // if (pos.y < -radius) fishRef.current.position.y = radius;
-    // if (pos.z > radius) fishRef.current.position.z = -radius;
-    // if (pos.z < -radius) fishRef.current.position.z = radius;
 
     fishRef.current.rotation.x = verticalHeading.current;
 
@@ -414,7 +418,7 @@ function Boids() {
                 key={i}
                 scale={7}
                 // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
-                speed={randInt(0.5, 5)}
+                speed={randFloat(0.75, 5)}
                 obstacleRef={puterRef}
                 position={[0, 0, 0]}
               />
