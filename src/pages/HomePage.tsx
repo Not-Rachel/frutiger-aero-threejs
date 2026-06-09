@@ -16,7 +16,8 @@ import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 
 // Projects
-import Background from "../components/Background";
+// import Background from "../components/Background";
+import Boids from "./Boids";
 import BlockStacking from "./BlockStacking";
 import DitherDemo from "./DitherDemo";
 import Offline from "./Offline";
@@ -61,7 +62,7 @@ const PROJECT_DEFS: Record<
   fish: {
     title: "Fish Swimming",
     href: "fish",
-    component: Background,
+    component: Boids,
     position: { x: 200, y: 80 },
   },
   physics: {
@@ -395,7 +396,7 @@ function HomePage() {
               </div>
             </div>
           )}
-          <div className="absolute w-full border h-auto items-center  flex flex-col">
+          <div className="absolute w-full  h-auto items-center  flex flex-col">
             <h1 className="sm:text-6xl text-4xl text-white/90 text-shadow-lg font-bolder   text-shadow-black/50  ">
               Rachel Brinkman
             </h1>
@@ -404,7 +405,7 @@ function HomePage() {
               initial={{ opacity: 0, y: "-100%" }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className=" items-center border flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
+              className=" items-center  flex flex-col text-white text-2xl font-semibold text-shadow-lg text-shadow-black/50"
             >
               <a
                 href="https://github.com/Not-Rachel"
@@ -425,9 +426,10 @@ function HomePage() {
                       },
                     }}
                     exit={{ scaleY: 0 }}
-                    className="z-40   p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col items-center "
+                    className="pointer-events-auto   p-2  rounded-md  border-2  border-cyan-100 overflow-hidden inset-shadow-sm inset-shadow-indigo-100  flex flex-col items-center "
                     style={{
                       backgroundColor: navToClose ? "#f3255151" : "#06B6D451",
+                      zIndex: 99,
                     }}
                   >
                     <h2>Play Music?</h2>
@@ -459,7 +461,7 @@ function HomePage() {
           // layout
           // ref={containerRef}
           transition={{ duration: 0.3 }}
-          className={`sm:grid sm:grid-cols-2 z-10  w-full h-full overflow-scroll `}
+          className={`sm:grid sm:grid-cols-2  border w-full h-full overflow-scroll `}
         >
           {activeProjects.map((id) => {
             const def = PROJECT_DEFS[id];

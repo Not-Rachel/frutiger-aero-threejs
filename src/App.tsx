@@ -5,7 +5,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import DitherDemo from "./pages/DitherDemo";
 import BlockStacking from "./pages/BlockStacking";
-import Background from "./components/Background";
+// import Background from "./components/Background";
+import Boids from "./pages/Boids";
+
 import PhysicsSim from "./pages/PhysicsSim";
 import Offline from "./pages/Offline";
 import { useEffect } from "react";
@@ -30,7 +32,7 @@ function App() {
           <Route path="/dither" element={<DitherDemo />} />
           <Route path="/offline" element={<Offline />} />
           <Route path="/stack" element={<BlockStacking />} />
-          <Route path="/fish" element={<Background />} />
+          <Route path="/fish" element={<Boids />} />
           <Route path="/physics" element={<PhysicsSim />} />
           <Route
             path="/scavenger/*"

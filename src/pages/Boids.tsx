@@ -1,0 +1,468 @@
+import {
+  Canvas,
+  // extend,
+  useFrame,
+  useThree,
+} from "@react-three/fiber";
+import hdr from "/assets/citrus.hdr?url";
+import {
+  Environment,
+  // OrbitControls,
+  MeshDistortMaterial,
+  MeshReflectorMaterial,
+  Float,
+  useGLTF,
+  useAnimations,
+  OrbitControls,
+  useProgress,
+  // shaderMaterial,
+} from "@react-three/drei";
+
+import fishModel from "/assets/scene.gltf?url";
+import puterModel from "/assets/retroComputer.gltf?url";
+// import * as YUKA from "yuka";
+import {
+  Suspense,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type JSX,
+} from "react";
+import { SkeletonUtils } from "three/examples/jsm/Addons.js";
+import { Physics, usePlane, useSphere } from "@react-three/cannon";
+// import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
+import {
+  // DepthOfField,
+  EffectComposer,
+  Vignette,
+  ChromaticAberration,
+  BrightnessContrast,
+} from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
+import { MathUtils, Object3D, type Object3DEventMap } from "three";
+// import { MeshRefractionMaterial } from "@react-three/drei/materials/MeshRefractionMaterial";
+// import { Color } from "three";
+
+const radius = 15;
+function randInt(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+// const glsl = (x: any) => x;
+
+function Boid(props: any) {
+  const gltf = useGLTF(fishModel);
+  const cloned = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
+  // cloned.matrixAutoUpdate = false;
+
+  const { actions } = useAnimations(gltf.animations, cloned);
+  const fishRef = useRef<Object3D<Object3DEventMap>>(null!);
+  // const vehicleRef = useRef<YUKA.Vehicle>(null!);
+  // const previousTimeRef = useRef<number>(0);
+  const speedRef = useRef(props.speed); // Adjust for larger/smaller circle
+  const heading = useRef(0);
+  const targetHeading = useRef(0);
+  const verticalHeading = useRef(0);
+  const verticalTargetHeading = useRef(0);
+  const lastTime = useRef(0);
+  const nextInterval = useRef(2);
+  useEffect(() => {
+    if (fishRef.current) {
+      fishRef.current.rotation.order = "YXZ";
+    }
+
+    const action = actions["Swim Animation"];
+    if (action) {
+      action.timeScale = speedRef.current / 7.0;
+      action.play();
+    }
+  }, []);
+
+  useFrame(({ clock }, delta) => {
+    if (!fishRef.current) return;
+
+    const t = clock.getElapsedTime();
+
+    const pos = fishRef.current.position;
+
+    if (pos.length() > radius * 0.8) {
+      // Set heading and/or vertical heading to the opposite direction
+
+      const angleToCenter = Math.atan2(-pos.x, -pos.z);
+
+      const vertAngle = -Math.atan2(-pos.y, Math.sqrt(pos.x ** 2 + pos.z ** 2));
+
+      // console.log(
+      //   "position y",
+      //   pos.y,
+      //   "vert angle",
+      //   vertAngle,
+      //   "current",
+      //   verticalTargetHeading.current,
+      // );
+
+      //Normalize
+      const headingDiff =
+        ((angleToCenter - targetHeading.current + Math.PI * 3) %
+          (Math.PI * 2)) -
+        Math.PI;
+
+      const vertDiff =
+        ((vertAngle - verticalTargetHeading.current + Math.PI * 3) %
+          (Math.PI * 2)) -
+        Math.PI;
+
+      targetHeading.current += headingDiff;
+      verticalTargetHeading.current += vertDiff;
+
+      lastTime.current = t;
+    } else if (t - lastTime.current > nextInterval.current) {
+      const newHeading = (targetHeading.current =
+        heading.current + (Math.random() - 0.5) * 4);
+      verticalTargetHeading.current =
+        verticalHeading.current + (Math.random() - 0.5) * 0.5;
+
+      nextInterval.current = Math.abs(newHeading - heading.current) * 2.5;
+      lastTime.current = t;
+
+      // console.log(nextInterval.current, lastTime.current);
+    }
+
+    const lerpFactor = 1 - Math.pow(0.5, delta);
+    heading.current = MathUtils.lerp(
+      heading.current,
+      targetHeading.current,
+      lerpFactor,
+    );
+    verticalHeading.current = MathUtils.lerp(
+      verticalHeading.current,
+      verticalTargetHeading.current,
+      lerpFactor,
+    );
+
+    fishRef.current.position.x +=
+      Math.sin(heading.current) * 0.03 * speedRef.current;
+    fishRef.current.position.z +=
+      Math.cos(heading.current) * 0.03 * speedRef.current;
+    fishRef.current.position.y +=
+      Math.sin(-verticalHeading.current) * 0.03 * speedRef.current;
+
+    // if (pos.x > radius || pos.x < -radius) fishRef.current.position.x = -pos.x;
+    // if (pos.y > radius || pos.y < -radius) fishRef.current.position.y = -pos.y;
+    // if (pos.z > radius || pos.z < -radius) fishRef.current.position.z = -pos.z;
+    // if (pos.x > radius) fishRef.current.position.x = -radius;
+    // if (pos.x < -radius) fishRef.current.position.x = radius;
+    // if (pos.y > radius) fishRef.current.position.y = -radius;
+    // if (pos.y < -radius) fishRef.current.position.y = radius;
+    // if (pos.z > radius) fishRef.current.position.z = -radius;
+    // if (pos.z < -radius) fishRef.current.position.z = radius;
+
+    fishRef.current.rotation.x = verticalHeading.current;
+
+    fishRef.current.rotation.y = heading.current;
+    // console.log(verticalHeading.current);
+  });
+
+  return <primitive ref={fishRef} object={cloned} {...props} />;
+}
+
+type PuterModelProps = Omit<JSX.IntrinsicElements["primitive"], "object">;
+
+function PuterModel({ ...props }: PuterModelProps) {
+  const gltf = useGLTF(puterModel);
+  const puterRef = useRef(null);
+  if (puterRef && puterRef.current) {
+    // console.log("Puter pos", puterRef.current.position, puterRef.current.scale);
+  }
+
+  return (
+    <primitive
+      ref={puterRef}
+      object={gltf.scene}
+      {...props}
+      onClick={(e: { stopPropagation: () => void }) => {
+        e.stopPropagation();
+      }}
+    />
+  );
+}
+
+function BubbleMesh() {
+  // const bubble = useRef<Object3D<Object3DEventMap>>(null!);
+
+  // useFrame(({ clock }) => {
+  //   if (bubble.current) {
+  //     bubble.current.position.y = Math.sin(clock.elapsedTime / 3.0);
+  //     bubble.current.position.x = Math.cos(clock.elapsedTime / 3.0);
+  //   }
+  //   // console.log("Frame");
+  // });
+
+  const [ref] = useSphere(() => ({
+    mass: 0.02,
+    position: [0, 1, -4],
+    velocity: [-1, Math.random() * 0.5, Math.random() * 0.5],
+  }));
+
+  return (
+    <Float floatIntensity={1} speed={0.5}>
+      <mesh ref={ref} scale={1} position={[0, 0, 0]}>
+        <sphereGeometry args={[1, 64, 64]} />
+        <MeshDistortMaterial
+          distort={0.25}
+          transmission={1.0}
+          thickness={-0.5}
+          roughness={0}
+          iridescence={1}
+          iridescenceIOR={1}
+          iridescenceThicknessRange={[0, 1200]}
+          clearcoat={1}
+          clearcoatRoughness={0}
+          envMapIntensity={1.5}
+        />
+      </mesh>
+    </Float>
+  );
+}
+
+// function Wall(props: any) {
+//   const [ref] = useBox(() => ({
+//     mass: 0,
+//     type: "Static",
+//     ...props,
+//   }));
+
+//   return (
+//     <mesh ref={ref}>
+//       <boxGeometry args={props.args} />
+//       <meshBasicMaterial
+//         color={"#ff5445"}
+//         wireframe={false}
+//         transparent={true}
+//         opacity={0}
+//       />
+//     </mesh>
+//   );
+// }
+
+function Cage(props: any) {
+  console.log("Radius", props.radius, props);
+  const [ref] = useSphere(() => ({
+    mass: 0,
+    type: "Static",
+    ...props,
+  }));
+  return (
+    <mesh ref={ref}>
+      <sphereGeometry args={props.args} />
+      <meshBasicMaterial wireframe={true} transparent={true} opacity={0.2} />
+    </mesh>
+  );
+}
+
+function OceanMesh() {
+  const [ref] = usePlane(() => ({
+    mass: 0,
+    rotation: [-Math.PI / 2, 0, 0],
+    position: [0, -1, 0],
+  }));
+
+  // const envMap = useEnvironment({ files: hdr });
+
+  return (
+    <mesh ref={ref}>
+      {/* <planeGeometry args={[16, 16]} /> */}
+      <planeGeometry args={[200, 200]} />
+      <MeshReflectorMaterial
+        // blur={[400, 221]}
+        resolution={512}
+        mixBlur={1}
+        mixStrength={4}
+        depthScale={1}
+        minDepthThreshold={0.85}
+        color={"#153333"}
+        roughness={0.2}
+        mirror={1}
+        metalness={0.5}
+        distortion={5}
+        blur={[256, 64]}
+        // envMap={envMap}
+        // envMapIntensity={0.0}
+      />
+      {/* <meshBasicMaterial color={"#094443"} /> */}
+    </mesh>
+  );
+}
+
+function LoadingOverlay() {
+  const { progress, active } = useProgress();
+
+  return (
+    <div
+      className="absolute inset-0 bg-black flex items-center justify-center transition-opacity duration-500"
+      style={{
+        opacity: active ? 1 : 0,
+        pointerEvents: active ? "auto" : "none",
+      }}
+    >
+      <div className="text-white text-center">
+        <div className="w-48 h-1 bg-white/20 rounded-full">
+          <div
+            className="h-full bg-white rounded-full transition-all duration-300"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <p className="text-xs mt-2 opacity-60">{Math.round(progress)}%</p>
+      </div>
+    </div>
+  );
+}
+
+function UnderwaterEffects() {
+  const { camera } = useThree();
+  const [isUnderwater, setIsUnderwater] = useState(false);
+
+  useFrame(() => {
+    setIsUnderwater(camera.position.y < -1); // below plane y
+  });
+
+  // if (!isUnderwater) return null;
+
+  return (
+    <EffectComposer>
+      {/* Teal fog tint */}
+
+      {/* <ColorAverage blendFunction={BlendFunction.COLOR} /> */}
+      {/* <DepthOfField
+        focusDistance={5}
+        focalLength={0.09}
+        bokehScale={1.2}
+        height={480}
+      /> */}
+      <ChromaticAberration
+        blendFunction={BlendFunction.AVERAGE}
+        offset={isUnderwater ? [0.005, 0.005] : [0.0, 0.0]}
+      />
+      <Vignette
+        eskil={false}
+        offset={isUnderwater ? 0.3 : 0}
+        darkness={isUnderwater ? 0.8 : 0}
+      />
+
+      <BrightnessContrast
+        brightness={isUnderwater ? -0.3 : 0.0} // brightness. min: -1, max: 1
+        contrast={0} // contrast: min -1, max: 1
+      />
+    </EffectComposer>
+  );
+}
+
+function Boids() {
+  const puterRef = useRef(null!);
+
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const observer = new ResizeObserver(() => {
+      window.dispatchEvent(new Event("resize"));
+    });
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ width: "100%", height: "100%" }}
+      className="relative border-2 border-white"
+    >
+      <Canvas
+        camera={{ fov: 65 }}
+        frameloop="demand"
+        gl={{
+          preserveDrawingBuffer: true,
+          powerPreference: "high-performance",
+          antialias: true,
+          alpha: false,
+        }}
+        onCreated={({ gl }) => {
+          gl.outputColorSpace = "srgb";
+          console.log("Window w h", window.innerWidth, window.innerHeight);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              window.dispatchEvent(new Event("resize"));
+            });
+          });
+        }}
+        style={{ width: "100%", height: "100%" }}
+        // linear
+      >
+        <Suspense fallback={null}>
+          {/* <pointLight position={[10, 10, 10]} color="yellow" intensity={1000} /> */}
+
+          <Physics
+            gravity={[0, 0.1, 0]}
+            defaultContactMaterial={{ restitution: 1.0 }}
+          >
+            {Array.from({ length: 40 }).map((_, i) => (
+              <Boid
+                key={i}
+                scale={7}
+                // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
+                speed={randInt(0.5, 5)}
+                obstacleRef={puterRef}
+                position={[0, 0, 0]}
+              />
+            ))}
+            <PuterModel
+              ref={puterRef}
+              scale={4}
+              position={[3, 0, -5]}
+              rotation={[0, -Math.PI / 1.3, Math.PI / 12]}
+            />
+            {/* <mesh>
+              <sphereGeometry args={[radius]} />
+              <meshBasicMaterial
+                wireframe={true}
+                transparent={true}
+                opacity={0.2}
+              />
+            </mesh> */}
+            <Cage position={[0, 0, 0]} args={[radius]} />
+
+            {/* <Box position={[0, 0, 0]} args={[16, 16, 0.2]} /> */}
+
+            <BubbleMesh />
+            <OceanMesh />
+            <OrbitControls
+              enableZoom={true}
+              maxDistance={50}
+              minDistance={1}
+              setPolarAngle={Math.PI / 6}
+              // minAzimuthAngle={-Math.PI / 4}
+              // maxAzimuthAngle={Math.PI / 4}
+              // minPolarAngle={Math.PI / 6}
+              // maxPolarAngle={Math.PI - Math.PI / 6}
+            />
+          </Physics>
+          <Environment
+            files={hdr}
+            backgroundBlurriness={0.03}
+            near={1}
+            far={100}
+            background={true}
+          />
+          <UnderwaterEffects />
+        </Suspense>
+      </Canvas>
+      <LoadingOverlay />
+    </div>
+  );
+}
+
+export default Boids;
