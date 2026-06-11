@@ -39,12 +39,9 @@ function ProductList({ items }: { items: itemProps[] }) {
   // }, [cart, productId]);
 
   function handleCart(productId: number): void {
-    console.log("HANDLE CART", { productId });
     if (productId === null) return;
 
     const item = products[productId];
-    console.log("HANDLE CART ITEM", { productId }, { item }, items);
-
     if (!item) return;
 
     let newCart;
@@ -87,13 +84,13 @@ function ProductList({ items }: { items: itemProps[] }) {
               />
             )}
             <div className="flex flex-col w-full">
-              <p className="text-4xl font-black text-left">{item.name}</p>
-              <p className="text-2xl text-left">{item.text}</p>
+              <p className="text-3xl font-semibold text-left">{item.name}</p>
+              <p className="text-xl text-left">{item.text}</p>
               <button
                 onClick={() => {
                   handleCart(item.key);
                 }}
-                className="text-red-900 pt-4"
+                className="text-red-900 pt-4 text-2xl"
               >
                 {cart.some((cartItem) => cartItem.key === item.key)
                   ? "Remove from Cart"

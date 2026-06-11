@@ -78,7 +78,7 @@ function ViewProduct({
         className="fixed inset-0  h-full w-1/2 "
         style={{ zIndex: 9999 }}
       >
-        <div className="absolute text-white bottom-1/16 z-50 text-5xl font-[Kashare] flex flex-row w-full justify-center gap-16">
+        <div className="absolute text-white bottom-1/16 z-50 font-[bleguk] text-5xl flex flex-row w-full justify-center gap-16">
           <button
             onClick={() => {
               const params = new URLSearchParams(searchParams);

@@ -8,9 +8,9 @@ import Cart from "./Cart";
 import Shop from "./Shop";
 import { useSearchParams } from "react-router-dom";
 
-const oldParchment = "/scavenger/assets/old-parchment-center-l.png";
-const oldParchmentRight = "/scavenger/assets/old-parchment-edge-right.png";
-const oldParchmentLeft = "/scavenger/assets/old-parchment-edge-left.png";
+const oldParchment = "/scavenger/assets/old-parchment-center-l.webp";
+const oldParchmentRight = "/scavenger/assets/old-parchment-edge-right.webp";
+const oldParchmentLeft = "/scavenger/assets/old-parchment-edge-left.webp";
 
 type MapState = "closed" | "open" | "halfOpen";
 
@@ -160,7 +160,7 @@ function Map() {
                           duration: 1,
                           ease: [0.25, 0.46, 0.45, 0.94],
                         }}
-                        className="w-full h-full absolute inset-0 overflow-y-scroll "
+                        className="w-full h-full absolute inset-0 overflow-hidden "
                       >
                         <Routes location={location} key={location.pathname}>
                           <Route path="scavenger/map" element={<Home />} />

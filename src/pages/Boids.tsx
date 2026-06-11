@@ -27,6 +27,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type RefObject,
   type JSX,
 } from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
@@ -40,7 +41,14 @@ import {
   BrightnessContrast,
 } from "@react-three/postprocessing";
 import { BlendFunction } from "postprocessing";
-import { MathUtils, Object3D, type Object3DEventMap } from "three";
+import {
+  MathUtils,
+  Object3D,
+  // Vector2,
+  Vector3,
+  type Object3DEventMap,
+} from "three";
+import { randInt } from "three/src/math/MathUtils.js";
 // import { MeshRefractionMaterial } from "@react-three/drei/materials/MeshRefractionMaterial";
 // import { Color } from "three";
 
@@ -60,7 +68,49 @@ function shortestAngle(x: number, y: number) {
 }
 // const glsl = (x: any) => x;
 
-function Boid(props: any) {
+function avoidCollision(
+  position: Vector3,
+  obstaclePosition: Vector3,
+  target: { current: number },
+  targetVertical: { current: number },
+  // speedRef: { current: number },
+  radius = 1,
+  maxForce = 0.25,
+) {
+  const obstacleToFish = position.clone().sub(obstaclePosition); //Subtract vectors
+  const distance = obstacleToFish.length();
+  if (distance < radius) {
+    // speedRef.current = Math.max(1.2, speedRef.current - 0.1 * maxForce);
+
+    const force = Math.min(1 / distance ** 2, maxForce); // cap the max force
+    const vforce = Math.min(1 / distance ** 2, 0.25); // cap the max force
+
+    const repulseYaw = Math.atan2(obstacleToFish.x, obstacleToFish.z);
+    const replusPitch = Math.atan2(
+      obstacleToFish.y,
+      Math.sqrt(obstacleToFish.x ** 2 + obstacleToFish.z ** 2),
+    );
+    const headingDiff = shortestAngle(repulseYaw, target.current);
+
+    const verticalHeadingDiff = shortestAngle(
+      replusPitch,
+      targetVertical.current,
+    );
+
+    target.current += headingDiff * force;
+    targetVertical.current += verticalHeadingDiff * vforce;
+  }
+  // else speedRef.current = Math.min(3, speedRef.current + 0.005);
+}
+
+type BoidProps = Omit<JSX.IntrinsicElements["primitive"], "object"> & {
+  speed: number;
+  obstacleRef: RefObject<Object3D>;
+  fishRefs: RefObject<Object3D[]>;
+  index: number;
+};
+
+function Boid({ speed, obstacleRef, fishRefs, index, ...props }: BoidProps) {
   const gltf = useGLTF(fishModel);
   const cloned = useMemo(() => SkeletonUtils.clone(gltf.scene), [gltf.scene]);
   // cloned.matrixAutoUpdate = false;
@@ -69,20 +119,21 @@ function Boid(props: any) {
   const fishRef = useRef<Object3D<Object3DEventMap>>(null!);
   // const vehicleRef = useRef<YUKA.Vehicle>(null!);
   // const previousTimeRef = useRef<number>(0);
-  const speedRef = useRef(props.speed); // Adjust for larger/smaller circle
+  const speedRef = useRef(speed); // Adjust for larger/smaller circle
   const heading = useRef(0);
   const targetHeading = useRef(0);
   const verticalHeading = useRef(0);
   const verticalTargetHeading = useRef(0);
   const lastTime = useRef(0);
   const nextInterval = useRef(2);
+  const { camera } = useThree();
 
-  const obstacleRef = props.obstacleRef;
-  // function avoidCollision(position: Vector3) {
+  // const obstacleRef = props.obstacleRef;
 
-  //   targetHeading.current = 0;
-  // }
-
+  useEffect(() => {
+    fishRefs.current[index] = fishRef.current;
+    // console.log(fishRefs.current);
+  }, []);
   // const forward = useRef<Vector3>(new Vector3(0, 0, 0));
   // const target = useRef<Vector3>(new Vector3(0, 0, 0));
 
@@ -96,7 +147,7 @@ function Boid(props: any) {
       action.timeScale = speedRef.current / 7.0;
       action.play();
     }
-  }, []);
+  }, [fishRef]);
 
   useFrame(({ clock }, delta) => {
     if (!fishRef.current || !obstacleRef.current) return;
@@ -132,17 +183,43 @@ function Boid(props: any) {
       // console.log(nextInterval.current, lastTime.current);
     }
 
-    const obbyToFish = pos.clone().sub(obPos); //Subtract vectors
-    const distance = obbyToFish.length();
-    if (distance < 5) {
-      const force = 1 / distance ** 2;
-      // const repluse = obbyToFish.normalize().multiplyScalar(force);
-      // console.log("Too close to computer", repluse.length());
-
-      const repulseYaw = Math.atan2(obbyToFish.x, obbyToFish.z);
-      const headingDiff = shortestAngle(repulseYaw, heading.current);
-      targetHeading.current += headingDiff * force;
+    // Fish avoid other fishes
+    // if (t - lastTime.current > 1 / speed / 10) {
+    for (let i = 0; i < fishRefs.current.length; i++) {
+      if (i === index) continue; // skip self
+      const otherFish = fishRefs.current[i];
+      if (!otherFish) continue;
+      avoidCollision(
+        pos,
+        otherFish.position,
+        targetHeading,
+        verticalTargetHeading,
+        // speedRef,
+        2,
+        0.2,
+      );
     }
+    // }
+
+    avoidCollision(
+      pos,
+      obPos,
+      targetHeading,
+      verticalTargetHeading,
+      // speedRef,
+      8,
+      3,
+    );
+
+    avoidCollision(
+      pos,
+      camera.position,
+      targetHeading,
+      verticalTargetHeading,
+      // speedRef,
+      10,
+      2,
+    );
 
     const lerpFactor = 1 - Math.pow(0.5, delta);
     heading.current = MathUtils.lerp(
@@ -176,7 +253,7 @@ type PuterModelProps = Omit<JSX.IntrinsicElements["primitive"], "object">;
 
 function PuterModel({ ...props }: PuterModelProps) {
   const gltf = useGLTF(puterModel);
-  const puterRef = useRef(null);
+  const puterRef = useRef<Object3D>(null);
   if (puterRef && puterRef.current) {
     // console.log("Puter pos", puterRef.current.position, puterRef.current.scale);
   }
@@ -230,26 +307,6 @@ function BubbleMesh() {
     </Float>
   );
 }
-
-// function Wall(props: any) {
-//   const [ref] = useBox(() => ({
-//     mass: 0,
-//     type: "Static",
-//     ...props,
-//   }));
-
-//   return (
-//     <mesh ref={ref}>
-//       <boxGeometry args={props.args} />
-//       <meshBasicMaterial
-//         color={"#ff5445"}
-//         wireframe={false}
-//         transparent={true}
-//         opacity={0}
-//       />
-//     </mesh>
-//   );
-// }
 
 function Cage(props: any) {
   console.log("Radius", props.radius, props);
@@ -364,9 +421,11 @@ function UnderwaterEffects() {
 }
 
 function Boids() {
-  const puterRef = useRef(null!);
+  const puterRef = useRef<Object3D>(null!);
 
   const containerRef = useRef(null);
+
+  const fishRefs = useRef<Object3D[]>([]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -416,11 +475,17 @@ function Boids() {
             {Array.from({ length: 40 }).map((_, i) => (
               <Boid
                 key={i}
-                scale={7}
+                fishRefs={fishRefs}
+                index={i}
                 // position={[randInt(-5, 5), randInt(-1, 1), randInt(-5, 5)]}
                 speed={randFloat(0.75, 5)}
                 obstacleRef={puterRef}
-                position={[0, 0, 0]}
+                position={[
+                  randInt(-radius, radius),
+                  0,
+                  randInt(-radius, radius),
+                ]}
+                scale={7}
               />
             ))}
             <PuterModel

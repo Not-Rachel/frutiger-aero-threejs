@@ -1,10 +1,10 @@
-const bagImg = "/scavenger/assets/product-images/bagDetail.png";
-const strawImg = "/scavenger/assets/product-images/filterstrawTorn.png";
-const balmImg = "/scavenger/assets/product-images/balmTorn.png";
-const coordImg = "/scavenger/assets/product-images/coordTorn.png";
-const toteImg = "/scavenger/assets/product-images/toteTorn.png";
-const fireImg = "/scavenger/assets/product-images/firestarter.png";
-const multitoolImg = "/scavenger/assets/product-images/multitoolTorn.png";
+const bagImg = "/scavenger/assets/product-images/bagDetail.webp";
+const strawImg = "/scavenger/assets/product-images/filterstrawTorn.webp";
+const balmImg = "/scavenger/assets/product-images/balmTorn.webp";
+const coordImg = "/scavenger/assets/product-images/coordTorn.webp";
+const toteImg = "/scavenger/assets/product-images/toteTorn.webp";
+const fireImg = "/scavenger/assets/product-images/firestarter.webp";
+const multitoolImg = "/scavenger/assets/product-images/multitoolTorn.webp";
 
 export const products = [
   {

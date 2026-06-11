@@ -14,7 +14,7 @@ function Shop() {
   const categories = ["hiking", "camping", "survival", "climbing"];
 
   return (
-    <div className="overflow-hidden  w-full h-[90%] pt-8 px-16 font-[Daubmark] text-3xl  flex flex-col  ">
+    <div className="overflow-hidden  w-full h-[90%] pt-8 px-16  text-3xl  flex flex-col  ">
       <nav className="flex flex-row gap-4 justify-center items-center ">
         {categories.map((cat) => {
           return (
@@ -24,11 +24,7 @@ function Shop() {
                 params.set("category", cat);
                 navigate(`?${params.toString()}`);
               }}
-              className={
-                cat === category
-                  ? "font-[Kashare] tracking-wide text-[3vw]"
-                  : ""
-              }
+              className={cat === category ? "text-red-950" : ""}
             >
               {cat}
             </button>

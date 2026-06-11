@@ -4,17 +4,18 @@ import { useNavigate } from "react-router-dom";
 import Xarrow from "react-xarrows";
 import { AnimatePresence, motion } from "framer-motion";
 import Trees from "../components/Trees";
-// import fishImg from "/assets/map-icons/fish-hook.png";
-// const fishImg = "/scavenger/assets/map-icons/fish-hook.png";
-// const fireImg = "/scavenger/assets/map-icons/Fire.gif";
-// const hikerImg = "/scavenger/assets/map-icons/hiker.png";
-// const mountImg = "/scavenger/assets/map-icons/mount3.png";
-const cabinImg = "/scavenger/assets/map-icons/cabin.png";
+const cabinImg = "/scavenger/assets/map-icons/cabin.webp";
 
 function Home() {
   const navigate = useNavigate();
   const [hovered, setHovered] = useState<string | null>(null);
   const [redrawTrigger, setRedrawTrigger] = useState(0);
+
+  // Preload cabin image
+  useEffect(() => {
+    const img = new Image();
+    img.src = cabinImg;
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,10 +29,10 @@ function Home() {
     <>
       <Trees />
 
-      <div className="flex z-50 font-[Kashare] lg:text-5xl  md:text-4xl text-3xl flex-1 justify-center items-center h-full w-full pointer-events-auto">
+      <div className="flex z-50  lg:text-5xl font-[Kashare]  md:text-4xl text-3xl flex-1 justify-center items-center h-full w-full pointer-events-auto">
         <div
           id="camping"
-          className="absolute top-1/8 left-1/8 "
+          className="absolute top-1/8 left-1/8  "
           onClick={() => navigate(`./shop?category=camping`)}
           onMouseEnter={() => {
             setHovered("camping");

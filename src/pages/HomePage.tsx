@@ -20,7 +20,7 @@ import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
 import Boids from "./Boids";
 import BlockStacking from "./BlockStacking";
 import DitherDemo from "./DitherDemo";
-import Offline from "./Offline";
+// import Offline from "./Offline";
 import PhysicsSim from "./PhysicsSim";
 import ScavengerPortal from "./ScavengerPortal";
 
@@ -47,12 +47,12 @@ const PROJECT_DEFS: Record<
     component: ScavengerPortal,
     position: { x: 40, y: 40 },
   },
-  offline: {
-    title: "Offline",
-    href: "offline",
-    component: Offline,
-    position: { x: 80, y: 80 },
-  },
+  // offline: {
+  //   title: "Offline",
+  //   href: "offline",
+  //   component: Offline,
+  //   position: { x: 80, y: 80 },
+  // },
   stacking: {
     title: "Block Stacking",
     href: "stacking",
@@ -71,30 +71,30 @@ const PROJECT_DEFS: Record<
     component: PhysicsSim,
     position: { x: 200, y: 80 },
   },
-  ex: {
-    title: "null",
-    href: "null",
-    component: undefined,
-    position: { x: 200, y: 80 },
-  },
-  ex2: {
-    title: "null",
-    href: "null",
-    component: undefined,
-    position: { x: 200, y: 80 },
-  },
-  ex3: {
-    title: "null",
-    href: "null",
-    component: undefined,
-    position: { x: 200, y: 80 },
-  },
-  ex4: {
-    title: "null",
-    href: "null",
-    component: undefined,
-    position: { x: 200, y: 80 },
-  },
+  // ex: {
+  //   title: "null",
+  //   href: "null",
+  //   component: undefined,
+  //   position: { x: 200, y: 80 },
+  // },
+  // ex2: {
+  //   title: "null",
+  //   href: "null",
+  //   component: undefined,
+  //   position: { x: 200, y: 80 },
+  // },
+  // ex3: {
+  //   title: "null",
+  //   href: "null",
+  //   component: undefined,
+  //   position: { x: 200, y: 80 },
+  // },
+  // ex4: {
+  //   title: "null",
+  //   href: "null",
+  //   component: undefined,
+  //   position: { x: 200, y: 80 },
+  // },
 };
 
 const PROJECT_IDS = Object.keys(PROJECT_DEFS) as (keyof typeof PROJECT_DEFS)[];

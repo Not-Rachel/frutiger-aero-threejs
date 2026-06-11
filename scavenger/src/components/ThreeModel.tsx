@@ -84,7 +84,7 @@ function LoadingOverlay() {
 
   return (
     <div
-      className="absolute inset-0 bg-black flex items-center justify-center transition-opacity duration-500"
+      className="absolute inset-0  flex items-center justify-center transition-opacity duration-500"
       style={{
         opacity: active ? 1 : 0,
         pointerEvents: active ? "auto" : "none",
