@@ -25,7 +25,7 @@ function Cart() {
   }, [productId]);
   return (
     <div className=" h-full flex  items-center  flex-col p-8 text-3xl   overflow-visible">
-      <p className=" tracking-wide text-[3vw] ">CART</p>
+      <p className=" tracking-wide text-[3vw] font-[Kashare] text-6xl ">CART</p>
       <ProductList items={cart} />
     </div>
   );

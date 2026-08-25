@@ -14,8 +14,8 @@ function Shop() {
   const categories = ["hiking", "camping", "survival", "climbing"];
 
   return (
-    <div className="overflow-hidden  w-full h-[90%] pt-8 px-16  text-3xl  flex flex-col  ">
-      <nav className="flex flex-row gap-4 justify-center items-center ">
+    <div className="font-[Kashare] overflow-hidden  w-full h-[90%] pt-8 px-16  text-3xl  flex flex-col  ">
+      <nav className="flex flex-row  justify-around  text-6xl ">
         {categories.map((cat) => {
           return (
             <button

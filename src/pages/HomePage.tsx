@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import {
+  // createRef,
   useCallback,
   useEffect,
   useRef,
@@ -14,6 +15,7 @@ import click_low from "/assets/audio/click_low.mp3";
 
 import { randInt } from "three/src/math/MathUtils.js";
 import { PiCaretDoubleRightFill, PiCaretDoubleLeftFill } from "react-icons/pi";
+// import { TbEye } from "react-icons/tb";
 
 // Projects
 // import Background from "../components/Background";
@@ -31,6 +33,7 @@ const PROJECT_DEFS: Record<
   {
     title: string;
     href: string;
+    information: string;
     component?: React.ComponentType;
     position: { x: number; y: number };
   }
@@ -38,36 +41,42 @@ const PROJECT_DEFS: Record<
   dither: {
     title: "Blue Dithering",
     href: "dither",
+    information: "Blue dithering shader post-processing effect",
     component: DitherDemo,
     position: { x: 0, y: 0 },
   },
   scavenger: {
     title: "Scavenger",
     href: "scavenger",
+    information: "Information of the project",
     component: ScavengerPortal,
     position: { x: 40, y: 40 },
   },
   // offline: {
   //   title: "Offline",
   //   href: "offline",
+  //   information: "Information of the project",
   //   component: Offline,
   //   position: { x: 80, y: 80 },
   // },
   stacking: {
     title: "Block Stacking",
     href: "stacking",
+    information: "Information of the project",
     component: BlockStacking,
     position: { x: 100, y: 80 },
   },
   fish: {
     title: "Fish Swimming",
     href: "fish",
+    information: "Information of the project",
     component: Boids,
     position: { x: 200, y: 80 },
   },
   physics: {
     title: "Physics Simulation",
     href: "physics",
+    information: "Information of the project",
     component: PhysicsSim,
     position: { x: 200, y: 80 },
   },
@@ -113,36 +122,52 @@ const musicTracks = [
 
 const wallpaper = "/assets/meadow_wallpaper.mp4";
 
+type NavButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  active?: boolean;
+  title: string;
+  onHoverStart?: () => void;
+};
+
 function NavButton({
   active,
   title,
+  onHoverStart,
   onClick,
-}: {
-  active: boolean;
-  title: string;
-  onClick: () => void;
-}) {
-  const hoverSound = new Audio(hover);
-  const clickLow = new Audio(click_low);
-  clickLow.volume = 0.7;
-  clickLow.load();
-  hoverSound.volume = 0.5;
-  hoverSound.load();
+  onMouseEnter,
+  onMouseLeave,
+}: NavButtonProps) {
+  const hoverSoundRef = useRef(new Audio(hover));
+  const clickSoundRef = useRef(new Audio(click_low));
+
+  useEffect(() => {
+    clickSoundRef.current.volume = 0.7;
+    hoverSoundRef.current.volume = 0.5;
+    clickSoundRef.current.load();
+    hoverSoundRef.current.load();
+  }, []);
+
   return (
     <motion.button
       whileHover={{ scale: 1.1, transition: { duration: 0.01 } }}
-      onClick={() => {
+      onClick={(e) => {
         // buttonClick();
-        clickLow.play();
-        onClick();
+        clickSoundRef.current.play();
+        onClick?.(e);
       }}
-      onHoverStart={() => hoverSound.play()}
-      className=" aero p-1 text-amber-50 rounded-xl overflow-hidden"
-      style={
-        active
-          ? ({ "--hue": 600, "--saturation": 0.8 } as React.CSSProperties)
-          : {}
-      }
+      onMouseEnter={(e) => {
+        hoverSoundRef.current.play();
+        onHoverStart?.();
+        onMouseEnter?.(e);
+      }}
+      onMouseLeave={(e) => {
+        onMouseLeave?.(e);
+      }}
+      className={`opacity-70 aero p-1 text-amber-50 rounded-xl ${active && "opacity-100"}  `}
+      // style={
+      //   active
+      //     ? ({ "--hue": 600, "--saturation": 0.8 } as React.CSSProperties)
+      //     : {}
+      // }
     >
       {title}
     </motion.button>
@@ -159,6 +184,8 @@ function HomePage() {
   const [navToClose, setNavToClose] = useState(false);
   const [fullScreen, setFullscreen] = useState(false);
   const [activeProjects, setActiveProject] = useState<string[]>([]);
+  const [focusedProject, setFocusedProject] = useState<string | null>(null);
+
   const [zIndices, setZIndices] = useState<Record<string, number>>({});
 
   // const [showNav, setShowNav] = useState(true);
@@ -168,6 +195,9 @@ function HomePage() {
   const topZRef = useRef(1);
 
   const openProject = useCallback((id: string) => {
+    // if open already
+    // signal to Window to be shown (if not already)
+
     setMusicPrompt(false);
     topZRef.current += 1;
     setActiveProject((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -183,10 +213,10 @@ function HomePage() {
     });
   }, []);
 
-  const resetProject = useCallback((id: string) => {
-    closeProject(id);
-    setTimeout(() => openProject(id), 0); // Delay so change is made
-  }, []);
+  // const resetProject = useCallback((id: string) => {
+  //   closeProject(id);
+  //   setTimeout(() => openProject(id), 0); // Delay so change is made
+  // }, []);
 
   const bringToFront = useCallback((id: string) => {
     topZRef.current += 1;
@@ -365,8 +395,17 @@ function HomePage() {
                             key={id}
                             active={isActive}
                             onClick={() => {
-                              isActive ? resetProject(id) : openProject(id);
+                              // isActive ? resetProject(id) : openProject(id);
+                              openProject(id);
+                              setFocusedProject(id);
+                              console.log("Focus project", id);
                             }}
+                            // onMouseEnter={() => {
+                            //   setFocusedProject(id);
+                            // }}
+                            // onMouseLeave={() => {
+                            //   setFocusedProject(null);
+                            // }}
                             title={PROJECT_DEFS[id].title}
                           />
                         );
@@ -386,9 +425,14 @@ function HomePage() {
                       key={id}
                       active={isActive}
                       onClick={() => {
-                        isActive ? resetProject(id) : openProject(id);
+                        // isActive ? resetProject(id) : openProject(id);
+                        openProject(id);
+                        setFocusedProject(id);
+                        console.log("Focus project", id);
                       }}
-                      // onClick={() => {}}
+                      onHoverStart={() => {
+                        setFocusedProject(id);
+                      }}
                       title={PROJECT_DEFS[id].title}
                     />
                   );
@@ -468,8 +512,7 @@ function HomePage() {
             return (
               <Window
                 key={id}
-                href={def.href}
-                component={def.component}
+                project={def}
                 zIndex={zIndices[id] ?? 1}
                 fullScreen={fullScreen}
                 setFullScreen={setFullscreen}
@@ -477,7 +520,12 @@ function HomePage() {
                 onClose={() => {
                   closeProject(id);
                 }}
-                onFocus={() => bringToFront(id)}
+                // onOpen={()=>openProject(id)}
+                onFocus={() => {
+                  bringToFront(id);
+                  setFocusedProject(null);
+                }}
+                isFocused={focusedProject === id}
                 constraintsRef={constraintsRef}
               />
             );

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import ViewProduct from "./ViewProduct";
 import { useState, useEffect } from "react";
@@ -63,7 +63,7 @@ function ProductList({ items }: { items: itemProps[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 w-[90%] overflow-y-auto backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
+    <div className="flex flex-col gap-4 py-4 w-[90%] overflow-y-auto backdrop-blur-sm [mask-image:linear-gradient(to_bottom,transparent,black_3%,black_97%,transparent)] ">
       {items.map((item) => {
         return (
           <div key={item.key} className="flex flex-row gap-4 w-full">
@@ -83,9 +83,9 @@ function ProductList({ items }: { items: itemProps[] }) {
                 alt=""
               />
             )}
-            <div className="flex flex-col w-full">
-              <p className="text-3xl font-semibold text-left">{item.name}</p>
-              <p className="text-xl text-left">{item.text}</p>
+            <div className="flex flex-col w-full font-[EdSimple]">
+              <p className="text-2xl font-semibold text-left">{item.name}</p>
+              <p className="text-lg text-left">{item.text}</p>
               <button
                 onClick={() => {
                   handleCart(item.key);
@@ -101,15 +101,19 @@ function ProductList({ items }: { items: itemProps[] }) {
         );
       })}
 
-      {productId && (
-        <ViewProduct
-          handleCart={handleCart}
-          itemInCart={cart.some(
-            (cartItem) => cartItem.key === parseInt(productId),
-          )}
-          productId={parseInt(productId)}
-        />
-      )}
+      <AnimatePresence>
+        {productId && (
+          <motion.div exit={{ opacity: 0 }}>
+            <ViewProduct
+              handleCart={handleCart}
+              itemInCart={cart.some(
+                (cartItem) => cartItem.key === parseInt(productId),
+              )}
+              productId={parseInt(productId)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

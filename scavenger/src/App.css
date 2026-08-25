@@ -21,65 +21,64 @@
 @font-face {
   font-family: bleguk;
   src:
-    url(/scavenger/assets/fonts/Bleguk-Demo.woff) format("woff"),
-    url(/scavenger/assets/fonts/Bleguk-Demo.otf) format("truetype");
+    /* url(/scavenger/assets/fonts/Bleguk-Demo.woff) format("woff"), */ url(/scavenger/assets/fonts/Bleguk-Demo.otf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: revolution;
   src:
-    url(/scavenger/assets/fonts/Children_of_the_revolution.woff) format("woff"),
-    url(/scavenger/assets/fonts/Children_of_the_revolution.ttf)
-      format("truetype");
+    /* url(/scavenger/assets/fonts/Children_of_the_revolution.woff) format("woff"), */ url(/scavenger/assets/fonts/Children_of_the_revolution.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: santo;
   src:
-    url(/scavenger/assets/fonts/SANTO___.woff) format("woff"),
-    url(/scavenger/assets/fonts/SANTO___.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/SANTO___.woff) format("woff"), */ url(/scavenger/assets/fonts/SANTO___.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: vtks;
   src:
-    url(/scavenger/assets/fonts/Vtks_Vinte_e_Cinco.woff) format("woff"),
-    url(/scavenger/assets/fonts/Vtks_Vinte_e_Cinco.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/Vtks_Vinte_e_Cinco.woff) format("woff"), */ url(/scavenger/assets/fonts/Vtks_Vinte_e_Cinco.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: EdSloppy;
   src:
-    url(/scavenger/assets/fonts/zai_EdSloppyHandwritten.woff) format("woff"),
-    url(/scavenger/assets/fonts/zai_EdSloppyHandwritten.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/zai_EdSloppyHandwritten.woff) format("woff"), */ url(/scavenger/assets/fonts/zai_EdSloppyHandwritten.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: EdSimple;
   src:
-    url(/scavenger/assets/fonts/zai_EdSloppySimple.woff) format("woff"),
-    url(/scavenger/assets/fonts/zai_EdSloppySimple.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/zai_EdSloppySimple.woff) format("woff"), */ url(/scavenger/assets/fonts/zai_EdSloppySimple.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: Daubmark;
   src:
-    url(/scavenger/assets/fonts/Daubmark.woff) format("woff"),
-    url(/scavenger/assets/fonts/Daubmark.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/Daubmark.woff) format("woff"), */ url(/scavenger/assets/fonts/Daubmark.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: Caligraf;
   src:
-    url(/scavenger/assets/fonts/Caligraf.woff) format("woff"),
-    url(/scavenger/assets/fonts/Caligraf.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/Caligraf.woff) format("woff"), */ url(/scavenger/assets/fonts/Caligraf.ttf)
+    format("truetype");
   font-display: fallback;
 }
 @font-face {
   font-family: Kashare;
   src:
-    url(/scavenger/assets/fonts/Kashare.woff) format("woff"),
-    url(/scavenger/assets/fonts/Kashare.ttf) format("truetype");
+    /* url(/scavenger/assets/fonts/Kashare.woff) format("woff"), */ url(/scavenger/assets/fonts/Kashare.ttf)
+    format("truetype");
   font-display: fallback;
 }
 

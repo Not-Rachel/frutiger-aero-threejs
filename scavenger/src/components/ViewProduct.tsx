@@ -25,7 +25,7 @@ function ViewProduct({
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // const productId = searchParams.get("product");
+  // const product = searchParams.get("product");
   const [model, setModel] = useState<null | string>(null);
   // // const [itemInCart, setItemInCart] = useState<boolean>(false);
 
@@ -35,42 +35,6 @@ function ViewProduct({
     else setModel(null);
   }, [productId]);
 
-  // const [cart, setCart] = useState<itemProps[]>([]);
-
-  // useEffect(() => {
-  //   const prevCart = localStorage.getItem("cart");
-  //   if (prevCart) {
-  //     setCart(JSON.parse(prevCart));
-  //   }
-  // }, []);
-
-  // useEffect(() => {
-  //   if (productId) {
-  //     setItemInCart(
-  //       cart.some((cartItem) => cartItem.key === parseInt(productId)),
-  //     );
-  //   }
-  // }, [cart, productId]);
-
-  // function handleCart(): void {
-  //   if (!productId) return;
-
-  //   const item = items[parseInt(productId)];
-  //   let newCart;
-  //   if (itemInCart) {
-  //     newCart = cart.filter((cartItem) => cartItem.key !== item.key);
-  //   } else {
-  //     newCart = [...cart, item];
-  //   }
-
-  //   setCart(newCart);
-  //   localStorage.setItem("cart", JSON.stringify(newCart));
-
-  //   // Close the product modal
-  //   const params = new URLSearchParams(searchParams);
-  //   params.delete("product");
-  //   navigate(`?${params.toString()}`);
-  // }
   return (
     model &&
     createPortal(

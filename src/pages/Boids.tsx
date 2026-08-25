@@ -2,7 +2,7 @@ import {
   Canvas,
   // extend,
   useFrame,
-  useThree,
+  // useThree,
 } from "@react-three/fiber";
 import hdr from "/assets/citrus.hdr?url";
 import {
@@ -26,21 +26,21 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  // useState,
   type RefObject,
   type JSX,
 } from "react";
 import { SkeletonUtils } from "three/examples/jsm/Addons.js";
 import { Physics, usePlane, useSphere } from "@react-three/cannon";
 // import { Water, type WaterOptions } from "three/examples/jsm/Addons.js";
-import {
-  // DepthOfField,
-  EffectComposer,
-  Vignette,
-  ChromaticAberration,
-  BrightnessContrast,
-} from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+// import {
+//   // DepthOfField,
+//   EffectComposer,
+//   Vignette,
+//   ChromaticAberration,
+//   BrightnessContrast,
+// } from "@react-three/postprocessing";
+// import { BlendFunction } from "postprocessing";
 import {
   MathUtils,
   Object3D,
@@ -126,7 +126,7 @@ function Boid({ speed, obstacleRef, fishRefs, index, ...props }: BoidProps) {
   const verticalTargetHeading = useRef(0);
   const lastTime = useRef(0);
   const nextInterval = useRef(2);
-  const { camera } = useThree();
+  // const { camera } = useThree();
 
   // const obstacleRef = props.obstacleRef;
 
@@ -211,15 +211,15 @@ function Boid({ speed, obstacleRef, fishRefs, index, ...props }: BoidProps) {
       3,
     );
 
-    avoidCollision(
-      pos,
-      camera.position,
-      targetHeading,
-      verticalTargetHeading,
-      // speedRef,
-      10,
-      2,
-    );
+    // avoidCollision(
+    //   pos,
+    //   camera.position,
+    //   targetHeading,
+    //   verticalTargetHeading,
+    //   // speedRef,
+    //   10,
+    //   2,
+    // );
 
     const lerpFactor = 1 - Math.pow(0.5, delta);
     heading.current = MathUtils.lerp(
@@ -381,44 +381,44 @@ function LoadingOverlay() {
   );
 }
 
-function UnderwaterEffects() {
-  const { camera } = useThree();
-  const [isUnderwater, setIsUnderwater] = useState(false);
+// function UnderwaterEffects() {
+//   const { camera } = useThree();
+//   const [isUnderwater, setIsUnderwater] = useState(false);
 
-  useFrame(() => {
-    setIsUnderwater(camera.position.y < -1); // below plane y
-  });
+//   useFrame(() => {
+//     setIsUnderwater(camera.position.y < -1); // below plane y
+//   });
 
-  // if (!isUnderwater) return null;
+//   // if (!isUnderwater) return null;
 
-  return (
-    <EffectComposer>
-      {/* Teal fog tint */}
+//   return (
+//     <EffectComposer>
+//       {/* Teal fog tint */}
 
-      {/* <ColorAverage blendFunction={BlendFunction.COLOR} /> */}
-      {/* <DepthOfField
-        focusDistance={5}
-        focalLength={0.09}
-        bokehScale={1.2}
-        height={480}
-      /> */}
-      <ChromaticAberration
-        blendFunction={BlendFunction.AVERAGE}
-        offset={isUnderwater ? [0.005, 0.005] : [0.0, 0.0]}
-      />
-      <Vignette
-        eskil={false}
-        offset={isUnderwater ? 0.3 : 0}
-        darkness={isUnderwater ? 0.8 : 0}
-      />
+//       {/* <ColorAverage blendFunction={BlendFunction.COLOR} /> */}
+//       {/* <DepthOfField
+//         focusDistance={5}
+//         focalLength={0.09}
+//         bokehScale={1.2}
+//         height={480}
+//       /> */}
+//       <ChromaticAberration
+//         blendFunction={BlendFunction.AVERAGE}
+//         offset={isUnderwater ? [0.005, 0.005] : [0.0, 0.0]}
+//       />
+//       <Vignette
+//         eskil={false}
+//         offset={isUnderwater ? 0.3 : 0}
+//         darkness={isUnderwater ? 0.8 : 0}
+//       />
 
-      <BrightnessContrast
-        brightness={isUnderwater ? -0.3 : 0.0} // brightness. min: -1, max: 1
-        contrast={0} // contrast: min -1, max: 1
-      />
-    </EffectComposer>
-  );
-}
+//       <BrightnessContrast
+//         brightness={isUnderwater ? -0.3 : 0.0} // brightness. min: -1, max: 1
+//         contrast={0} // contrast: min -1, max: 1
+//       />
+//     </EffectComposer>
+//   );
+// }
 
 function Boids() {
   const puterRef = useRef<Object3D>(null!);
@@ -526,7 +526,7 @@ function Boids() {
             far={100}
             background={true}
           />
-          <UnderwaterEffects />
+          {/* <UnderwaterEffects /> */}
         </Suspense>
       </Canvas>
       <LoadingOverlay />

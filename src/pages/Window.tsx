@@ -1,10 +1,10 @@
-import { motion, useDragControls } from "motion/react";
+import { AnimatePresence, motion, useDragControls } from "motion/react";
 import { Resizable } from "re-resizable";
 import {
   useEffect,
   useRef,
   useState,
-  type CSSProperties,
+  // Activity,
   type Dispatch,
   type RefObject,
   type SetStateAction,
@@ -12,28 +12,41 @@ import {
 
 import ui_1 from "/assets/audio/ui1.mp3";
 import TVOff from "/assets/audio/TVOff2.mp3";
+import { IoInformationCircle } from "react-icons/io5";
+import { IoMdClose } from "react-icons/io";
+import { RiFullscreenFill } from "react-icons/ri";
+import { RiFullscreenExitLine } from "react-icons/ri";
+import { VscChromeMinimize } from "react-icons/vsc";
+
+type ProjectProps = {
+  title: string;
+  href: string;
+  information: string;
+  component?: React.ComponentType;
+  position: { x: number; y: number };
+};
 
 type WindowProps = {
-  href: string;
+  project: ProjectProps;
   fullScreen: boolean;
-  component: any;
   zIndex: number;
   setFullScreen: Dispatch<SetStateAction<boolean>>;
   setNavToClose: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   onFocus: () => void;
+  isFocused: boolean;
   constraintsRef: RefObject<HTMLDivElement | null>;
 };
 
 function Window({
-  href,
-  component,
+  project,
   fullScreen,
   zIndex,
   setFullScreen,
   setNavToClose,
   onClose,
   onFocus,
+  isFocused,
   constraintsRef,
 }: WindowProps) {
   const dragControls = useDragControls();
@@ -49,8 +62,16 @@ function Window({
   const TVoffSound = useRef(new Audio(TVOff));
   // const firstDrag = useRef(false);
   const [firstDrag, setFirstDrag] = useState(false); // TODO: use better hook?
+  const [showInfo, setShowInfo] = useState(false);
+  const [minimized, setMinimized] = useState(false);
 
   console.log(constraintsRef);
+  // const info = "This is information pertaining to the Project";
+
+  useEffect(() => {
+    if (isFocused) setShowScreen(true);
+    // else minimizeScreen();
+  }, [isFocused]);
 
   useEffect(() => {
     if (dragScreenRef.current) {
@@ -65,18 +86,28 @@ function Window({
     TVoffSound.current.currentTime = 0; // rewind in case it was played before
     TVoffSound.current.play();
     setFullScreen(false);
+    setMinimized(false);
+    setNavToClose(false);
+    setShowScreen(false);
+  }
+  function minimizeScreen() {
+    setMinimized(true);
+    TVoffSound.current.currentTime = 0; // rewind in case it was played before
+    TVoffSound.current.play();
+    setFullScreen(false);
     setNavToClose(false);
     setShowScreen(false);
   }
 
-  function changeScreen(param: string) {
-    setShowScreen(true);
-    window.open(`/${param}`, "_blank");
-  }
+  // function changeScreen(param: string) {
+  //   setShowScreen(true);
+  //   window.open(`/${param}`, "_blank");
+  // }
 
-  const ProjectComponent = component;
+  const ProjectComponent = project.component;
 
   return (
+    // <Activity>
     <motion.div
       ref={dragScreenRef}
       layout
@@ -129,13 +160,16 @@ function Window({
           initial={{ scaleY: showScreen ? 0 : "100%" }}
           animate={{
             scaleY: showScreen ? "100%" : 0,
+            opacity: showScreen ? "100%" : 0,
             transition: {
               duration: 0.3,
             },
           }}
           onAnimationComplete={() => {
-            if (!showScreen) {
+            if (!showScreen && !minimized) {
               onClose();
+            }
+            if (minimized) {
             }
           }}
           className=" w-full h-full "
@@ -147,27 +181,21 @@ function Window({
             <motion.div
               layout
               data-drag-handle
-              className={`flex  overflow-hidden left-0 justify-between items-start  ${!fullScreen ? "bg-cyan-50/40 w-full" : "rounded-r-md w-auto"}`}
-              style={
-                fullScreen ? { position: "absolute", top: 0, zIndex: 99 } : {}
-              }
+              className={`flex items-center  overflow-hidden left-0 justify-between ${!fullScreen ? "bg-cyan-50/40 w-full" : "bg-cyan-950 w-full"} `}
+              // style={
+              //   fullScreen ? { position: "absolute", top: 0, zIndex: 99 } : {}
+              // }
               onPointerDown={(e) => dragControls.start(e)}
               // onPointerDown={() => setDragScreen(true)}
             >
-              <div className="flex">
+              <h1 className=" px-2 font-light">{project.title}</h1>
+
+              <div className="flex h-full justify-end">
                 <button
-                  onClick={closeScreen}
-                  className="aero text-center  text-xl px-2  "
-                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                  onClick={minimizeScreen}
+                  className={`text-center text-xl px-2`}
                 >
-                  x
-                </button>
-                <button
-                  onClick={closeScreen}
-                  className="aero text-center   text-xl px-2  "
-                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
-                >
-                  -
+                  <VscChromeMinimize />
                 </button>
                 <button
                   onClick={() => {
@@ -175,40 +203,71 @@ function Window({
                     setFullScreen((prev) => !prev);
                     setNavToClose(false);
                   }}
-                  className="aero text-center  text-xl px-2 "
-                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                  className={`text-center text-xl px-2`}
                 >
-                  []
+                  {fullScreen ? <RiFullscreenExitLine /> : <RiFullscreenFill />}
                 </button>
-              </div>
-
-              {!fullScreen && (
                 <button
-                  onClick={() => {
-                    changeScreen(href);
-                  }}
-                  className="aero text-center  text-lg px-2 "
-                  style={{ "--hue": 200, "--saturation": 0.1 } as CSSProperties}
+                  onClick={closeScreen}
+                  className={`text-center text-xl px-2`}
                 >
-                  Open link to new tab
+                  <IoMdClose></IoMdClose>
                 </button>
-              )}
+                {/* {!fullScreen && (
+                  <button
+                    onClick={() => {
+                      changeScreen(project.href);
+                    }}
+                    className={`${!fullScreen ? "aero" : ""} text-center text-lg px-2`}
+                    style={
+                      { "--hue": 200, "--saturation": 0.1 } as CSSProperties
+                    }
+                  >
+                    OPEN IN NEW TAB
+                  </button>
+                )} */}
+              </div>
             </motion.div>
 
             <div
-              className="overflow-hidden w-full h-full"
+              className="overflow-hidden w-full h-full relative"
               onPointerDown={() => dragControls.cancel()}
             >
+              <motion.div
+                initial={{ y: showInfo ? "85%" : 0 }}
+                animate={{ y: showInfo ? 0 : "85%" }}
+                transition={{ ease: "easeInOut" }}
+                className={`absolute z-40 left-0 bottom-0 h-1/3 w-full p-4  ${showInfo && " bg-blue-400/50 font-extrabold rounded-sm"}`}
+              >
+                <motion.button
+                  className="absolute right-0 top-0 z-50 p-2 text-white text-lg  "
+                  whileHover={{ scale: 1.4 }}
+                  onClick={() => setShowInfo((prev) => !prev)}
+                >
+                  <IoInformationCircle />
+                </motion.button>
+                <AnimatePresence>
+                  {showInfo && (
+                    <motion.p
+                      exit={{ opacity: 0 }}
+                      className="text-white text-lg "
+                    >
+                      {project.information}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </motion.div>
               {ProjectComponent ? (
                 <ProjectComponent />
               ) : (
-                <p className="text-white p-4">Not found: {href}</p>
+                <p className="text-white p-4">Not found: {project.href}</p>
               )}
             </div>
           </motion.div>
         </motion.main>
       </Resizable>
     </motion.div>
+    // </Activity>
   );
 }
 
